@@ -1,0 +1,441 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>NeuroCore</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Telegram Mini App SDK -->
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+
+    <!-- Подключаем шрифт Roboto -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+        body {
+            margin: 0;
+            min-height: 100vh;
+            font-family: "Roboto", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 16px;
+            background: radial-gradient(circle at top, #0ea5e9 0, #020617 50%, #000000 100%);
+            color: #e5e7eb;
+            animation: bgShift 14s infinite alternate ease-in-out;
+        }
+        .card {
+            width: 100%;
+            max-width: 420px;
+            background: rgba(15, 23, 42, 0.92);
+            border-radius: 18px;
+            padding: 18px 16px 16px;
+            box-shadow:
+                0 20px 50px rgba(0, 0, 0, 0.8),
+                0 0 0 1px rgba(59, 130, 246, 0.3);
+            backdrop-filter: blur(14px);
+        }
+        .card-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+        .avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 12px;
+            background: conic-gradient(from 140deg, #22c55e, #22d3ee, #6366f1, #ec4899, #22c55e);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #020617;
+            font-weight: 700;
+            font-size: 18px;
+            text-shadow: 0 0 6px rgba(15, 23, 42, 0.8);
+            animation: pulseGlow 3s infinite ease-in-out;
+        }
+        .title-block {
+            flex: 1;
+        }
+        .title {
+            font-size: 18px;
+            font-weight: 700;
+            letter-spacing: 0.14em;
+            text-transform: uppercase;
+            color: #e0f2fe;
+            text-shadow:
+                0 0 8px rgba(56, 189, 248, 0.9),
+                0 0 16px rgba(59, 130, 246, 0.8);
+            animation: titleGlow 4s infinite ease-in-out;
+        }
+        .subtitle {
+            font-size: 12px;
+            color: #9ca3af;
+        }
+        .badge {
+            font-size: 11px;
+            padding: 3px 7px;
+            border-radius: 999px;
+            background: rgba(59, 130, 246, 0.15);
+            border: 1px solid rgba(59, 130, 246, 0.6);
+            color: #bfdbfe;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+        }
+        .buttons-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 8px;
+            margin: 10px 0 12px;
+        }
+        .btn {
+            padding: 11px 12px;
+            border-radius: 12px;
+            border: 0;
+            cursor: pointer;
+            font-size: 14px;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 3px;
+            transition: transform 0.12s ease, box-shadow 0.12s ease, background 0.12s ease;
+            color: #e5e7eb;
+            letter-spacing: 0.01em;
+        }
+        .btn span.label {
+            font-weight: 600;
+        }
+        .btn span.desc {
+            font-size: 11px;
+            color: #cbd5f5;
+        }
+        .btn.primary {
+            background: linear-gradient(135deg, #2563eb, #7c3aed);
+            box-shadow: 0 10px 25px rgba(37, 99, 235, 0.45);
+        }
+        .btn.secondary {
+            background: rgba(30, 64, 175, 0.55);
+            border: 1px solid rgba(129, 140, 248, 0.5);
+        }
+        .btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 12px 26px rgba(59, 130, 246, 0.45);
+        }
+        .btn:active {
+            transform: translateY(0);
+            box-shadow: none;
+        }
+        textarea {
+            width: 100%;
+            min-height: 90px;
+            border-radius: 14px;
+            border: 1px solid rgba(75, 85, 99, 0.9);
+            padding: 9px 10px;
+            font-size: 13px;
+            resize: vertical;
+            background: radial-gradient(circle at top left, #0f172a 0, #020617 60%);
+            color: #e5e7eb;
+            outline: none;
+            font-family: "Roboto", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+        }
+        textarea::placeholder {
+            color: #6b7280;
+        }
+        textarea:focus {
+            border-color: #38bdf8;
+            box-shadow: 0 0 0 1px rgba(56, 189, 248, 0.8);
+        }
+        .bottom-row {
+            margin-top: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 8px;
+        }
+        .hint {
+            font-size: 11px;
+            color: #9ca3af;
+        }
+        .send-btn {
+            padding: 8px 12px;
+            border-radius: 999px;
+            border: 0;
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+            background: linear-gradient(135deg, #22c55e, #16a34a);
+            color: #022c22;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            box-shadow: 0 10px 22px rgba(34, 197, 94, 0.5);
+        }
+        .send-btn:active {
+            transform: translateY(1px);
+            box-shadow: none;
+        }
+
+        .add-group {
+            margin-top: 12px;
+        }
+        .add-group-btn {
+            width: 100%;
+            padding: 10px 14px;
+            border-radius: 999px;
+            border: 0;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            background: linear-gradient(135deg, #f97316, #ec4899);
+            color: #fefce8;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            box-shadow: 0 10px 25px rgba(248, 113, 113, 0.5);
+            text-decoration: none;
+        }
+        .add-group-btn:hover {
+            filter: brightness(1.05);
+        }
+        .add-group-btn:active {
+            transform: translateY(1px);
+            box-shadow: none;
+        }
+
+        .meta-block {
+            margin-top: 10px;
+            padding-top: 8px;
+            border-top: 1px solid rgba(55, 65, 81, 0.8);
+            font-size: 11px;
+            color: #9ca3af;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+        .meta-title {
+            font-size: 11px;
+            letter-spacing: 0.16em;
+            text-transform: uppercase;
+            color: #a5b4fc;
+            text-shadow: 0 0 8px rgba(129, 140, 248, 0.6);
+        }
+        .meta-links {
+            display: flex;
+            justify-content: space-between;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+        .meta-link {
+            color: #38bdf8;
+            text-decoration: none;
+            font-size: 11px;
+        }
+        .meta-link:hover {
+            text-decoration: underline;
+        }
+
+        /* УВЕЛИЧЕННЫЙ «3D»-жетон NeuroCore */
+        .logo-3d {
+            margin-top: 12px;
+            display: flex;
+            justify-content: center;
+            perspective: 700px;
+        }
+        .logo-chip {
+            width: 180px;
+            height: 40px;
+            border-radius: 999px;
+            background: radial-gradient(circle at 10% 0, #0f172a 0, #020617 55%);
+            border: 1px solid rgba(56, 189, 248, 0.9);
+            box-shadow:
+                0 0 22px rgba(56, 189, 248, 1),
+                0 22px 40px rgba(15, 23, 42, 0.95);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #e0f2fe;
+            font-size: 12px;
+            letter-spacing: 0.18em;
+            text-transform: uppercase;
+            text-shadow: 0 0 10px rgba(56, 189, 248, 1);
+            transform-style: preserve-3d;
+            animation: chipSpin 8s infinite linear;
+            position: relative;
+        }
+        .logo-chip::before {
+            content: "";
+            position: absolute;
+            inset: 4px;
+            border-radius: inherit;
+            border: 1px dashed rgba(59, 130, 246, 0.65);
+        }
+
+        @keyframes pulseGlow {
+            0% {
+                box-shadow: 0 0 0 rgba(56, 189, 248, 0.0);
+            }
+            50% {
+                box-shadow: 0 0 18px rgba(56, 189, 248, 0.9);
+            }
+            100% {
+                box-shadow: 0 0 0 rgba(56, 189, 248, 0.0);
+            }
+        }
+
+        @keyframes titleGlow {
+            0% {
+                text-shadow:
+                    0 0 4px rgba(56, 189, 248, 0.5),
+                    0 0 8px rgba(59, 130, 246, 0.4);
+            }
+            50% {
+                text-shadow:
+                    0 0 10px rgba(56, 189, 248, 1),
+                    0 0 22px rgba(59, 130, 246, 0.9);
+            }
+            100% {
+                text-shadow:
+                    0 0 4px rgba(56, 189, 248, 0.5),
+                    0 0 8px rgba(59, 130, 246, 0.4);
+            }
+        }
+
+        @keyframes bgShift {
+            0% {
+                background: radial-gradient(circle at top, #0ea5e9 0, #020617 50%, #000000 100%);
+            }
+            50% {
+                background: radial-gradient(circle at top, #6366f1 0, #020617 55%, #000000 100%);
+            }
+            100% {
+                background: radial-gradient(circle at top, #ec4899 0, #020617 50%, #000000 100%);
+            }
+        }
+
+        @keyframes chipSpin {
+            0% {
+                transform: rotateY(-18deg) rotateX(12deg);
+            }
+            50% {
+                transform: rotateY(18deg) rotateX(12deg);
+            }
+            100% {
+                transform: rotateY(-18deg) rotateX(12deg);
+            }
+        }
+    </style>
+
+    <script>
+        const tg = window.Telegram.WebApp;
+
+        // сказать Telegram, что мини‑апп готово
+        if (tg && tg.ready) {
+            tg.ready();
+        }
+
+        function setMode(mode) {
+            const input = document.getElementById("prompt");
+            if (!input) return;
+
+            if (mode === "question") {
+                input.placeholder = "Напиши свой вопрос для NeuroCore…";
+            } else if (mode === "explain") {
+                input.placeholder = "Напиши тему или понятие, которое нужно объяснить…";
+            } else if (mode === "fix") {
+                input.placeholder = "Вставь текст, который нужно исправить…";
+            } else if (mode === "ideas") {
+                input.placeholder = "Опиши, для чего нужны идеи (сочинение, проект и т.п.)…";
+            } else {
+                input.placeholder = "Напиши текст для NeuroCore…";
+            }
+        }
+
+        function sendToBot() {
+            const input = document.getElementById("prompt");
+            const text = input.value.trim();
+
+            if (!text) {
+                alert("Сначала напиши текст для NeuroCore.");
+                return;
+            }
+
+            // если запущено как Mini App из бота – отправляем строку назад боту
+            if (tg && tg.sendData) {
+                tg.sendData(text); // в боте придёт web_app_data.data с этим текстом[web:243][web:246]
+            } else {
+                alert("Мини‑апп нужно запускать из Telegram‑бота через web_app кнопку.");
+            }
+        }
+    </script>
+</head>
+<body>
+    <div class="card">
+        <div class="card-header">
+            <div class="avatar">NC</div>
+            <div class="title-block">
+                <div class="title">NEUROCORE</div>
+                <div class="subtitle">Учёба · тексты · идеи · 18+</div>
+            </div>
+            <div class="badge">beta</div>
+        </div>
+
+        <div class="buttons-grid">
+            <button class="btn primary" onclick="setMode('question')">
+                <span class="label">Задать вопрос</span>
+                <span class="desc">Спроси что угодно</span>
+            </button>
+            <button class="btn secondary" onclick="setMode('explain')">
+                <span class="label">Объяснить тему</span>
+                <span class="desc">Темы, задачи, теорию</span>
+            </button>
+            <button class="btn secondary" onclick="setMode('fix')">
+                <span class="label">Исправить текст</span>
+                <span class="desc">Орфография и стиль</span>
+            </button>
+            <button class="btn secondary" onclick="setMode('ideas')">
+                <span class="label">Сгенерировать идеи</span>
+                <span class="desc">Проекты, сюжеты, подарки</span>
+            </button>
+        </div>
+
+        <textarea id="prompt" placeholder="Напиши текст для NeuroCore…"></textarea>
+
+        <div class="bottom-row">
+            <div class="hint">Этот интерфейс работает как Mini App. Текст улетит боту через WebApp.</div>
+            <button class="send-btn" onclick="sendToBot()">
+                Отправить
+            </button>
+        </div>
+
+        <div class="add-group">
+            <!-- ЗДЕСЬ ВСТАВЬ СВОЙ ЮЗЕРНЕЙМ БОТА вместо genius_neo_bot -->
+            <a class="add-group-btn" href="tg://resolve?domain=genius_neo_bot">
+                Пригласить NeuroCore в чат
+            </a>
+        </div>
+
+        <div class="meta-block">
+            <div class="meta-title">SYSTEM</div>
+            <div class="meta-links">
+                <a class="meta-link" href="https://example.com/privacy" target="_blank">
+                    Политика конфиденциальности
+                </a>
+                <a class="meta-link" href="https://t.me/ВАШ_НИК" target="_blank">
+                    Связь с разработчиком
+                </a>
+            </div>
+        </div>
+
+        <div class="logo-3d">
+            <div class="logo-chip">NEUROCORE</div>
+        </div>
+    </div>
+</body>
+</html>
