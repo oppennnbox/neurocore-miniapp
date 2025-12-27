@@ -364,17 +364,13 @@
             }
         }
 
-        // НОВАЯ функция — открытие выбора чата для добавления бота
         function addBotToGroup() {
             if (!tg || !tg.openTelegramLink) {
                 alert("Эту кнопку можно использовать только внутри Telegram Mini App.");
                 return;
             }
-
-            // Официальный deep‑link с startgroup, как в доке Telegram[web:307]
             const url = "https://t.me/genius_neo_bot?startgroup=add";
-
-            tg.openTelegramLink(url); // откроет стандартный экран выбора чата в Telegram[web:200][web:343][web:346]
+            tg.openTelegramLink(url);  // откроет выбор чата в Telegram[web:200][web:307][web:343]
         }
     </script>
 </head>
@@ -418,7 +414,6 @@
         </div>
 
         <div class="add-group">
-            <!-- ТЕПЕРЬ кнопка вызывает JS-функцию, а не tg:// -->
             <button class="add-group-btn" type="button" onclick="addBotToGroup()">
                 Пригласить NeuroCore в чат
             </button>
