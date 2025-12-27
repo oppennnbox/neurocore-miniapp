@@ -1,0 +1,402 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <title>Политика конфиденциальности · NeuroCore</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <!-- Шрифт -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    html, body {
+      margin: 0;
+      padding: 0;
+      min-height: 100%;
+    }
+
+    body {
+      font-family: "Roboto", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      color: #e5e7eb;
+      background:
+        radial-gradient(circle at top, #0ea5e9 0, #020617 45%, #000 100%);
+      animation: bgShift 18s infinite alternate ease-in-out;
+    }
+
+    .page {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .top-bar {
+      width: 100%;
+      padding: 16px clamp(16px, 4vw, 32px);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      backdrop-filter: blur(12px);
+    }
+
+    .logo-wrap {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .logo {
+      width: 32px;
+      height: 32px;
+      border-radius: 999px;
+      background: conic-gradient(from 140deg, #22c55e, #22d3ee, #6366f1, #ec4899, #22c55e);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 15px;
+      color: #020617;
+      text-shadow: 0 0 6px rgba(15,23,42,0.8);
+      animation: pulseGlow 3s infinite ease-in-out;
+    }
+
+    .brand-text {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .brand-title {
+      font-size: 16px;
+      font-weight: 700;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: #e0f2fe;
+      text-shadow:
+        0 0 8px rgba(56,189,248,0.9),
+        0 0 18px rgba(59,130,246,0.9);
+    }
+
+    .brand-subtitle {
+      font-size: 11px;
+      color: #9ca3af;
+    }
+
+    .pill {
+      font-size: 11px;
+      padding: 5px 10px;
+      border-radius: 999px;
+      border: 1px solid rgba(148,163,184,0.8);
+      background: rgba(15,23,42,0.85);
+      color: #e5e7eb;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      white-space: nowrap;
+    }
+
+    .pill-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: #22c55e;
+      box-shadow: 0 0 10px rgba(34,197,94,0.9);
+    }
+
+    .content {
+      flex: 1;
+      width: 100%;
+      padding: 8px clamp(16px, 5vw, 48px) 40px;
+      display: flex;
+      justify-content: center;
+    }
+
+    .content-inner {
+      width: 100%;
+      max-width: 980px;
+      background: linear-gradient(
+        135deg,
+        rgba(15,23,42,0.96),
+        rgba(15,23,42,0.94)
+      );
+      border-radius: 20px;
+      border: 1px solid rgba(30,64,175,0.7);
+      box-shadow:
+        0 24px 70px rgba(15,23,42,0.9),
+        0 0 0 1px rgba(56,189,248,0.2);
+      padding: clamp(16px, 4vw, 28px);
+      overflow: hidden;
+    }
+
+    .content-header {
+      margin-bottom: 16px;
+      border-bottom: 1px solid rgba(55,65,81,0.9);
+      padding-bottom: 10px;
+    }
+
+    .content-title {
+      font-size: clamp(18px, 3vw, 22px);
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: #e0f2fe;
+      margin-bottom: 4px;
+    }
+
+    .content-subtitle {
+      font-size: 12px;
+      color: #9ca3af;
+    }
+
+    .sections {
+      font-size: 13px;
+      line-height: 1.7;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      color: #e5e7eb;
+    }
+
+    .section {
+      padding: 8px 0;
+      border-radius: 12px;
+    }
+
+    .section-title {
+      font-size: 13px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: #c7d2fe;
+      margin-bottom: 4px;
+    }
+
+    .section p {
+      margin: 3px 0;
+    }
+
+    .section ul {
+      margin: 3px 0 4px 18px;
+      padding: 0;
+    }
+
+    .section li {
+      margin: 2px 0;
+    }
+
+    .section-number {
+      font-weight: 500;
+    }
+
+    .footer {
+      width: 100%;
+      padding: 10px clamp(16px, 4vw, 32px) 16px;
+      font-size: 11px;
+      color: #9ca3af;
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+
+    .footer span {
+      opacity: 0.9;
+    }
+
+    .footer-link {
+      padding: 6px 12px;
+      border-radius: 999px;
+      border: 1px solid rgba(56,189,248,0.8);
+      color: #e0f2fe;
+      text-decoration: none;
+      font-size: 11px;
+      background: rgba(15,23,42,0.9);
+      box-shadow: 0 0 15px rgba(56,189,248,0.6);
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .footer-link-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: #22c55e;
+    }
+
+    .footer-link:hover {
+      filter: brightness(1.05);
+    }
+
+    @keyframes pulseGlow {
+      0% { box-shadow: 0 0 0 rgba(56,189,248,0.0); }
+      50% { box-shadow: 0 0 18px rgba(56,189,248,0.9); }
+      100% { box-shadow: 0 0 0 rgba(56,189,248,0.0); }
+    }
+
+    @keyframes bgShift {
+      0% {
+        background: radial-gradient(circle at top, #0ea5e9 0, #020617 45%, #000000 100%);
+      }
+      50% {
+        background: radial-gradient(circle at top, #6366f1 0, #020617 55%, #000000 100%);
+      }
+      100% {
+        background: radial-gradient(circle at top, #ec4899 0, #020617 50%, #000000 100%);
+      }
+    }
+
+    @media (max-width: 640px) {
+      .top-bar {
+        padding: 12px 14px;
+      }
+      .content-inner {
+        border-radius: 16px;
+        padding: 14px;
+      }
+      .sections {
+        font-size: 12px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <header class="top-bar">
+      <div class="logo-wrap">
+        <div class="logo">NC</div>
+        <div class="brand-text">
+          <div class="brand-title">NEUROCORE</div>
+          <div class="brand-subtitle">Учёба · тексты · идеи</div>
+        </div>
+      </div>
+      <div class="pill">
+        <span class="pill-dot"></span>
+        <span>Политика конфиденциальности · РФ · 152‑ФЗ</span>
+      </div>
+    </header>
+
+    <main class="content">
+      <div class="content-inner">
+        <div class="content-header">
+          <div class="content-title">Политика конфиденциальности Telegram‑бота «NeuroCore»</div>
+          <div class="content-subtitle">
+            Описание того, как обрабатываются и защищаются данные пользователей бота.
+          </div>
+        </div>
+
+        <div class="sections">
+          <div class="section">
+            <div class="section-title">1. Общие положения</div>
+            <p><span class="section-number">1.1.</span> Настоящая Политика конфиденциальности (далее – «Политика») определяет порядок и условия обработки персональных данных пользователей Telegram‑бота «NeuroCore» (далее – «Бот») и меры по обеспечению их безопасности.</p>
+            <p><span class="section-number">1.2.</span> Администратором Бота является физическое лицо – разработчик Бота (далее – «Администратор»).</p>
+            <p><span class="section-number">1.3.</span> Политика разработана в соответствии с Федеральным законом РФ от 27.07.2006 № 152‑ФЗ «О персональных данных» и иными применимыми нормами законодательства Российской Федерации.</p>
+            <p><span class="section-number">1.4.</span> Используя Бота, Пользователь подтверждает, что ознакомился с настоящей Политикой и выражает свое согласие на обработку своих данных на условиях, изложенных в Политике.</p>
+          </div>
+
+          <div class="section">
+            <div class="section-title">2. Объем обрабатываемых данных</div>
+            <p><span class="section-number">2.1.</span> Администратор получает и обрабатывает только те данные, которые автоматически предоставляет Telegram при использовании Бота, а именно: идентификатор чата (chat_id), отображаемое имя и имя пользователя (username), текст и содержимое отправляемых сообщений, а также техническую информацию (время отправки, тип чата и т.п.).</p>
+            <p><span class="section-number">2.2.</span> Администратор не запрашивает и не собирает заведомо избыточные данные, а также специальные категории персональных данных (сведения о здоровье, религиозных убеждениях, политических взглядах и т.п.), за исключением случаев, когда Пользователь добровольно укажет их в тексте сообщений.</p>
+            <p><span class="section-number">2.3.</span> Администратор не осуществляет скрытого сбора данных, не использует сторонние трекеры и не объединяет базы данных для несовместимых целей.</p>
+          </div>
+
+          <div class="section">
+            <div class="section-title">3. Цели обработки данных</div>
+            <p><span class="section-number">3.1.</span> Персональные данные обрабатываются исключительно в следующих целях:</p>
+            <ul>
+              <li>обеспечение работы функционала Бота (ответы на вопросы, генерация текстов, обработка команд);</li>
+              <li>оказание пользователям информационной и вспомогательной поддержки в рамках образовательной деятельности, включая помощь школьникам, студентам и иным пользователям разных возрастов при подготовке к занятиям, экзаменам, выполнении учебных и творческих задач;</li>
+              <li>предоставление развлекательного и познавательного контента в дружелюбных группах, сообществах и переписках, не направленного на причинение вреда кому‑либо;</li>
+              <li>улучшение качества работы Бота и корректировка его алгоритмов (анализ обезличенной статистики обращений);</li>
+              <li>выполнение требований законодательства РФ, в том числе по запросу уполномоченных органов в предусмотренных законом случаях.</li>
+            </ul>
+            <p><span class="section-number">3.2.</span> Все реализованные в Боте функции и команды предназначены для упрощения взаимодействия пользователей с нейросетями, снижения трудоёмкости творческой, учебной и информационной деятельности и не создаются с целью причинения вреда людям, организациям, обществу или государству.</p>
+            <p><span class="section-number">3.3.</span> Данные не используются для навязчивой рекламы, массовых рассылок, профилирования в коммерческих целях и передачи третьим лицам для их собственных маркетинговых задач.</p>
+          </div>
+
+          <div class="section">
+            <div class="section-title">4. Правовые основания обработки</div>
+            <p><span class="section-number">4.1.</span> Обработка персональных данных осуществляется на основании:</p>
+            <ul>
+              <li>согласия Пользователя, выраженного через использование Бота и направление сообщений в его адрес;</li>
+              <li>необходимости исполнения соглашения между Пользователем и Администратором по предоставлению функционала Бота;</li>
+              <li>требований законодательства Российской Федерации.</li>
+            </ul>
+            <p><span class="section-number">4.2.</span> Пользователь вправе прекратить использование Бота в любое время, что рассматривается как отзыв согласия на дальнейшую обработку данных, за исключением случаев, когда их хранение требуется в силу закона.</p>
+          </div>
+
+          <div class="section">
+            <div class="section-title">5. Передача и хранение данных</div>
+            <p><span class="section-number">5.1.</span> Вся передача сообщений между Пользователем и Ботом осуществляется через инфраструктуру Telegram; Администратор не несет ответственности за способы обработки данных самим сервисом Telegram. Пользователь должен дополнительно ознакомиться с Политикой конфиденциальности Telegram.</p>
+            <p><span class="section-number">5.2.</span> Если Администратор хранит историю переписки или отдельные запросы Пользователей вне Telegram (например, на сервере или в базе данных), хранение осуществляется в минимально необходимом объеме и только для целей, указанных в разделе 3.</p>
+            <p><span class="section-number">5.3.</span> Доступ к таким данным может иметь только Администратор (и/или уполномоченные им лица) при условии соблюдения режима конфиденциальности.</p>
+            <p><span class="section-number">5.4.</span> Срок хранения данных ограничен сроком, необходимым для достижения целей обработки, после чего данные подлежат удалению или обезличиванию, если иное не требуется законом.</p>
+          </div>
+
+          <div class="section">
+            <div class="section-title">6. Защита персональных данных</div>
+            <p><span class="section-number">6.1.</span> Администратор принимает разумные и достаточные организационные и технические меры для защиты персональных данных от неправомерного или случайного доступа, уничтожения, изменения, блокирования, копирования, распространения и иных неправомерных действий третьих лиц.</p>
+            <p><span class="section-number">6.2.</span> В том числе могут применяться: ограничение доступа к данным, использование сложных паролей и двухфакторной аутентификации, резервное копирование и регулярное обновление программного обеспечения.</p>
+            <p><span class="section-number">6.3.</span> Несмотря на принимаемые меры, Администратор не может гарантировать абсолютную защиту от всех возможных киберугроз и просит Пользователя воздерживаться от передачи в Бот конфиденциальной информации, которая не необходима для использования его функционала.</p>
+          </div>
+
+          <div class="section">
+            <div class="section-title">7. Права пользователя</div>
+            <p><span class="section-number">7.1.</span> Пользователь имеет право:</p>
+            <ul>
+              <li>получать информацию о своих персональных данных, обрабатываемых Администратором;</li>
+              <li>требовать уточнения, блокирования или удаления своих персональных данных в случаях, предусмотренных законодательством РФ;</li>
+              <li>отозвать согласие на обработку персональных данных путем прекращения использования Бота и (при необходимости) направления соответствующего запроса Администратору.</li>
+            </ul>
+            <p><span class="section-number">7.2.</span> Для реализации своих прав Пользователь может обратиться к Администратору через контакт, указанный в описании Бота или в настоящей Политике (например, через Telegram‑аккаунт разработчика).</p>
+            <p>Для связи с Администратором и по вопросам обработки персональных данных можно написать в Telegram:
+              <a href="https://t.me/genuis_neo_bot" target="_blank" style="color:#38bdf8;text-decoration:none;">
+                @genuis_neo_bot
+              </a>.
+            </p>
+          </div>
+
+          <div class="section">
+            <div class="section-title">8. Недопустимые действия и ограничения</div>
+            <p><span class="section-number">8.1.</span> Пользователь не вправе использовать Бот для любых действий, нарушающих законодательство Российской Федерации, включая, но не ограничиваясь: распространением материалов экстремистского или террористического характера, разжиганием ненависти или вражды, призывами к насилию, совершению противоправных деяний, а также для мошенничества, спама и иных злоупотреблений.</p>
+            <p><span class="section-number">8.2.</span> Разработчик и Администратор Бота выступают против любой формы терроризма, экстремизма, разжигания ненависти, дискриминации и иных противоправных действий и не поддерживают подобный контент и поведение.</p>
+            <p><span class="section-number">8.3.</span> Все реализованные в Боте функции и команды направлены исключительно на упрощение взаимодействия пользователей с нейросетями, снижение трудоёмкости творческой и информационной деятельности и не предназначены для причинения вреда каким‑либо лицам, организациям, обществу или государству.</p>
+            <p><span class="section-number">8.4.</span> Любое использование Бота в целях причинения вреда, подготовки, организации или совершения противоправных деяний (в том числе террористической, экстремистской, мошеннической или иной незаконной деятельности) является недопустимым и осуществляется Пользователем по его собственной инициативе и под его личную ответственность.</p>
+          </div>
+
+          <div class="section">
+            <div class="section-title">9. Ограничение ответственности Администратора</div>
+            <p><span class="section-number">9.1.</span> Администратор не несет ответственность за любые действия Пользователя, совершённые с использованием Бота, включая действия, противоречащие законодательству Российской Федерации, а также за причиненный третьим лицам вред, если такие действия осуществлялись по инициативе Пользователя.</p>
+            <p><span class="section-number">9.2.</span> Администратор не несет ответственность за содержание внешних ресурсов и ссылок, которые могут быть указаны, сформированы или рекомендованы в ответах Бота, а также за последствия перехода Пользователя по таким ссылкам. Ответственность за использование внешних сайтов, сервисов и материалов несет сам Пользователь.</p>
+            <p><span class="section-number">9.3.</span> Администратор не несет ответственность за размещение и распространение Пользователем материалов, которые могут быть признаны экстремистскими, террористическими, противоправными или вредоносными. Обязанность соблюдения требований законодательства РФ (в том числе законодательства о противодействии экстремистской и террористической деятельности) лежит на Пользователе.</p>
+            <p><span class="section-number">9.4.</span> Вся информация, предоставляемая Ботом, носит справочный и рекомендательный характер и не является юридической, медицинской, финансовой или иной профессиональной консультацией.</p>
+          </div>
+
+          <div class="section">
+            <div class="section-title">10. Изменения Политики</div>
+            <p><span class="section-number">10.1.</span> Администратор вправе в одностороннем порядке вносить изменения в настоящую Политику, если это необходимо для актуализации информации или приведения ее в соответствие с законодательством РФ.</p>
+            <p><span class="section-number">10.2.</span> Обновленная редакция Политики вступает в силу с момента ее размещения по ссылке, указанной в описании Бота или в интерфейсе Mini App. Рекомендуется периодически знакомиться с актуальной версией Политики.</p>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <footer class="footer">
+      <span>NeuroCore · Telegram‑бот</span>
+      <span>Политика конфиденциальности · версия 1.0</span>
+      <a class="footer-link" href="https://t.me/genuis_neo_bot" target="_blank">
+        <span class="footer-link-dot"></span>
+        <span>Официальный Telegram‑канал разработчика</span>
+      </a>
+    </footer>
+  </div>
+</body>
+</html>
