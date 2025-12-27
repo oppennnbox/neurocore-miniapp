@@ -14,9 +14,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;600;700&display=swap" rel="stylesheet">
 
     <style>
-        * {
-            box-sizing: border-box;
-        }
+        * { box-sizing: border-box; }
         html, body {
             margin: 0;
             padding: 0;
@@ -67,9 +65,7 @@
             text-shadow: 0 0 6px rgba(15, 23, 42, 0.8);
             animation: pulseGlow 3s infinite ease-in-out;
         }
-        .title-block {
-            flex: 1;
-        }
+        .title-block { flex: 1; }
         .title {
             font-size: 18px;
             font-weight: 700;
@@ -115,9 +111,7 @@
             color: #e5e7eb;
             letter-spacing: 0.01em;
         }
-        .btn span.label {
-            font-weight: 600;
-        }
+        .btn span.label { font-weight: 600; }
         .btn span.desc {
             font-size: 11px;
             color: #cbd5f5;
@@ -152,9 +146,7 @@
             outline: none;
             font-family: "Roboto", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
         }
-        textarea::placeholder {
-            color: #6b7280;
-        }
+        textarea::placeholder { color: #6b7280; }
         textarea:focus {
             border-color: #38bdf8;
             box-shadow: 0 0 0 1px rgba(56, 189, 248, 0.8);
@@ -193,9 +185,7 @@
             box-shadow: none;
         }
 
-        .add-group {
-            margin-top: 12px;
-        }
+        .add-group { margin-top: 12px; }
         .add-group-btn {
             width: 100%;
             padding: 10px 14px;
@@ -213,9 +203,7 @@
             box-shadow: 0 10px 25px rgba(248, 113, 113, 0.5);
             text-decoration: none;
         }
-        .add-group-btn:hover {
-            filter: brightness(1.05);
-        }
+        .add-group-btn:hover { filter: brightness(1.05); }
         .add-group-btn:active {
             transform: translateY(1px);
             box-shadow: none;
@@ -249,9 +237,7 @@
             text-decoration: none;
             font-size: 11px;
         }
-        .meta-link:hover {
-            text-decoration: underline;
-        }
+        .meta-link:hover { text-decoration: underline; }
 
         .logo-3d {
             margin-top: 12px;
@@ -289,17 +275,10 @@
         }
 
         @keyframes pulseGlow {
-            0% {
-                box-shadow: 0 0 0 rgba(56, 189, 248, 0.0);
-            }
-            50% {
-                box-shadow: 0 0 18px rgba(56, 189, 248, 0.9);
-            }
-            100% {
-                box-shadow: 0 0 0 rgba(56, 189, 248, 0.0);
-            }
+            0% { box-shadow: 0 0 0 rgba(56, 189, 248, 0.0); }
+            50% { box-shadow: 0 0 18px rgba(56, 189, 248, 0.9); }
+            100% { box-shadow: 0 0 0 rgba(56, 189, 248, 0.0); }
         }
-
         @keyframes titleGlow {
             0% {
                 text-shadow:
@@ -317,41 +296,21 @@
                     0 0 8px rgba(59, 130, 246, 0.4);
             }
         }
-
         @keyframes bgShift {
-            0% {
-                background: radial-gradient(circle at top, #0ea5e9 0, #020617 50%, #000000 100%);
-            }
-            50% {
-                background: radial-gradient(circle at top, #6366f1 0, #020617 55%, #000000 100%);
-            }
-            100% {
-                background: radial-gradient(circle at top, #ec4899 0, #020617 50%, #000000 100%);
-            }
+            0% { background: radial-gradient(circle at top, #0ea5e9 0, #020617 50%, #000000 100%); }
+            50% { background: radial-gradient(circle at top, #6366f1 0, #020617 55%, #000000 100%); }
+            100% { background: radial-gradient(circle at top, #ec4899 0, #020617 50%, #000000 100%); }
         }
-
         @keyframes chipSpin {
-            0% {
-                transform: rotateY(-18deg) rotateX(12deg);
-            }
-            50% {
-                transform: rotateY(18deg) rotateX(12deg);
-            }
-            100% {
-                transform: rotateY(-18deg) rotateX(12deg);
-            }
+            0% { transform: rotateY(-18deg) rotateX(12deg); }
+            50% { transform: rotateY(18deg) rotateX(12deg); }
+            100% { transform: rotateY(-18deg) rotateX(12deg); }
         }
 
         @media (max-width: 360px) {
-            .card {
-                padding: 14px 10px 12px;
-            }
-            .title {
-                font-size: 16px;
-            }
-            textarea {
-                min-height: 80px;
-            }
+            .card { padding: 14px 10px 12px; }
+            .title { font-size: 16px; }
+            textarea { min-height: 80px; }
         }
     </style>
 
@@ -360,9 +319,7 @@
 
         if (tg && tg.ready) {
             tg.ready();
-            if (tg.expand) {
-                tg.expand();
-            }
+            if (tg.expand) tg.expand();
         }
 
         let currentMode = "free";
@@ -406,6 +363,19 @@
                 alert("Мини‑апп нужно запускать из Telegram‑бота через web_app кнопку.");
             }
         }
+
+        // НОВАЯ функция — открытие выбора чата для добавления бота
+        function addBotToGroup() {
+            if (!tg || !tg.openTelegramLink) {
+                alert("Эту кнопку можно использовать только внутри Telegram Mini App.");
+                return;
+            }
+
+            // Официальный deep‑link с startgroup, как в доке Telegram[web:307]
+            const url = "https://t.me/genius_neo_bot?startgroup=add";
+
+            tg.openTelegramLink(url); // откроет стандартный экран выбора чата в Telegram[web:200][web:343][web:346]
+        }
     </script>
 </head>
 <body>
@@ -448,9 +418,10 @@
         </div>
 
         <div class="add-group">
-            <a class="add-group-btn" href="tg://resolve?domain=genius_neo_bot&startgroup=true">
+            <!-- ТЕПЕРЬ кнопка вызывает JS-функцию, а не tg:// -->
+            <button class="add-group-btn" type="button" onclick="addBotToGroup()">
                 Пригласить NeuroCore в чат
-            </a>
+            </button>
         </div>
 
         <div class="meta-block">
