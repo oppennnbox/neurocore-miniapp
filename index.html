@@ -17,9 +17,13 @@
         * {
             box-sizing: border-box;
         }
-        body {
+        html, body {
             margin: 0;
-            min-height: 100vh;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+        }
+        body {
             font-family: "Roboto", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
             display: flex;
             align-items: center;
@@ -31,7 +35,8 @@
         }
         .card {
             width: 100%;
-            max-width: 420px;
+            max-width: 480px;
+            max-height: 100%;
             background: rgba(15, 23, 42, 0.92);
             border-radius: 18px;
             padding: 18px 16px 16px;
@@ -39,6 +44,8 @@
                 0 20px 50px rgba(0, 0, 0, 0.8),
                 0 0 0 1px rgba(59, 130, 246, 0.3);
             backdrop-filter: blur(14px);
+            display: flex;
+            flex-direction: column;
         }
         .card-header {
             display: flex;
@@ -131,6 +138,7 @@
             transform: translateY(0);
             box-shadow: none;
         }
+
         textarea {
             width: 100%;
             min-height: 90px;
@@ -151,16 +159,19 @@
             border-color: #38bdf8;
             box-shadow: 0 0 0 1px rgba(56, 189, 248, 0.8);
         }
+
         .bottom-row {
             margin-top: 8px;
             display: flex;
             align-items: center;
             justify-content: space-between;
             gap: 8px;
+            flex-wrap: wrap;
         }
         .hint {
             font-size: 11px;
             color: #9ca3af;
+            flex: 1 1 60%;
         }
         .send-btn {
             padding: 8px 12px;
@@ -175,6 +186,7 @@
             align-items: center;
             gap: 4px;
             box-shadow: 0 10px 22px rgba(34, 197, 94, 0.5);
+            flex-shrink: 0;
         }
         .send-btn:active {
             transform: translateY(1px);
@@ -241,7 +253,6 @@
             text-decoration: underline;
         }
 
-        /* УВЕЛИЧЕННЫЙ «3D»-жетон NeuroCore */
         .logo-3d {
             margin-top: 12px;
             display: flex;
@@ -330,19 +341,37 @@
                 transform: rotateY(-18deg) rotateX(12deg);
             }
         }
+
+        @media (max-width: 360px) {
+            .card {
+                padding: 14px 10px 12px;
+            }
+            .title {
+                font-size: 16px;
+            }
+            textarea {
+                min-height: 80px;
+            }
+        }
     </style>
 
     <script>
         const tg = window.Telegram.WebApp;
 
-        // сказать Telegram, что мини‑апп готово
         if (tg && tg.ready) {
             tg.ready();
+            if (tg.expand) {
+                tg.expand();
+            }
         }
+
+        let currentMode = "free";
 
         function setMode(mode) {
             const input = document.getElementById("prompt");
             if (!input) return;
+
+            currentMode = mode;
 
             if (mode === "question") {
                 input.placeholder = "Напиши свой вопрос для NeuroCore…";
@@ -366,9 +395,13 @@
                 return;
             }
 
-            // если запущено как Mini App из бота – отправляем строку назад боту
+            const payload = {
+                mode: currentMode,
+                text: text
+            };
+
             if (tg && tg.sendData) {
-                tg.sendData(text); // в боте придёт web_app_data.data с этим текстом[web:243][web:246]
+                tg.sendData(JSON.stringify(payload));
             } else {
                 alert("Мини‑апп нужно запускать из Telegram‑бота через web_app кнопку.");
             }
@@ -415,8 +448,7 @@
         </div>
 
         <div class="add-group">
-            <!-- ЗДЕСЬ ВСТАВЬ СВОЙ ЮЗЕРНЕЙМ БОТА вместо genius_neo_bot -->
-            <a class="add-group-btn" href="tg://resolve?domain=genius_neo_bot">
+            <a class="add-group-btn" href="tg://resolve?domain=genius_neo_bot&startgroup=true">
                 Пригласить NeuroCore в чат
             </a>
         </div>
@@ -427,7 +459,7 @@
                 <a class="meta-link" href="https://example.com/privacy" target="_blank">
                     Политика конфиденциальности
                 </a>
-                <a class="meta-link" href="https://t.me/ВАШ_НИК" target="_blank">
+                <a class="meta-link" href="https://t.me/genuis_neo_bot" target="_blank">
                     Связь с разработчиком
                 </a>
             </div>
