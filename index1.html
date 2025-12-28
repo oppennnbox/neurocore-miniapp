@@ -1,0 +1,627 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🎓 КВЕСТ: ВЫБОР ВУЗА</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Exo+2:wght@400;600;800&family=Bebas+Neue&display=swap');
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Exo 2', sans-serif;
+            background: linear-gradient(135deg, #0c0c1a 0%, #1a1a2e 50%, #16213e 100%);
+            color: #fff;
+            min-height: 100vh;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        .game-container {
+            max-width: 950px;
+            margin: 0 auto;
+            padding: 20px;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .entrance-commission {
+            background: rgba(0,0,0,0.85);
+            border: 2px solid rgba(255,255,255,0.2);
+            border-radius: 20px;
+            padding: 25px;
+            margin-bottom: 25px;
+            text-align: center;
+            box-shadow: 0 15px 30px rgba(0,0,0,0.4);
+        }
+
+        .entrance-title {
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 2.5rem;
+            font-weight: 900;
+            background: linear-gradient(45deg, #ff6b35, #4ecdc4, #a55eea);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 10px;
+            letter-spacing: 3px;
+        }
+
+        .entrance-subtitle {
+            font-family: 'Orbitron', monospace;
+            font-size: 1rem;
+            color: #ccc;
+            letter-spacing: 1px;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .stat-card {
+            background: rgba(255,255,255,0.08);
+            border: 1px solid rgba(255,255,255,0.15);
+            border-radius: 12px;
+            padding: 15px 10px;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+        }
+
+        .stat-icon { font-size: 1.8rem; display: block; margin-bottom: 5px; }
+        .stat-value {
+            font-family: 'Orbitron', monospace;
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: #fff;
+        }
+        .stat-label { font-size: 0.8rem; opacity: 0.8; margin-top: 3px; }
+
+        .inventory-section {
+            background: rgba(0,0,0,0.7);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 12px;
+            padding: 15px;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .inventory-icon { font-size: 1.5rem; }
+        .inventory-list {
+            flex: 1;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+        .inventory-item {
+            background: rgba(0,212,255,0.3);
+            border: 1px solid rgba(0,212,255,0.6);
+            padding: 6px 12px;
+            border-radius: 15px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: #00d4ff;
+        }
+
+        .scene-container {
+            background: rgba(0,0,0,0.9);
+            border: 2px solid rgba(255,255,255,0.1);
+            border-radius: 20px;
+            padding: 30px;
+            margin-bottom: 25px;
+            min-height: 220px;
+        }
+
+        .scene-title {
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 1.8rem;
+            text-align: center;
+            margin-bottom: 20px;
+            color: #fff;
+            letter-spacing: 2px;
+        }
+
+        .scene-text {
+            line-height: 1.7;
+            font-size: 1rem;
+            white-space: pre-wrap;
+            color: #f0f0f0;
+        }
+
+        .university-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+
+        @media (max-width: 768px) {
+            .university-grid { grid-template-columns: repeat(2, 1fr); }
+            .game-container { padding: 15px; }
+        }
+
+        @media (max-width: 480px) {
+            .university-grid { grid-template-columns: 1fr; }
+        }
+
+        .uni-btn {
+            background: rgba(255,255,255,0.1);
+            border: 3px solid;
+            border-radius: 15px;
+            padding: 18px 15px;
+            font-family: 'Orbitron', monospace;
+            font-size: 0.95rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: center;
+            min-height: 85px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: #fff;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .uni-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transition: left 0.5s;
+        }
+
+        .uni-btn:hover::before { left: 100%; }
+        .uni-btn:hover { transform: translateY(-5px); box-shadow: 0 15px 30px rgba(0,0,0,0.4); }
+
+        .uni-kipu { border-color: #00d4ff; background: linear-gradient(145deg, rgba(0,212,255,0.2), rgba(0,150,200,0.1)); color: #00d4ff; box-shadow: 0 0 20px rgba(0,212,255,0.3); }
+        .uni-mirea { border-color: #4ecdc4; background: linear-gradient(145deg, rgba(78,205,196,0.2), rgba(46,213,115,0.1)); color: #4ecdc4; box-shadow: 0 0 20px rgba(78,205,196,0.3); }
+        .uni-bauman { border-color: #ff6b35; background: linear-gradient(145deg, rgba(255,107,53,0.2), rgba(249,202,36,0.1)); color: #ff6b35; box-shadow: 0 0 20px rgba(255,107,53,0.3); }
+        .uni-ranepa { border-color: #ff4757; background: linear-gradient(145deg, rgba(255,71,87,0.2), rgba(255,56,56,0.1)); color: #ff4757; box-shadow: 0 0 20px rgba(255,71,87,0.3); }
+        .uni-hse { border-color: #a55eea; background: linear-gradient(145deg, rgba(165,94,234,0.2), rgba(253,121,168,0.1)); color: #a55eea; box-shadow: 0 0 20px rgba(165,94,234,0.3); }
+        .uni-mgu { border-color: #f9ca24; background: linear-gradient(145deg, rgba(249,202,36,0.2), rgba(255,165,2,0.1)); color: #f9ca24; box-shadow: 0 0 20px rgba(249,202,36,0.3); }
+
+        .menu-bar {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            flex-wrap: wrap;
+            padding: 20px;
+            background: rgba(0,0,0,0.5);
+            border-radius: 15px;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .menu-btn {
+            background: rgba(255,255,255,0.15);
+            border: 1px solid rgba(255,255,255,0.2);
+            color: #fff;
+            padding: 12px 20px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .menu-btn:hover { background: rgba(255,255,255,0.25); transform: translateY(-2px); }
+
+        .win-modal, .gameover-modal {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(0,0,0,0.95);
+            border: 3px solid;
+            border-radius: 25px;
+            padding: 40px;
+            text-align: center;
+            max-width: 90vw;
+            box-shadow: 0 25px 60px rgba(0,0,0,0.6);
+            z-index: 1000;
+        }
+
+        .win-modal { border-color: #2ed573; }
+        .gameover-modal { border-color: #ff4757; }
+
+        .modal-title {
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 2.5rem;
+            margin-bottom: 20px;
+            letter-spacing: 3px;
+        }
+
+        .restart-btn {
+            background: linear-gradient(145deg, #2ed573, #20bf6b);
+            border: none;
+            color: white;
+            padding: 15px 30px;
+            border-radius: 20px;
+            font-size: 1.1rem;
+            font-weight: 700;
+            font-family: 'Orbitron', monospace;
+            cursor: pointer;
+            margin-top: 20px;
+            transition: all 0.3s ease;
+        }
+
+        .restart-btn:hover { transform: translateY(-3px); box-shadow: 0 10px 25px rgba(46,213,115,0.4); }
+
+        .hidden { display: none !important; }
+    </style>
+</head>
+<body>
+    <div class="game-container">
+        <div class="entrance-commission">
+            <div class="entrance-title">ПРИЕМНАЯ КОМИССИЯ</div>
+            <div class="entrance-subtitle">2025 • 4 ГОДА БАКАЛАВРИАТ</div>
+        </div>
+
+        <div class="stats-grid">
+            <div class="stat-card">
+                <span class="stat-icon">🎓</span>
+                <div class="stat-value" id="uniName">—</div>
+                <div class="stat-label">ВУЗ / Направление</div>
+            </div>
+            <div class="stat-card">
+                <span class="stat-icon">📚</span>
+                <div class="stat-value" id="knowledge">0</div>
+                <div class="stat-label">Знания</div>
+            </div>
+            <div class="stat-card">
+                <span class="stat-icon">⭐</span>
+                <div class="stat-value" id="prestige">0</div>
+                <div class="stat-label">Престиж</div>
+            </div>
+            <div class="stat-card">
+                <span class="stat-icon">🎯</span>
+                <div class="stat-value" id="experience">0</div>
+                <div class="stat-label">Опыт</div>
+            </div>
+            <div class="stat-card">
+                <span class="stat-icon">📖</span>
+                <div class="stat-value" id="course">1</div>
+                <div class="stat-label">Курс</div>
+            </div>
+            <div class="stat-card">
+                <span class="stat-icon">💰</span>
+                <div class="stat-value" id="money">1,000₽</div>
+                <div class="stat-label">Деньги</div>
+            </div>
+        </div>
+
+        <div class="inventory-section">
+            <span class="inventory-icon">📦</span>
+            <div class="inventory-list" id="inventory">Инвентарь пуст</div>
+        </div>
+
+        <div class="scene-container">
+            <div class="scene-title" id="sceneTitle">🏛 НАЧАЛО ПУТИ</div>
+            <div class="scene-text" id="sceneText">Выберите ВУЗ и НАПРАВЛЕНИЕ обучения (4 года бакалавриат)...</div>
+        </div>
+
+        <div class="university-grid" id="controls"></div>
+
+        <div class="menu-bar">
+            <button class="menu-btn" onclick="showStats()">📊 СТАТИСТИКА</button>
+            <button class="menu-btn" onclick="showInventory()">📦 ИНВЕНТАРЬ</button>
+            <button class="menu-btn" onclick="resetGame()">🔄 НОВАЯ ИГРА</button>
+        </div>
+    </div>
+
+    <div id="winModal" class="win-modal hidden">
+        <div class="modal-title">🎉 ПОБЕДА!</div>
+        <div id="winText"></div>
+        <button class="restart-btn" onclick="resetGame()">🎮 НАЧАТЬ ЗАНОВО</button>
+    </div>
+
+    <div id="gameoverModal" class="gameover-modal hidden">
+        <div class="modal-title">💔 GAME OVER</div>
+        <div id="gameoverText"></div>
+        <button class="restart-btn" onclick="resetGame()">🔄 ПОПРОБОВАТЬ СНОВА</button>
+    </div>
+
+    <script>
+        let gameState = {
+            currentLocation: 0,
+            university: 0,
+            direction: '',
+            inventory: [],
+            stats: { knowledge: 0, prestige: 0, experience: 0, course: 1, money: 1000 },
+            gameOver: false,
+            gameWon: false
+        };
+
+        const locations = {
+            0: {
+                title: "🏛 НАЧАЛО - ВЫБОР ВУЗА",
+                text: `🎓 БАКАЛАВРИАТ 4 ГОДА • 2025 поступление
+
+Выберите ВУЗ и НАПРАВЛЕНИЕ:
+🔧 КИПУ - Инженерия | IT | Педагогика
+🔵 МИРЭА - Программирование | AI | Кибербезопасность
+🟠 БАУМАНКА - Авиация | Робототехника | Космос
+🔴 РАНХиГС - Менеджмент | Экономика
+🟣 ВШЭ - Финансы | Data Science | Маркетинг
+🟡 МГУ - Физика | Юриспруденция | Журналистика`,
+                actions: [
+                    { text: "🔧 КИПУ (Инженерия)", next: 101, color: "uni-kipu" },
+                    { text: "🔵 МИРЭА (Программирование)", next: 201, color: "uni-mirea" },
+                    { text: "🟠 БАУМАНКА (Робототехника)", next: 301, color: "uni-bauman" },
+                    { text: "🔴 РАНХиГС (Менеджмент)", next: 401, color: "uni-ranepa" },
+                    { text: "🟣 ВШЭ (Data Science)", next: 501, color: "uni-hse" },
+                    { text: "🟡 МГУ (Физика)", next: 601, color: "uni-mgu" }
+                ]
+            },
+
+            // === КИПУ - РЕАЛЬНЫЕ НАПРАВЛЕНИЯ ===
+            101: {
+                title: "🔧 КИПУ - Инженерные науки",
+                text: `🎓 Крымский Инженерно-Педагогический Университет
+Симферополь • Бакалавриат 4 года
+
+📚 НАПРАВЛЕНИЯ:
+• 15.03.01 Машиностроение
+• 15.03.02 Технологические машины
+• 09.03.01 Информатика и вычислительная техника
+• 44.03.01 Педагогическое образование
+• 09.03.02 Прикладная информатика
+
+Староста: "Выбирай направление, Владислав!"`,
+                actions: [
+                    { text: "15.03.01 Машиностроение", next: 110, color: "uni-kipu", direction: "Машиностроение" },
+                    { text: "09.03.01 Информатика", next: 111, color: "uni-kipu", direction: "Информатика" },
+                    { text: "44.03.01 Педагогика", next: 112, color: "uni-kipu", direction: "Педагогика" }
+                ],
+                stats: { knowledge: 8 }
+            },
+            110: {
+                title: "🔩 15.03.01 МАШИНОСТРОЕНИЕ",
+                text: `Станки ЧПУ • Сопромат • Детали машин
+1-й курс КИПУ! Практика с первого семестра!
+💰 Выпуск: 150-220к/мес (инженер заводов Крыма)`,
+                actions: [{ text: "🎓 Главный инженер завода", next: 150, color: "uni-kipu" }],
+                stats: { knowledge: 25, experience: 20, money: 150000 },
+                win: true,
+                winText: "🔧 КИПУ МАШИНОСТРОЕНИЕ! 220к/мес инженер!"
+            },
+            111: {
+                title: "💻 09.03.01 ИНФОРМАТИКА",
+                text: `Программирование • Сети • Базы данных
+КИПУ IT! Разработка для крымских компаний!
+💰 Выпуск: 120-180к/мес (программист)`,
+                actions: [{ text: "🎓 Ведущий разработчик", next: 151, color: "uni-kipu" }],
+                stats: { knowledge: 22, money: 150000 },
+                win: true,
+                winText: "💻 КИПУ ИНФОРМАТИКА! 180к/мес разработчик!"
+            },
+            112: {
+                title: "👨‍🏫 44.03.01 ПЕДАГОГИКА",
+                text: `Математика • Физика • Информатика
+Учитель будущего! КИПУ готовит профи!
+💰 Выпуск: 80-120к/мес + льготы`,
+                actions: [{ text: "🎓 Учитель года Крыма", next: 152, color: "uni-kipu" }],
+                stats: { prestige: 25, money: 100000 },
+                win: true,
+                winText: "👨‍🏫 КИПУ ПЕДАГОГИКА! Учитель года!"
+            },
+
+            // === МИРЭА ===
+            201: {
+                title: "🔵 МИРЭА - Программирование",
+                text: `09.03.04 Программная инженерия
+AI • Блокчейн • Кибербезопасность
+💰 Выпуск: 200-350к/мес (Яндекс, Сбер)`,
+                actions: [{ text: "🏆 Senior Developer", next: 250, color: "uni-mirea" }],
+                stats: { knowledge: 30, money: 250000 },
+                win: true,
+                winText: "🔵 МИРЭА! Senior Developer 300к+!"
+            },
+
+            // === БАУМАНКА ===
+            301: {
+                title: "🟠 БАУМАНКА - Робототехника",
+                text: `15.03.06 Мехатроника и робототехника
+Роскосмос • Boeing • Tesla
+💰 Выпуск: 250-400к/мес`,
+                actions: [{ text: "🤖 Главный робототехник", next: 350, color: "uni-bauman" }],
+                stats: { knowledge: 35, prestige: 40, money: 300000 },
+                win: true,
+                winText: "🟠 БАУМАНКА! Робототехника 350к+!"
+            },
+
+            // === РАНХиГС ===
+            401: {
+                title: "🔴 РАНХиГС - Менеджмент",
+                text: `38.03.02 Менеджмент
+💰 Выпуск: 40-80к/мес (офисный планктон)`,
+                actions: [{ text: "😔 Менеджер среднего звена", next: 450, color: "uni-ranepa" }],
+                stats: { money: 60000 },
+                gameOver: true,
+                gameoverText: "🔴 РАНХиГС! 60к/мес менеджер..."
+            },
+
+            // === ВШЭ ===
+            501: {
+                title: "🟣 ВШЭ - Data Science",
+                text: `01.03.02 Прикладная математика и информатика
+Kaggle • Goldman Sachs • McKinsey
+💰 Выпуск: 300-500к/мес`,
+                actions: [{ text: "📊 Data Scientist", next: 550, color: "uni-hse" }],
+                stats: { knowledge: 38, prestige: 45, money: 400000 },
+                win: true,
+                winText: "🟣 ВШЭ! Data Scientist 450к+!"
+            },
+
+            // === МГУ ===
+            601: {
+                title: "🟡 МГУ - Физика",
+                text: `03.03.02 Физика
+ЦЕРН • РАН • Нобелевские премии
+💰 Выпуск: 150-300к/мес + гранты`,
+                actions: [{ text: "🔬 Профессор МГУ", next: 650, color: "uni-mgu" }],
+                stats: { knowledge: 45, prestige: 50, money: 250000 },
+                win: true,
+                winText: "🟡 МГУ! Профессор физики!"
+            }
+        };
+
+        function initGame() {
+            gameState = {
+                currentLocation: 0,
+                university: 0,
+                direction: '',
+                inventory: [],
+                stats: { knowledge: 0, prestige: 0, experience: 0, course: 1, money: 1000 },
+                gameOver: false,
+                gameWon: false
+            };
+            updateDisplay();
+            showLocation(0);
+            document.getElementById('winModal').classList.add('hidden');
+            document.getElementById('gameoverModal').classList.add('hidden');
+        }
+
+        function showLocation(id) {
+            if (gameState.gameWon || gameState.gameOver) return;
+            const loc = locations[id];
+            if (!loc) return;
+
+            gameState.currentLocation = id;
+
+            // Установка университета и направления
+            if (loc.direction) {
+                gameState.direction = loc.direction;
+                gameState.university = parseInt(id.toString()[0]);
+                gameState.inventory.push(`Диплом ${gameState.direction} (${getUniName(gameState.university)})`);
+            }
+
+            if (loc.stats) {
+                Object.keys(loc.stats).forEach(key => {
+                    gameState.stats[key] = (gameState.stats[key] || 0) + (loc.stats[key] || 0);
+                });
+            }
+
+            document.getElementById('sceneTitle').textContent = loc.title;
+            document.getElementById('sceneText').textContent = loc.text;
+
+            const controls = document.getElementById('controls');
+            controls.innerHTML = '';
+
+            if (loc.win) {
+                gameState.gameWon = true;
+                setTimeout(() => {
+                    document.getElementById('winText').innerHTML = 
+                        `🎓 <strong>${gameState.direction}</strong><br>` +
+                        `${getUniName(gameState.university)}<br>` +
+                        `<strong>${loc.winText}</strong>`;
+                    document.getElementById('winModal').classList.remove('hidden');
+                }, 1500);
+                return;
+            }
+
+            if (loc.gameOver) {
+                gameState.gameOver = true;
+                setTimeout(() => {
+                    document.getElementById('gameoverText').innerHTML = loc.gameoverText;
+                    document.getElementById('gameoverModal').classList.remove('hidden');
+                }, 1000);
+                return;
+            }
+
+            if (loc.actions) {
+                loc.actions.forEach(action => {
+                    const btn = document.createElement('button');
+                    btn.className = `uni-btn ${action.color}`;
+                    btn.innerHTML = `<div style="font-size: 1.05em; font-weight: 800;">${action.text}</div>`;
+                    btn.onclick = () => showLocation(action.next);
+                    controls.appendChild(btn);
+                });
+            }
+
+            updateDisplay();
+        }
+
+        function updateDisplay() {
+            document.getElementById('uniName').textContent = gameState.direction ? 
+                `${gameState.direction} (${getUniName(gameState.university)})` : '—';
+            document.getElementById('knowledge').textContent = gameState.stats.knowledge;
+            document.getElementById('prestige').textContent = gameState.stats.prestige;
+            document.getElementById('experience').textContent = gameState.stats.experience;
+            document.getElementById('course').textContent = gameState.stats.course;
+            document.getElementById('money').textContent = formatMoney(gameState.stats.money);
+
+            const inv = document.getElementById('inventory');
+            if (gameState.inventory.length === 0) {
+                inv.innerHTML = '<span style="opacity: 0.6;">Инвентарь пуст</span>';
+            } else {
+                inv.innerHTML = gameState.inventory.slice(-6).map(item => 
+                    `<span class="inventory-item">${item}</span>`
+                ).join('');
+            }
+        }
+
+        function getUniName(id) {
+            const names = { 
+                1: '🔧 КИПУ', 2: '🔵 МИРЭА', 3: '🟠 БАУМАНКА', 
+                4: '🔴 РАНХиГС', 5: '🟣 ВШЭ', 6: '🟡 МГУ' 
+            };
+            return names[id] || '—';
+        }
+
+        function formatMoney(amount) {
+            return amount.toLocaleString() + '₽';
+        }
+
+        function showStats() {
+            const statsText = `📊 СТАТИСТИКА (${gameState.direction || 'Не выбрано'}):
+🎓 Направление: ${gameState.direction || '—'}
+🏛 ВУЗ: ${getUniName(gameState.university)}
+📚 Знания: ${gameState.stats.knowledge}
+⭐ Престиж: ${gameState.stats.prestige}
+🎯 Опыт: ${gameState.stats.experience}
+📖 Курс: ${gameState.stats.course} из 4
+💰 Деньги: ${formatMoney(gameState.stats.money)}
+📦 Дипломы: ${gameState.inventory.length}`;
+            alert(statsText);
+        }
+
+        function showInventory() {
+            if (gameState.inventory.length === 0) {
+                alert('📦 Инвентарь пуст');
+                return;
+            }
+            alert(`📦 ДОСТИЖЕНИЯ (${gameState.inventory.length}):
+${gameState.inventory.join('\n')}`);
+        }
+
+        function resetGame() {
+            document.getElementById('winModal').classList.add('hidden');
+            document.getElementById('gameoverModal').classList.add('hidden');
+            setTimeout(initGame, 300);
+        }
+
+        initGame();
+    </script>
+</body>
+</html>
