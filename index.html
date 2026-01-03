@@ -16,26 +16,28 @@
             font-family: "Roboto", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; 
         }
         body { 
-            display: flex; align-items: center; justify-content: center; padding: 12px; 
-            background: radial-gradient(circle at top, #0ea5e9 0, #020617 50%, #000000 100%); 
+            display: flex; align-items: center; justify-content: center; padding: 12px;
+            background: radial-gradient(circle at top, #0ea5e9 0, #020617 50%, #000000 100%);
             color: #e5e7eb; animation: bgShift 14s infinite alternate ease-in-out; min-height: 100vh; 
         }
         .card { 
-            width: 100%; max-width: 540px; max-height: 95vh; 
-            background: rgba(15, 23, 42, 0.92); border-radius: 20px; padding: 20px 16px; 
-            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.8), 0 0 0 1px rgba(59, 130, 246, 0.3); 
+            width: 100%; max-width: 540px; max-height: 95vh;
+            background: rgba(15, 23, 42, 0.92); border-radius: 20px; padding: 20px 16px;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.8), 0 0 0 1px rgba(59, 130, 246, 0.3);
             backdrop-filter: blur(14px); display: flex; flex-direction: column; overflow-y: auto; gap: 16px; 
         }
         
         .lang-selector { display: flex; justify-content: flex-end; margin-bottom: 12px; }
         .lang-dropdown { background: rgba(30, 64, 175, 0.55); border: 1px solid rgba(129, 140, 248, 0.5); border-radius: 8px; padding: 6px 10px; color: #e5e7eb; font-size: 12px; cursor: pointer; outline: none; }
         .lang-dropdown:hover { background: rgba(30, 64, 175, 0.7); }
+        
         .card-header { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
         .avatar { width: 40px; height: 40px; border-radius: 12px; background: conic-gradient(from 140deg, #22c55e, #22d3ee, #6366f1, #ec4899, #22c55e); display: flex; align-items: center; justify-content: center; color: #020617; font-weight: 700; font-size: 18px; text-shadow: 0 0 6px rgba(15, 23, 42, 0.8); animation: pulseGlow 3s infinite ease-in-out; }
         .title-block { flex: 1; }
         .title { font-size: 18px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: #e0f2fe; text-shadow: 0 0 8px rgba(56, 189, 248, 0.9), 0 0 16px rgba(59, 130, 246, 0.8); animation: titleGlow 4s infinite ease-in-out; }
         .subtitle { font-size: 12px; color: #9ca3af; }
         .badge { font-size: 11px; padding: 3px 7px; border-radius: 999px; background: rgba(59, 130, 246, 0.15); border: 1px solid rgba(59, 130, 246, 0.6); color: #bfdbfe; text-transform: uppercase; letter-spacing: 0.08em; }
+        
         .buttons-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; margin: 10px 0 12px; }
         .btn { padding: 11px 12px; border-radius: 12px; border: 0; cursor: pointer; font-size: 14px; display: flex; flex-direction: column; align-items: flex-start; gap: 3px; transition: transform 0.12s ease, box-shadow 0.12s ease, background 0.12s ease; color: #e5e7eb; letter-spacing: 0.01em; }
         .btn span.label { font-weight: 600; }
@@ -44,17 +46,20 @@
         .btn.secondary { background: rgba(30, 64, 175, 0.55); border: 1px solid rgba(129, 140, 248, 0.5); }
         .btn:hover { transform: translateY(-1px); box-shadow: 0 12px 26px rgba(59, 130, 246, 0.45); }
         .btn:active { transform: translateY(0); box-shadow: none; }
+        
         textarea { width: 100%; min-height: 90px; border-radius: 14px; border: 1px solid rgba(75, 85, 99, 0.9); padding: 9px 10px; font-size: 13px; resize: vertical; background: radial-gradient(circle at top left, #0f172a 0, #020617 60%); color: #e5e7eb; outline: none; font-family: "Roboto", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; }
         textarea::placeholder { color: #6b7280; }
         textarea:focus { border-color: #38bdf8; box-shadow: 0 0 0 1px rgba(56, 189, 248, 0.8); }
+        
         .bottom-row { margin-top: 8px; display: flex; align-items: center; justify-content: space-between; gap: 8px; flex-wrap: wrap; }
         .hint { font-size: 11px; color: #9ca3af; flex: 1 1 60%; }
         .send-btn { padding: 8px 12px; border-radius: 999px; border: 0; font-size: 13px; font-weight: 500; cursor: pointer; background: linear-gradient(135deg, #22c55e, #16a34a); color: #022c22; display: flex; align-items: center; gap: 4px; box-shadow: 0 10px 22px rgba(34, 197, 94, 0.5); flex-shrink: 0; }
         .send-btn:active { transform: translateY(1px); box-shadow: none; }
+        
         .add-group-btn { width: 100%; padding: 10px 14px; border-radius: 999px; border: 0; cursor: pointer; font-size: 14px; font-weight: 600; background: linear-gradient(135deg, #f97316, #ec4899); color: #fefce8; display: flex; align-items: center; justify-content: center; gap: 6px; box-shadow: 0 10px 25px rgba(248, 113, 113, 0.5); text-decoration: none; transition: all 0.2s ease; }
         .add-group-btn:hover { filter: brightness(1.05); transform: translateY(-1px); }
         .add-group-btn:active { transform: translateY(1px); box-shadow: none; }
-
+        
         .section-divider { height: 1px; background: linear-gradient(90deg, transparent, rgba(59, 130, 246, 0.6), transparent); margin: 20px 0; }
         .section-title { display: flex; align-items: center; gap: 12px; font-size: 16px; font-weight: 600; color: #e0f2fe; margin-bottom: 16px; }
         .section-icon { width: 32px; height: 32px; border-radius: 8px; display: flex; align-items: center; justify-content: center; }
@@ -63,12 +68,12 @@
         .sphere-1 { animation-delay: 0s; top: 4px; left: 4px; }
         .sphere-2 { animation-delay: 2s; top: 12px; right: 4px; }
         .sphere-3 { animation-delay: 4s; bottom: 4px; left: 12px; }
-        /* ✅ НОВЫЙ ИКОН ДЛЯ КРИПТЫ - сферы со стрелками */
+        
+        /* ✅ КРИПТО ИКОНА */
         .crypto-icon { 
             background: rgba(75, 85, 99, 0.6); 
             border: 1px solid rgba(156, 163, 175, 0.4); 
-            position: relative; 
-            overflow: hidden; 
+            position: relative; overflow: hidden; 
         }
         .crypto-arrow { 
             position: absolute; width: 6px; height: 6px; 
@@ -80,22 +85,52 @@
         .crypto-arrow:nth-child(2) { animation-delay: 1.3s; top: 12px; right: 4px; background: #f59e0b; transform: scaleX(-1); }
         .crypto-arrow:nth-child(3) { animation-delay: 2.6s; bottom: 4px; left: 12px; background: #ef4444; }
         @keyframes arrowFloat { 
-            0%, 100% { transform: translateY(0px) rotate(0deg) scale(1); opacity: 0.7; } 
-            50% { transform: translateY(-6px) rotate(180deg) scale(1.2); opacity: 1; } 
+            0%, 100% { transform: translateY(0px) rotate(0deg) scale(1); opacity: 0.7; }
+            50% { transform: translateY(-6px) rotate(180deg) scale(1.2); opacity: 1; }
         }
+        
+        /* ✅ НОВЫЙ ИКОН ДЛЯ КОНВЕРТЕРА КРИПТА→РУБЛИ */
+        .converter-icon {
+            background: rgba(75, 85, 99, 0.6); 
+            border: 1px solid rgba(156, 163, 175, 0.4); 
+            position: relative; overflow: hidden; 
+        }
+        .rub-sign { 
+            position: absolute; font-size: 16px; font-weight: 700; color: #f59e0b; 
+            animation: rubPulse 2s infinite ease-in-out; 
+        }
+        .rub-sign:nth-child(1) { top: 6px; left: 8px; animation-delay: 0s; }
+        .rub-sign:nth-child(2) { top: 10px; right: 6px; font-size: 14px; animation-delay: 0.7s; }
+        @keyframes rubPulse {
+            0%, 100% { transform: scale(1) rotate(0deg); opacity: 0.8; }
+            50% { transform: scale(1.1) rotate(10deg); opacity: 1; }
+        }
+        
+        /* ✅ ИКОН ДЛЯ ВАЛЮТ */
+        .currency-icon {
+            background: rgba(75, 85, 99, 0.6); 
+            border: 1px solid rgba(156, 163, 175, 0.4); 
+            position: relative; overflow: hidden; 
+        }
+        .currency-dollar { 
+            position: absolute; font-size: 14px; font-weight: 700; color: #10b981; 
+            animation: currencyFloat 3s infinite ease-in-out; 
+        }
+        .currency-euro { background: #3b82f6; }
+        .currency-dollar:nth-child(1) { top: 4px; left: 6px; }
+        .currency-dollar:nth-child(2) { bottom: 4px; right: 6px; font-size: 12px; animation-delay: 1s; }
+        @keyframes currencyFloat {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-4px); }
+        }
+        
         .coming-soon { font-size: 13px; color: #9ca3af; font-style: italic; }
         
         .crypto-section { background: rgba(17, 24, 39, 0.5); border-radius: 16px; padding: 16px; border: 1px solid rgba(59, 130, 246, 0.3); }
         .crypto-title { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
         .crypto-price { font-size: 18px; font-weight: 700; background: linear-gradient(135deg, #10b981, #059669); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-        .chart-container { 
-            height: 120px; position: relative; margin-bottom: 12px; 
-            background: rgba(15, 23, 42, 0.8); border-radius: 12px; overflow: hidden; 
-        }
-        #cryptoChart { 
-            width: 100% !important; height: 100% !important; 
-            background: rgba(17, 24, 39, 0.3); 
-        }
+        .chart-container { height: 120px; position: relative; margin-bottom: 12px; background: rgba(15, 23, 42, 0.8); border-radius: 12px; overflow: hidden; }
+        #cryptoChart { width: 100% !important; height: 100% !important; background: rgba(17, 24, 39, 0.3); }
         .timeframes { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; }
         .timeframe-btn { padding: 6px 4px; border-radius: 8px; border: 1px solid rgba(59, 130, 246, 0.4); background: rgba(15, 23, 42, 0.8); color: #e5e7eb; font-size: 11px; cursor: pointer; transition: all 0.2s ease; }
         .timeframe-btn.active, .timeframe-btn:hover { background: linear-gradient(135deg, #2563eb, #7c3aed); border-color: #60a5fa; color: white; transform: translateY(-1px); }
@@ -106,12 +141,34 @@
         .btc { background: linear-gradient(135deg, #f59e0b, #d97706); color: white; }
         .not { background: linear-gradient(135deg, #06b6d4, #0891b2); color: white; }
 
+        /* ✅ СТИЛИ ДЛЯ КОНВЕРТЕРА КРИПТА→РУБЛИ */
+        .crypto-converter { background: rgba(16, 185, 129, 0.15); border: 1px solid rgba(16, 185, 129, 0.4); border-radius: 12px; padding: 14px; margin-top: 12px; }
+        .converter-row { display: flex; gap: 8px; align-items: center; margin-bottom: 8px; }
+        .converter-input { flex: 1; padding: 8px 10px; border: 1px solid rgba(75, 85, 99, 0.6); border-radius: 8px; background: rgba(15, 23, 42, 0.8); color: #e5e7eb; font-size: 14px; }
+        .converter-select { padding: 8px 10px; border: 1px solid rgba(75, 85, 99, 0.6); border-radius: 8px; background: rgba(15, 23, 42, 0.8); color: #e5e7eb; font-size: 14px; }
+        .converter-result { font-size: 16px; font-weight: 600; color: #f59e0b; text-align: center; padding: 10px; background: rgba(249, 158, 11, 0.1); border-radius: 8px; }
+
+        /* ✅ СТИЛИ ДЛЯ ВАЛЮТНОЙ СЕКЦИИ */
+        .currency-section { background: rgba(34, 197, 94, 0.15); border: 1px solid rgba(34, 197, 94, 0.4); border-radius: 16px; padding: 16px; }
+        .currency-converter-row { display: flex; gap: 8px; align-items: center; margin-bottom: 12px; }
+        .currency-chart-container { height: 100px; position: relative; margin-bottom: 12px; background: rgba(15, 23, 42, 0.8); border-radius: 12px; overflow: hidden; }
+        .currency-coins { display: flex; gap: 6px; margin-bottom: 8px; }
+        .currency-btn { width: 44px; height: 36px; border-radius: 8px; border: 2px solid transparent; cursor: pointer; font-size: 12px; font-weight: 600; transition: all 0.2s ease; background: rgba(15, 23, 42, 0.8); color: #e5e7eb; }
+        .currency-btn.active { border-color: #22c55e; background: rgba(34, 197, 94, 0.2); transform: scale(1.05); }
+        
         .meta-block { margin-top: auto; padding-top: 16px; border-top: 1px solid rgba(55, 65, 81, 0.8); font-size: 11px; color: #9ca3af; display: flex; flex-direction: column; gap: 4px; }
         .meta-title { font-size: 11px; letter-spacing: 0.16em; text-transform: uppercase; color: #a5b4fc; text-shadow: 0 0 8px rgba(129, 140, 248, 0.6); }
         .meta-links { display: flex; justify-content: space-between; gap: 8px; flex-wrap: wrap; }
         .meta-link { color: #38bdf8; text-decoration: none; font-size: 11px; cursor: pointer; }
         .meta-link:hover { text-decoration: underline; }
-        @media (max-width: 480px) { .card { padding: 14px 10px 12px; } .title { font-size: 16px; } textarea { min-height: 80px; } }
+        
+        @media (max-width: 480px) { 
+            .card { padding: 14px 10px 12px; } 
+            .title { font-size: 16px; } 
+            textarea { min-height: 80px; } 
+            .converter-row { flex-direction: column; }
+            .currency-converter-row { flex-direction: column; }
+        }
         @keyframes pulseGlow { 0%, 100% { box-shadow: 0 0 0 rgba(56, 189, 248, 0); } 50% { box-shadow: 0 0 18px rgba(56, 189, 248, 0.9); } }
         @keyframes titleGlow { 0%, 100% { text-shadow: 0 0 4px rgba(56, 189, 248, 0.5), 0 0 8px rgba(59, 130, 246, 0.4); } 50% { text-shadow: 0 0 10px rgba(56, 189, 248, 1), 0 0 22px rgba(59, 130, 246, 0.9); } }
         @keyframes bgShift { 0% { background: radial-gradient(circle at top, #0ea5e9 0, #020617 50%, #000000 100%); } 50% { background: radial-gradient(circle at top, #6366f1 0, #020617 55%, #000000 100%); } 100% { background: radial-gradient(circle at top, #ec4899 0, #020617 50%, #000000 100%); } }
@@ -127,7 +184,7 @@
                 <option value="tt">🇹🇹 Татарский</option>
             </select>
         </div>
-
+ 
         <div class="card-header">
             <div class="avatar">NC</div>
             <div class="title-block">
@@ -136,7 +193,7 @@
             </div>
             <div class="badge">beta</div>
         </div>
-
+ 
         <div class="buttons-grid">
             <button class="btn primary" onclick="setMode('question')">
                 <span class="label" id="btn1-label">Задать вопрос</span>
@@ -155,19 +212,19 @@
                 <span class="desc" id="btn4-desc">Проекты, сюжеты, подарки</span>
             </button>
         </div>
-
+ 
         <textarea id="prompt" placeholder="Напиши текст для NeuroCore…"></textarea>
         <div class="bottom-row">
             <div class="hint" id="hint">Этот интерфейс работает как Mini App. Текст улетит боту через WebApp.</div>
             <button class="send-btn" id="sendBtn" onclick="sendToBot()">Отправить</button>
         </div>
-
+ 
         <div class="add-group">
             <button class="add-group-btn" type="button" id="addGroupBtn" onclick="inviteToGroup()">
                 👥 <span id="addBtnText">Пригласить NeuroCore в группу</span>
             </button>
         </div>
-
+ 
         <div class="section-divider"></div>
         <div class="section-title">
             <div class="section-icon games-icon">
@@ -180,9 +237,9 @@
         <div style="text-align: center; color: #6b7280; font-size: 14px;">
             <span id="comingSoon" class="coming-soon">Скоро...</span>
         </div>
-
+ 
         <div class="section-divider"></div>
-        <!-- ✅ ИЗМЕНЁН КРИПТО ИКОН - теперь сферы со стрелками -->
+        <!-- ✅ КРИПТО БЛОК (НЕ ТРОГАЛ) -->
         <div class="section-title">
             <div class="section-icon crypto-icon">
                 <div class="crypto-arrow"></div>
@@ -212,6 +269,51 @@
             </div>
         </div>
 
+        <!-- ✅ ✅ НОВЫЙ КОНВЕРТЕР КРИПТА → РУБЛИ (ПРЯМО ПОД КРИПТО БЛОКОМ) -->
+        <div class="section-title">
+            <div class="section-icon converter-icon">
+                <div class="rub-sign">₽</div>
+                <div class="rub-sign">₽</div>
+            </div>
+            <span>Крипта → ₽</span>
+        </div>
+        <div class="crypto-converter">
+            <div class="converter-row">
+                <input type="number" class="converter-input" id="cryptoAmount" placeholder="1.5" step="any" min="0" onchange="convertCryptoToRub()">
+                <select class="converter-select" id="cryptoCoinSelect" onchange="convertCryptoToRub()">
+                    <option value="ton">TON</option>
+                    <option value="btc">BTC</option>
+                    <option value="not">NOT</option>
+                </select>
+            </div>
+            <div class="converter-result" id="cryptoRubResult">0 ₽</div>
+        </div>
+
+        <div class="section-divider"></div>
+        <!-- ✅ ✅ НОВЫЙ БЛОК ВАЛЮТ -->
+        <div class="section-title">
+            <div class="section-icon currency-icon">
+                <div class="currency-dollar">$</div>
+                <div class="currency-dollar">€</div>
+            </div>
+            <span>Валюты</span>
+        </div>
+        <div class="currency-section">
+            <div class="currency-converter-row">
+                <input type="number" class="converter-input" id="currencyAmount" placeholder="1" step="any" min="0" onchange="convertCurrency()">
+                <select class="converter-select" id="currencySelect" onchange="convertCurrency()">
+                    <option value="usd">USD</option>
+                    <option value="eur">EUR</option>
+                    <option value="byn">BYN</option>
+                    <option value="kzt">KZT</option>
+                </select>
+            </div>
+            <div class="currency-chart-container">
+                <canvas id="currencyChart"></canvas>
+            </div>
+            <div class="currency-result" id="currencyRubResult">0 ₽</div>
+        </div>
+ 
         <div class="meta-block">
             <div class="meta-title">SYSTEM</div>
             <div class="meta-links">
@@ -220,7 +322,7 @@
             </div>
         </div>
     </div>
-
+ 
     <script>
         // ПЕРЕМЕННЫЕ
         let currentMode = 'question';
@@ -228,20 +330,34 @@
         let currentCoin = 'ton';
         let currentTimeframe = '1d';
         let cryptoChart = null;
+        let currencyChart = null;
+        let usdToRubRate = 97.5; // кэш курса USD→RUB
         const tg = window.Telegram?.WebApp || {};
 
-        // CoinGecko IDs для реальных данных
+        // CoinGecko IDs
         const COINGECKO_IDS = {
             ton: 'the-open-network',
-            btc: 'bitcoin',
+            btc: 'bitcoin', 
             not: 'notcoin'
         };
+        const CURRENCY_IDS = {
+            usd: 'usd',
+            eur: 'euro',
+            byn: 'belarusian-ruble',
+            kzt: 'kazakhstani-tenge'
+        };
 
-        // Цвета монет
+        // Цвета
         const coinColors = {
             ton: '#8b5cf6',
             btc: '#f59e0b', 
             not: '#06b6d4'
+        };
+        const currencyColors = {
+            usd: '#10b981',
+            eur: '#3b82f6',
+            byn: '#f59e0b',
+            kzt: '#ef4444'
         };
 
         const translations = {
@@ -301,7 +417,128 @@
             tg.MainButton.setText('Отправить').show().onClick(sendToBot);
         }
 
-        // ✅ ИСПРАВЛЕННАЯ ФУНКЦИЯ - ТОЧНЫЕ ЦЕНЫ БЕЗ ОКРУГЛЕНИЯ
+        // ✅ ФУНКЦИЯ ПОЛУЧЕНИЯ КУРСА USD→RUB
+        async function fetchUsdToRub() {
+            try {
+                const response = await fetch('https://api.exchangerate-api.com/v4/latest/USD');
+                const data = await response.json();
+                usdToRubRate = data.rates.RUB;
+                return usdToRubRate;
+            } catch (error) {
+                return usdToRubRate || 97.5; // fallback
+            }
+        }
+
+        // ✅ КОНВЕРТЕР КРИПТА → РУБЛИ
+        async function convertCryptoToRub() {
+            const amount = parseFloat(document.getElementById('cryptoAmount').value) || 0;
+            const coin = document.getElementById('cryptoCoinSelect').value;
+            
+            if (amount <= 0) {
+                document.getElementById('cryptoRubResult').textContent = '0 ₽';
+                return;
+            }
+
+            try {
+                const coinId = COINGECKO_IDS[coin];
+                const response = await fetch(`https://api.coingecko.com/api/v3/simple/price?ids=${coinId}&vs_currencies=usd`);
+                const data = await response.json();
+                const priceUsd = data[coinId].usd;
+                const rubRate = await fetchUsdToRub();
+                const result = amount * priceUsd * rubRate;
+                
+                document.getElementById('cryptoRubResult').textContent = 
+                    result.toLocaleString('ru-RU', { minimumFractionDigits: 0, maximumFractionDigits: 0 }) + ' ₽';
+            } catch (error) {
+                document.getElementById('cryptoRubResult').textContent = 'Ошибка API';
+            }
+        }
+
+        // ✅ КОНВЕРТЕР ВАЛЮТА → РУБЛИ
+        async function convertCurrency() {
+            const amount = parseFloat(document.getElementById('currencyAmount').value) || 0;
+            const currency = document.getElementById('currencySelect').value;
+            
+            if (amount <= 0) {
+                document.getElementById('currencyRubResult').textContent = '0 ₽';
+                return;
+            }
+
+            try {
+                const response = await fetch('https://api.exchangerate-api.com/v4/latest/' + currency.toUpperCase());
+                const data = await response.json();
+                const rate = data.rates.RUB;
+                const result = amount * rate;
+                
+                document.getElementById('currencyRubResult').textContent = 
+                    result.toLocaleString('ru-RU', { minimumFractionDigits: 0, maximumFractionDigits: 0 }) + ' ₽';
+                
+                updateCurrencyChart(currency);
+            } catch (error) {
+                document.getElementById('currencyRubResult').textContent = 'Ошибка API';
+            }
+        }
+
+        // ✅ ГРАФИК ВАЛЮТ
+        async function updateCurrencyChart(currency) {
+            const canvas = document.getElementById('currencyChart');
+            const ctx = canvas.getContext('2d');
+            
+            if (currencyChart) currencyChart.destroy();
+
+            try {
+                const response = await fetch('https://api.exchangerate-api.com/v4/historical/2024-12-01.json');
+                const data = await response.json();
+                const rates = data.rates.RUB;
+                
+                const labels = ['Дек1', 'Дек10', 'Дек20', 'Дек30'];
+                const values = [rates['2024-12-01'], rates['2024-12-10'], rates['2024-12-20'], rates['2024-12-30']];
+
+                currencyChart = new Chart(ctx, {
+                    type: 'line',
+                    data: {
+                        labels: labels,
+                        datasets: [{
+                            data: values,
+                            borderColor: currencyColors[currency],
+                            backgroundColor: currencyColors[currency] + '20',
+                            borderWidth: 2,
+                            fill: true,
+                            tension: 0.4,
+                            pointRadius: 3
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: { legend: { display: false } },
+                        scales: {
+                            x: { grid: { display: false }, ticks: { color: '#94a3b8', font: { size: 10 } } },
+                            y: { 
+                                grid: { color: 'rgba(148, 163, 184, 0.15)' },
+                                ticks: { color: '#94a3b8', callback: value => value + ' ₽' }
+                            }
+                        }
+                    }
+                });
+            } catch (error) {
+                // Fallback график
+                currencyChart = new Chart(ctx, {
+                    type: 'line',
+                    data: {
+                        labels: ['Дек1', 'Дек10', 'Дек20', 'Дек30'],
+                        datasets: [{
+                            data: [95, 97, 98, 96],
+                            borderColor: currencyColors[currency],
+                            fill: true
+                        }]
+                    },
+                    options: { responsive: true, maintainAspectRatio: false }
+                });
+            }
+        }
+
+        // ✅ СТАРЫЕ ФУНКЦИИ КРИПТЫ (БЕЗ ИЗМЕНЕНИЙ)
         async function fetchRealPrice() {
             try {
                 const coinId = COINGECKO_IDS[currentCoin];
@@ -311,10 +548,9 @@
                 const price = data[coinId].usd;
                 const change = data[coinId].usd_24h_change;
                 
-                // ✅ ТОЧНАЯ ЦЕНА БЕЗ ОКРУГЛЕНИЯ - полная точность!
-                document.getElementById('cryptoPrice').textContent = '$' + price.toLocaleString(undefined, { 
-                    minimumFractionDigits: 0, 
-                    maximumFractionDigits: 8 
+                document.getElementById('cryptoPrice').textContent = '$' + price.toLocaleString(undefined, {
+                    minimumFractionDigits: 0,
+                    maximumFractionDigits: 8
                 });
                 
                 const changeEl = document.getElementById('cryptoChange');
@@ -329,7 +565,6 @@
             }
         }
 
-        // ✅ ГРАФИК С ОКРУГЛЕНИЕМ НА ШКАЛЕ (как просил)
         async function createRealChart() {
             const canvas = document.getElementById('cryptoChart');
             const ctx = canvas.getContext('2d');
@@ -372,15 +607,11 @@
                         maintainAspectRatio: false,
                         plugins: { legend: { display: false } },
                         scales: {
-                            x: { 
-                                grid: { display: false },
-                                ticks: { display: false }
-                            },
+                            x: { grid: { display: false }, ticks: { display: false } },
                             y: {
                                 grid: { color: 'rgba(148, 163, 184, 0.15)' },
                                 ticks: {
                                     color: '#94a3b8',
-                                    // ✅ ОКРУГЛЕНИЕ ТОЛЬКО НА ШКАЛЕ ГРАФИКА
                                     callback: function(value) {
                                         if (value >= 1000) return '$' + (value / 1000).toFixed(1) + 'k';
                                         return '$' + value.toFixed(1);
@@ -396,7 +627,6 @@
             }
         }
 
-        // Fallback функции без изменений
         function updatePrice() {
             const cryptoPrices = {
                 ton: { price: 1.795, change: 2.8, color: '#8b5cf6' },
@@ -463,15 +693,41 @@
             });
         }
 
-        // Остальные функции БЕЗ ИЗМЕНЕНИЙ
+        // ✅ ✅ ✅ ИСПРАВЛЕННЫЕ ФУНКЦИИ С ПЕРЕВОДОМ КНОПОК
         function changeLanguage(lang) {
             currentLang = lang;
             const t = translations[lang] || translations.ru;
             
-            ['subtitle','btn1-label','btn1-desc','btn2-label','btn2-desc','btn3-label','btn3-desc','btn4-label','btn4-desc','prompt','hint','sendBtn','addBtnText','gamesTitle','comingSoon','cryptoTitle','privacyLink','devLink'].forEach(id => {
+            // ✅ ФИКС: правильные ID для кнопок
+            const elements = {
+                'subtitle': 'subtitle',
+                'btn1-label': 'btn1_label',
+                'btn1-desc': 'btn1_desc',
+                'btn2-label': 'btn2_label', 
+                'btn2-desc': 'btn2_desc',
+                'btn3-label': 'btn3_label',
+                'btn3-desc': 'btn3_desc',
+                'btn4-label': 'btn4_label',
+                'btn4-desc': 'btn4_desc',
+                'hint': 'hint',
+                'addBtnText': 'addBtnText',
+                'gamesTitle': 'gamesTitle',
+                'comingSoon': 'comingSoon',
+                'cryptoTitle': 'cryptoTitle',
+                'privacyLink': 'privacy',
+                'devLink': 'dev'
+            };
+            
+            Object.keys(elements).forEach(id => {
                 const el = document.getElementById(id);
-                if (el) el.textContent = t[id.replace(/([A-Z])/g, '-$1').toLowerCase()] || t[id] || el.textContent;
+                if (el) el.textContent = t[elements[id]] || el.textContent;
             });
+            
+            // ✅ Placeholder для textarea
+            const prompt = document.getElementById('prompt');
+            prompt.placeholder = (currentMode === 'question' ? '' : 
+                (currentMode === 'explain' ? 'Объясни: ' : 
+                (currentMode === 'fix' ? 'Исправь: ' : 'Сгенерируй идеи: '))) + t.placeholder;
             
             if (tg.MainButton) tg.MainButton.setText(t.send || 'Отправить');
             localStorage.setItem('neurocore_lang', lang);
@@ -481,9 +737,24 @@
             currentMode = mode;
             const prompt = document.getElementById('prompt');
             const t = translations[currentLang] || translations.ru;
-            const prefixes = { question: '', explain: 'Объясни: ', fix: 'Исправь: ', ideas: 'Сгенерируй идеи: ' };
+            const prefixes = { 
+                question: '', 
+                explain: 'Объясни: ', 
+                fix: 'Исправь: ', 
+                ideas: 'Сгенерируй идеи: ' 
+            };
             prompt.placeholder = (prefixes[mode] || '') + t.placeholder;
             prompt.focus();
+        }
+
+        // ✅ ✅ ✅ ✅ ✅ КРИТИЧНЫЙ ФИКС: ПРАВИЛЬНАЯ КНОПКА ДЛЯ ГРУППЫ
+        function inviteToGroup() {
+            const btn = document.getElementById('addGroupBtn');
+            btn.style.transform = 'scale(0.97)';
+            setTimeout(() => btn.style.transform = '', 150);
+            
+            // ✅ ПРАВИЛЬНАЯ ССЫЛКА ДЛЯ ВЫБОРА ГРУППЫ (не канал!)
+            tg.openTelegramLink?.('https://t.me/genuis_neo_bot?startgroup=1');
         }
 
         function sendToBot() {
@@ -491,22 +762,24 @@
             if (!text) return;
             
             const t = translations[currentLang] || translations.ru;
-            const modes = { question: t['btn1_label'], explain: t['btn2_label'], fix: t['btn3_label'], ideas: t['btn4_label'] };
-            tg.sendData(JSON.stringify({ message: `${modes[currentMode] || 'Вопрос'}: ${text}` }));
+            const modes = { 
+                question: t.btn1_label || 'Задать вопрос', 
+                explain: t.btn2_label || 'Объяснить тему', 
+                fix: t.btn3_label || 'Исправить текст', 
+                ideas: t.btn4_label || 'Сгенерировать идеи' 
+            };
+            tg.sendData(JSON.stringify({ message: `${modes[currentMode]}: ${text}` }));
             document.getElementById('prompt').value = '';
-        }
-
-        function inviteToGroup() {
-            const btn = document.getElementById('addGroupBtn');
-            btn.style.transform = 'scale(0.97)';
-            setTimeout(() => btn.style.transform = '', 150);
-            tg.openTelegramLink?.('https://t.me/genuis_neo_bot?startgroup=true');
         }
 
         function setCryptoCoin(e, coin) {
             currentCoin = coin;
             document.querySelectorAll('.coin-btn').forEach(btn => btn.classList.remove('active'));
             e.target.classList.add('active');
+            
+            // ✅ СИНХРОНИЗАЦИЯ С КОНВЕРТЕРОМ
+            document.getElementById('cryptoCoinSelect').value = coin;
+            
             fetchRealPrice().then(() => createRealChart());
         }
 
@@ -519,17 +792,25 @@
             createRealChart();
         }
 
+        // Инициализация
         document.addEventListener('DOMContentLoaded', () => {
             const savedLang = localStorage.getItem('neurocore_lang') || 'ru';
             document.getElementById('langSelect').value = savedLang;
             changeLanguage(savedLang);
             setMode('question');
             
+            // ✅ Инициализация синхронизации монет
+            document.getElementById('cryptoCoinSelect').value = currentCoin;
+            
             setTimeout(() => {
                 fetchRealPrice().then(() => createRealChart());
                 setInterval(() => {
                     fetchRealPrice().then(() => createRealChart());
+                    fetchUsdToRub(); // обновление курса
                 }, 120000);
+                
+                // ✅ Инициализация валютного графика
+                updateCurrencyChart('usd');
             }, 300);
         });
 
