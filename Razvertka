@@ -1,0 +1,1283 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🧮 Развёрнутый ответ • Кор</title>
+    
+    <!-- CDN для быстрой загрузки (кешируются браузерами) -->
+    <script src="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/katex.min.js" crossorigin="anonymous" defer></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/katex.min.css" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" crossorigin="anonymous">
+    
+    <!-- Оптимизированный CSS для 20к+ пользователей -->
+    <style>
+        /* === ОСНОВНЫЕ СТИЛИ === */
+        :root {
+            --primary-color: #3b82f6;
+            --secondary-color: #8b5cf6;
+            --success-color: #10b981;
+            --danger-color: #ef4444;
+            --warning-color: #f59e0b;
+            --dark-color: #1e293b;
+            --light-color: #f8fafc;
+            --gray-color: #64748b;
+            --border-radius: 12px;
+            --shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            --transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #f1f5f9 0%, #e2e8f0 100%);
+            min-height: 100vh;
+            color: var(--dark-color);
+            line-height: 1.6;
+            padding: 20px;
+            overflow-x: hidden;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            display: grid;
+            gap: 20px;
+        }
+        
+        /* === HEADER === */
+        .header {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: var(--border-radius);
+            padding: 25px 30px;
+            text-align: center;
+            box-shadow: var(--shadow);
+            border: 1px solid rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(10px);
+        }
+        
+        h1 {
+            font-size: clamp(24px, 4vw, 36px);
+            font-weight: 800;
+            margin-bottom: 15px;
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .user-badge {
+            display: inline-block;
+            background: linear-gradient(135deg, rgba(59, 130, 246, 0.1), rgba(139, 92, 246, 0.1));
+            padding: 8px 20px;
+            border-radius: 50px;
+            margin: 10px 0;
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--primary-color);
+            border: 2px solid rgba(59, 130, 246, 0.2);
+        }
+        
+        /* === CONTENT AREA === */
+        .content-area {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 20px;
+        }
+        
+        @media (min-width: 992px) {
+            .content-area {
+                grid-template-columns: 1fr 350px;
+            }
+        }
+        
+        /* === MAIN CONTENT === */
+        .main-content {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: var(--border-radius);
+            padding: 30px;
+            box-shadow: var(--shadow);
+            border: 1px solid rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(10px);
+        }
+        
+        .tabs {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid rgba(0, 0, 0, 0.05);
+        }
+        
+        .tab {
+            padding: 12px 24px;
+            border-radius: 8px;
+            background: rgba(59, 130, 246, 0.08);
+            border: 2px solid transparent;
+            cursor: pointer;
+            font-weight: 600;
+            color: var(--gray-color);
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex: 1;
+            min-width: 120px;
+            justify-content: center;
+        }
+        
+        .tab:hover {
+            background: rgba(59, 130, 246, 0.15);
+            transform: translateY(-2px);
+        }
+        
+        .tab.active {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            box-shadow: 0 4px 15px rgba(59, 130, 246, 0.3);
+        }
+        
+        .tab-content {
+            display: none;
+            animation: fadeIn 0.3s ease;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        .section-title {
+            font-size: 22px;
+            font-weight: 700;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 3px solid var(--primary-color);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        .answer-text {
+            font-size: 16px;
+            line-height: 1.8;
+            color: var(--dark-color);
+            white-space: pre-line;
+            padding: 20px;
+            background: rgba(241, 245, 249, 0.5);
+            border-radius: 10px;
+            margin-bottom: 25px;
+        }
+        
+        .formula-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+        
+        .formula-card {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            border: 2px solid rgba(59, 130, 246, 0.1);
+            transition: var(--transition);
+        }
+        
+        .formula-card:hover {
+            border-color: var(--primary-color);
+            box-shadow: 0 8px 25px rgba(59, 130, 246, 0.15);
+            transform: translateY(-3px);
+        }
+        
+        /* === SIDEBAR === */
+        .sidebar {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: var(--border-radius);
+            padding: 25px;
+            box-shadow: var(--shadow);
+            border: 1px solid rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(10px);
+            height: fit-content;
+            position: sticky;
+            top: 20px;
+        }
+        
+        .subject-badges {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 25px;
+        }
+        
+        .subject-badge {
+            padding: 10px 18px;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .subject-math {
+            background: rgba(59, 130, 246, 0.1);
+            color: #1d4ed8;
+            border: 2px solid rgba(59, 130, 246, 0.2);
+        }
+        
+        .subject-physics {
+            background: rgba(16, 185, 129, 0.1);
+            color: #059669;
+            border: 2px solid rgba(16, 185, 129, 0.2);
+        }
+        
+        .subject-chemistry {
+            background: rgba(239, 68, 68, 0.1);
+            color: #dc2626;
+            border: 2px solid rgba(239, 68, 68, 0.2);
+        }
+        
+        .stats-box {
+            background: rgba(241, 245, 249, 0.7);
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        
+        .stat-item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+        }
+        
+        .stat-label {
+            color: var(--gray-color);
+            font-size: 14px;
+        }
+        
+        .stat-value {
+            font-weight: 700;
+            color: var(--primary-color);
+        }
+        
+        /* === LOADING === */
+        .loading-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 60vh;
+            text-align: center;
+        }
+        
+        .spinner {
+            width: 60px;
+            height: 60px;
+            border: 5px solid rgba(59, 130, 246, 0.1);
+            border-top: 5px solid var(--primary-color);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-bottom: 20px;
+        }
+        
+        /* === ERROR === */
+        .error-container {
+            display: none;
+            background: linear-gradient(135deg, rgba(239, 68, 68, 0.1), rgba(220, 38, 38, 0.1));
+            border: 2px solid rgba(239, 68, 68, 0.3);
+            border-radius: var(--border-radius);
+            padding: 30px;
+            text-align: center;
+            margin-top: 20px;
+        }
+        
+        /* === FOOTER === */
+        .footer {
+            text-align: center;
+            padding: 25px;
+            color: var(--gray-color);
+            font-size: 14px;
+            margin-top: 40px;
+            border-top: 1px solid rgba(0, 0, 0, 0.1);
+        }
+        
+        /* === ANIMATIONS === */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        /* === RESPONSIVE === */
+        @media (max-width: 768px) {
+            .container {
+                padding: 10px;
+            }
+            
+            .header, .main-content, .sidebar {
+                padding: 20px;
+            }
+            
+            .tabs {
+                flex-direction: column;
+            }
+            
+            .tab {
+                width: 100%;
+                justify-content: center;
+            }
+            
+            .formula-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        /* === PERFORMANCE OPTIMIZATIONS === */
+        .katex {
+            font-size: 1.2em;
+            overflow-x: auto;
+            overflow-y: hidden;
+            padding: 10px;
+            background: rgba(255, 255, 255, 0.8);
+            border-radius: 8px;
+            margin: 5px 0;
+        }
+        
+        .katex-display {
+            overflow-x: auto;
+            overflow-y: hidden;
+            padding: 15px 5px;
+        }
+        
+        /* === SCROLLBAR === */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        
+        ::-webkit-scrollbar-track {
+            background: rgba(0, 0, 0, 0.05);
+            border-radius: 10px;
+        }
+        
+        ::-webkit-scrollbar-thumb {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            border-radius: 10px;
+        }
+        
+        /* === UTILITY === */
+        .hidden {
+            display: none !important;
+        }
+        
+        .text-center {
+            text-align: center;
+        }
+        
+        .mt-20 {
+            margin-top: 20px;
+        }
+        
+        .mb-20 {
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Заголовок -->
+        <header class="header">
+            <h1 id="page-title">🧮 Развёрнутый ответ</h1>
+            <div class="user-badge" id="user-badge">
+                <i class="fas fa-user"></i> Пользователь #<span id="user-id">0000</span>
+            </div>
+            <div id="question-preview" class="answer-text" style="display: none; font-style: italic;"></div>
+        </header>
+        
+        <!-- Основная область -->
+        <div class="content-area">
+            <!-- Главный контент -->
+            <main class="main-content">
+                <!-- Вкладки -->
+                <nav class="tabs" id="tabs" style="display: none;">
+                    <div class="tab active" data-tab="explanation">
+                        <i class="fas fa-book-open"></i> Объяснение
+                    </div>
+                    <div class="tab" data-tab="formulas">
+                        <i class="fas fa-superscript"></i> Формулы
+                    </div>
+                    <div class="tab" data-tab="laws">
+                        <i class="fas fa-balance-scale"></i> Законы
+                    </div>
+                    <div class="tab" data-tab="steps">
+                        <i class="fas fa-list-ol"></i> Шаги решения
+                    </div>
+                </nav>
+                
+                <!-- Контент вкладок -->
+                <div id="explanation-tab" class="tab-content active">
+                    <h2 class="section-title">
+                        <i class="fas fa-book-open"></i> Подробное объяснение
+                    </h2>
+                    <div class="answer-text" id="answer-content">
+                        Загрузка...
+                    </div>
+                </div>
+                
+                <div id="formulas-tab" class="tab-content">
+                    <h2 class="section-title">
+                        <i class="fas fa-superscript"></i> Использованные формулы
+                    </h2>
+                    <div id="formulas-container" class="formula-grid">
+                        <!-- Формулы будут добавлены динамически -->
+                    </div>
+                </div>
+                
+                <div id="laws-tab" class="tab-content">
+                    <h2 class="section-title">
+                        <i class="fas fa-balance-scale"></i> Соответствующие законы
+                    </h2>
+                    <div id="laws-container">
+                        <!-- Законы будут добавлены динамически -->
+                    </div>
+                </div>
+                
+                <div id="steps-tab" class="tab-content">
+                    <h2 class="section-title">
+                        <i class="fas fa-list-ol"></i> Пошаговое решение
+                    </h2>
+                    <div id="steps-container">
+                        <!-- Шаги будут добавлены динамически -->
+                    </div>
+                </div>
+            </main>
+            
+            <!-- Сайдбар -->
+            <aside class="sidebar">
+                <h3 style="margin-bottom: 20px; color: var(--primary-color);">
+                    <i class="fas fa-info-circle"></i> Информация
+                </h3>
+                
+                <!-- Бейджи предметов -->
+                <div class="subject-badges" id="subject-badges">
+                    <!-- Бейджи будут добавлены динамически -->
+                </div>
+                
+                <!-- Статистика -->
+                <div class="stats-box">
+                    <h4 style="margin-bottom: 15px; color: var(--dark-color);">
+                        <i class="fas fa-chart-bar"></i> Статистика ответа
+                    </h4>
+                    <div class="stat-item">
+                        <span class="stat-label">Формул:</span>
+                        <span class="stat-value" id="formula-count">0</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">Шагов:</span>
+                        <span class="stat-value" id="step-count">0</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">Законов:</span>
+                        <span class="stat-value" id="law-count">0</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">Символов:</span>
+                        <span class="stat-value" id="char-count">0</span>
+                    </div>
+                </div>
+                
+                <!-- Действия -->
+                <div style="margin-top: 25px;">
+                    <button id="copy-link" class="tab" style="width: 100%; margin-bottom: 10px;">
+                        <i class="fas fa-copy"></i> Копировать ссылку
+                    </button>
+                    <button id="print-btn" class="tab" style="width: 100%;">
+                        <i class="fas fa-print"></i> Печать ответа
+                    </button>
+                </div>
+            </aside>
+        </div>
+        
+        <!-- Загрузка -->
+        <div class="loading-container" id="loading">
+            <div class="spinner"></div>
+            <h2 style="margin-bottom: 10px; color: var(--primary-color);">Формируем ответ...</h2>
+            <p style="color: var(--gray-color);">Это займет несколько секунд</p>
+        </div>
+        
+        <!-- Ошибка -->
+        <div class="error-container" id="error-container">
+            <i class="fas fa-exclamation-triangle" style="font-size: 48px; color: var(--danger-color); margin-bottom: 20px;"></i>
+            <h2 style="color: var(--danger-color); margin-bottom: 15px;">Ошибка загрузки</h2>
+            <p id="error-message">Не удалось загрузить данные ответа</p>
+            <button id="retry-btn" class="tab active" style="margin-top: 20px;">
+                <i class="fas fa-redo"></i> Попробовать снова
+            </button>
+        </div>
+        
+        <!-- Футер -->
+        <footer class="footer">
+            <p>🤖 Развёрнутый ответ сгенерирован ботом <strong>Кор</strong></p>
+            <p style="margin-top: 10px; font-size: 12px;">
+                <i class="fas fa-bolt"></i> Оптимизировано для 20,000+ одновременных пользователей
+            </p>
+        </footer>
+    </div>
+
+    <!-- Основной скрипт -->
+    <script>
+        // ============= ГЛОБАЛЬНЫЙ КОНТЕЙНЕР ДЛЯ МАСШТАБИРОВАНИЯ =============
+        class AnswerEngine {
+            constructor() {
+                this.currentAnswer = null;
+                this.userSession = this.generateSessionId();
+                this.performanceStart = performance.now();
+                this.config = this.getConfig();
+                this.init();
+            }
+            
+            // Генерация уникального ID сессии для каждого пользователя
+            generateSessionId() {
+                return 'user_' + Math.random().toString(36).substr(2, 9) + 
+                       '_' + Date.now().toString(36);
+            }
+            
+            // Конфигурация (кешируется в localStorage)
+            getConfig() {
+                const defaultConfig = {
+                    scienceDetectors: {
+                        math: /\b(интеграл|дифференциал|производная|уравнение|теорема|лемма|лимит|предел|матрица|вектор|функция|корень|степень|логарифм|синус|косинус|тангенс|тригонометрия|геометрия|алгебра)\b/i,
+                        physics: /\b(закон|сила|ускорение|энергия|импульс|мощность|напряжение|ток|сопротивление|частота|волна|гравитация|механика|термодинамика)\b/i,
+                        chemistry: /\b(моль|реакция|катализатор|окисление|восстановление|pH|концентрация|равновесие|элемент|молекула|атом)\b/i
+                    },
+                    laws: {
+                        physics: {
+                            "Первый закон Ньютона": "\\sum \\vec{F} = 0 \\Rightarrow \\vec{v} = \\text{const}",
+                            "Второй закон Ньютона": "\\vec{F} = m\\vec{a}",
+                            "Закон сохранения энергии": "E_{\\text{кин}} + E_{\\text{пот}} = \\text{const}",
+                            "Закон Ома": "I = \\frac{U}{R}"
+                        },
+                        math: {
+                            "Теорема Пифагора": "a^2 + b^2 = c^2",
+                            "Формула производной": "\\frac{d}{dx}f(x) = \\lim_{h \\to 0} \\frac{f(x+h)-f(x)}{h}",
+                            "Формула интеграла": "\\int f(x) dx = F(x) + C",
+                            "Квадратное уравнение": "ax^2 + bx + c = 0"
+                        },
+                        chemistry: {
+                            "Закон сохранения массы": "\\sum m_{\\text{исх}} = \\sum m_{\\text{пр}}",
+                            "Уравнение состояния идеального газа": "PV = nRT",
+                            "Закон действующих масс": "v = k[A]^m[B]^n"
+                        }
+                    },
+                    maxFormulas: 15,
+                    maxSteps: 20,
+                    cacheEnabled: true,
+                    cacheDuration: 300000 // 5 минут
+                };
+                
+                try {
+                    const saved = localStorage.getItem('answer_engine_config');
+                    return saved ? JSON.parse(saved) : defaultConfig;
+                } catch {
+                    return defaultConfig;
+                }
+            }
+            
+            // Инициализация
+            async init() {
+                try {
+                    this.setupEventListeners();
+                    const answerData = await this.loadAnswerData();
+                    
+                    if (answerData) {
+                        this.currentAnswer = answerData;
+                        await this.renderAnswer(answerData);
+                        this.showMainContent();
+                        this.logPerformance();
+                    } else {
+                        this.showError('Не удалось загрузить данные ответа');
+                    }
+                } catch (error) {
+                    console.error('Ошибка инициализации:', error);
+                    this.showError('Ошибка при загрузке страницы');
+                }
+            }
+            
+            // Загрузка данных ответа
+            async loadAnswerData() {
+                // 1. Пробуем получить из URL параметров
+                const urlData = this.parseUrlData();
+                if (urlData) {
+                    this.cacheAnswerData(urlData);
+                    return urlData;
+                }
+                
+                // 2. Пробуем получить из кэша
+                if (this.config.cacheEnabled) {
+                    const cachedData = this.getCachedAnswerData();
+                    if (cachedData) return cachedData;
+                }
+                
+                // 3. Пробуем получить из localStorage (fallback)
+                const localStorageData = this.getLocalStorageData();
+                if (localStorageData) return localStorageData;
+                
+                return null;
+            }
+            
+            // Парсинг данных из URL (оптимизировано для массового использования)
+            parseUrlData() {
+                try {
+                    const url = new URL(window.location.href);
+                    
+                    // Способ 1: Base64 encoded JSON (рекомендуется для бота)
+                    const dataParam = url.searchParams.get('data');
+                    if (dataParam) {
+                        try {
+                            const decoded = atob(dataParam);
+                            return JSON.parse(decoded);
+                        } catch {
+                            // Если не JSON, пробуем как plain text
+                            return {
+                                text: decodeURIComponent(dataParam),
+                                formulas: [],
+                                question: '',
+                                timestamp: Date.now()
+                            };
+                        }
+                    }
+                    
+                    // Способ 2: Отдельные параметры (для совместимости)
+                    const textParam = url.searchParams.get('text');
+                    if (textParam) {
+                        const data = {
+                            text: decodeURIComponent(textParam),
+                            formulas: url.searchParams.get('formulas') 
+                                ? JSON.parse(decodeURIComponent(url.searchParams.get('formulas')))
+                                : this.extractFormulas(decodeURIComponent(textParam)),
+                            question: url.searchParams.get('question') 
+                                ? decodeURIComponent(url.searchParams.get('question'))
+                                : '',
+                            timestamp: parseInt(url.searchParams.get('timestamp')) || Date.now()
+                        };
+                        return data;
+                    }
+                    
+                    // Способ 3: Хэш в URL
+                    const hash = url.hash.substring(1);
+                    if (hash) {
+                        try {
+                            const decoded = atob(hash);
+                            return JSON.parse(decoded);
+                        } catch {
+                            return null;
+                        }
+                    }
+                    
+                    return null;
+                } catch (error) {
+                    console.error('Ошибка парсинга URL:', error);
+                    return null;
+                }
+            }
+            
+            // Кэширование данных ответа
+            cacheAnswerData(data) {
+                if (!this.config.cacheEnabled) return;
+                
+                try {
+                    const cacheKey = `answer_cache_${this.userSession}`;
+                    const cacheData = {
+                        data: data,
+                        timestamp: Date.now(),
+                        session: this.userSession
+                    };
+                    
+                    // Сохраняем в sessionStorage для текущей сессии
+                    sessionStorage.setItem(cacheKey, JSON.stringify(cacheData));
+                    
+                    // Сохраняем в localStorage для быстрого доступа
+                    const simplifiedData = {
+                        text: data.text.substring(0, 1000), // Сохраняем только начало
+                        formulas: data.formulas,
+                        timestamp: data.timestamp
+                    };
+                    localStorage.setItem('last_answer', JSON.stringify(simplifiedData));
+                } catch (error) {
+                    console.warn('Не удалось закэшировать данные:', error);
+                }
+            }
+            
+            // Получение данных из кэша
+            getCachedAnswerData() {
+                try {
+                    const cacheKey = `answer_cache_${this.userSession}`;
+                    const cached = sessionStorage.getItem(cacheKey);
+                    
+                    if (cached) {
+                        const cacheData = JSON.parse(cached);
+                        const age = Date.now() - cacheData.timestamp;
+                        
+                        if (age < this.config.cacheDuration) {
+                            return cacheData.data;
+                        }
+                    }
+                } catch {
+                    // Игнорируем ошибки кэша
+                }
+                return null;
+            }
+            
+            // Получение данных из localStorage
+            getLocalStorageData() {
+                try {
+                    const saved = localStorage.getItem('last_answer');
+                    return saved ? JSON.parse(saved) : null;
+                } catch {
+                    return null;
+                }
+            }
+            
+            // Анализ предметов
+            analyzeSubjects(text) {
+                const subjects = new Set();
+                
+                for (const [subject, pattern] of Object.entries(this.config.scienceDetectors)) {
+                    if (pattern.test(text)) {
+                        subjects.add(subject);
+                    }
+                }
+                
+                // Если предметы не определены, определяем по контексту
+                if (subjects.size === 0) {
+                    if (text.includes('+') || text.includes('-') || text.includes('×') || text.includes('÷')) {
+                        subjects.add('math');
+                    }
+                }
+                
+                return Array.from(subjects);
+            }
+            
+            // Извлечение формул из текста
+            extractFormulas(text) {
+                const formulas = [];
+                const patterns = [
+                    /\$\$(.*?)\$\$/g,
+                    /\\\[(.*?)\\\]/g,
+                    /\\\((.*?)\\\)/g
+                ];
+                
+                for (const pattern of patterns) {
+                    let match;
+                    while ((match = pattern.exec(text)) !== null) {
+                        formulas.push(match[1].trim());
+                    }
+                }
+                
+                return formulas.slice(0, this.config.maxFormulas);
+            }
+            
+            // Разбиение текста на шаги
+            extractSteps(text) {
+                const steps = [];
+                
+                // Ищем нумерованные шаги
+                const stepPatterns = [
+                    /(\d+)\.\s+(.*?)(?=\n\d+\.|\n\n|$)/gs,
+                    /[•\-*]\s+(.*?)(?=\n[•\-*]|\n\n|$)/gs,
+                    /Шаг\s+\d+[.:]\s+(.*?)(?=\nШаг\s+\d|$)/gis
+                ];
+                
+                for (const pattern of stepPatterns) {
+                    const matches = text.match(pattern);
+                    if (matches && matches.length > 1) {
+                        matches.forEach(match => steps.push(match));
+                        break;
+                    }
+                }
+                
+                // Если шаги не найдены, разбиваем по абзацам
+                if (steps.length === 0) {
+                    const paragraphs = text.split('\n\n').filter(p => p.trim().length > 30);
+                    steps.push(...paragraphs.slice(0, this.config.maxSteps));
+                }
+                
+                return steps;
+            }
+            
+            // Рендеринг ответа
+            async renderAnswer(data) {
+                // 1. Устанавливаем базовую информацию
+                this.setBasicInfo(data);
+                
+                // 2. Определяем предметы
+                const subjects = this.analyzeSubjects(data.text);
+                this.renderSubjectBadges(subjects);
+                
+                // 3. Рендерим контент вкладок (асинхронно для производительности)
+                await Promise.all([
+                    this.renderExplanation(data.text),
+                    this.renderFormulas(data.formulas),
+                    this.renderLaws(subjects),
+                    this.renderSteps(data.text)
+                ]);
+                
+                // 4. Обновляем статистику
+                this.updateStatistics(data, subjects);
+                
+                // 5. Показываем вкладки
+                this.showTabs();
+            }
+            
+            // Установка базовой информации
+            setBasicInfo(data) {
+                // Устанавливаем заголовок
+                const title = document.getElementById('page-title');
+                const subjects = this.analyzeSubjects(data.text);
+                
+                if (subjects.includes('math')) {
+                    title.textContent = '📐 Математика • Развёрнутый ответ';
+                } else if (subjects.includes('physics')) {
+                    title.textContent = '⚛️ Физика • Развёрнутый ответ';
+                } else if (subjects.includes('chemistry')) {
+                    title.textContent = '🧪 Химия • Развёрнутый ответ';
+                }
+                
+                // Показываем вопрос если есть
+                if (data.question) {
+                    const questionPreview = document.getElementById('question-preview');
+                    questionPreview.textContent = `❓ ${data.question.substring(0, 150)}${data.question.length > 150 ? '...' : ''}`;
+                    questionPreview.style.display = 'block';
+                }
+                
+                // Устанавливаем ID пользователя
+                document.getElementById('user-id').textContent = this.userSession.split('_')[1];
+            }
+            
+            // Рендеринг бейджей предметов
+            renderSubjectBadges(subjects) {
+                const container = document.getElementById('subject-badges');
+                container.innerHTML = '';
+                
+                const icons = {
+                    math: '📐',
+                    physics: '⚛️',
+                    chemistry: '🧪'
+                };
+                
+                const names = {
+                    math: 'Математика',
+                    physics: 'Физика',
+                    chemistry: 'Химия'
+                };
+                
+                subjects.forEach(subject => {
+                    const badge = document.createElement('div');
+                    badge.className = `subject-badge subject-${subject}`;
+                    badge.innerHTML = `${icons[subject] || '📚'} ${names[subject] || subject}`;
+                    container.appendChild(badge);
+                });
+                
+                if (subjects.length === 0) {
+                    const badge = document.createElement('div');
+                    badge.className = 'subject-badge subject-math';
+                    badge.innerHTML = '📚 Общий ответ';
+                    container.appendChild(badge);
+                }
+            }
+            
+            // Рендеринг объяснения
+            async renderExplanation(text) {
+                const container = document.getElementById('answer-content');
+                
+                // Очищаем контейнер
+                container.innerHTML = '';
+                
+                // Разбиваем текст на абзацы для лучшей производительности
+                const paragraphs = text.split('\n\n').filter(p => p.trim());
+                
+                // Рендерим постепенно (чтобы не блокировать UI)
+                for (let i = 0; i < paragraphs.length; i++) {
+                    const paragraph = paragraphs[i];
+                    const p = document.createElement('p');
+                    p.style.marginBottom = '15px';
+                    p.textContent = paragraph;
+                    container.appendChild(p);
+                    
+                    // Делаем небольшую паузу между рендерингом абзацев
+                    if (i % 3 === 0) {
+                        await this.delay(0); // yield to main thread
+                    }
+                }
+            }
+            
+            // Рендеринг формул
+            async renderFormulas(formulas) {
+                const container = document.getElementById('formulas-container');
+                container.innerHTML = '';
+                
+                if (!formulas || formulas.length === 0) {
+                    container.innerHTML = `
+                        <div style="text-align: center; padding: 40px; color: #64748b; grid-column: 1 / -1;">
+                            <i class="fas fa-calculator" style="font-size: 48px; opacity: 0.5;"></i>
+                            <p style="margin-top: 15px;">Формулы не найдены</p>
+                        </div>
+                    `;
+                    return;
+                }
+                
+                // Рендерим формулы с отложенной загрузкой
+                for (let i = 0; i < formulas.length; i++) {
+                    const formulaCard = document.createElement('div');
+                    formulaCard.className = 'formula-card';
+                    
+                    const header = document.createElement('div');
+                    header.style.cssText = 'font-weight: 600; color: #475569; margin-bottom: 10px;';
+                    header.textContent = `Формула ${i + 1}`;
+                    
+                    const katexDiv = document.createElement('div');
+                    
+                    try {
+                        katex.render(formulas[i], katexDiv, {
+                            throwOnError: false,
+                            displayMode: true,
+                            trust: true
+                        });
+                    } catch (error) {
+                        katexDiv.innerHTML = `<div style="color: #ef4444; font-family: monospace;">${formulas[i]}</div>`;
+                    }
+                    
+                    formulaCard.appendChild(header);
+                    formulaCard.appendChild(katexDiv);
+                    container.appendChild(formulaCard);
+                    
+                    // Делаем паузу между рендерингом сложных формул
+                    if (formulas[i].length > 100) {
+                        await this.delay(10);
+                    }
+                }
+            }
+            
+            // Рендеринг законов
+            async renderLaws(subjects) {
+                const container = document.getElementById('laws-container');
+                container.innerHTML = '';
+                
+                let hasLaws = false;
+                
+                for (const subject of subjects) {
+                    const subjectLaws = this.config.laws[subject];
+                    if (subjectLaws) {
+                        hasLaws = true;
+                        
+                        const subjectHeader = document.createElement('h3');
+                        subjectHeader.style.cssText = 'margin: 20px 0 15px 0; color: #1e293b; font-size: 18px;';
+                        subjectHeader.textContent = subject === 'math' ? '📐 Математические теоремы' :
+                                                  subject === 'physics' ? '⚛️ Физические законы' :
+                                                  subject === 'chemistry' ? '🧪 Химические законы' : 'Законы';
+                        
+                        container.appendChild(subjectHeader);
+                        
+                        for (const [lawName, lawFormula] of Object.entries(subjectLaws)) {
+                            const lawCard = document.createElement('div');
+                            lawCard.className = 'formula-card';
+                            lawCard.style.marginBottom = '15px';
+                            
+                            const nameDiv = document.createElement('div');
+                            nameDiv.style.cssText = 'font-weight: 600; color: #7c3aed; margin-bottom: 10px;';
+                            nameDiv.textContent = lawName;
+                            
+                            const katexDiv = document.createElement('div');
+                            try {
+                                katex.render(lawFormula, katexDiv, {
+                                    throwOnError: false,
+                                    displayMode: true
+                                });
+                            } catch {
+                                katexDiv.textContent = lawFormula;
+                            }
+                            
+                            lawCard.appendChild(nameDiv);
+                            lawCard.appendChild(katexDiv);
+                            container.appendChild(lawCard);
+                        }
+                    }
+                }
+                
+                if (!hasLaws) {
+                    container.innerHTML = `
+                        <div style="text-align: center; padding: 40px; color: #64748b;">
+                            <i class="fas fa-book" style="font-size: 48px; opacity: 0.5;"></i>
+                            <p style="margin-top: 15px;">Для этой темы нет предустановленных законов</p>
+                        </div>
+                    `;
+                }
+            }
+            
+            // Рендеринг шагов решения
+            async renderSteps(text) {
+                const container = document.getElementById('steps-container');
+                container.innerHTML = '';
+                
+                const steps = this.extractSteps(text);
+                
+                if (steps.length === 0) {
+                    container.innerHTML = `
+                        <div style="text-align: center; padding: 40px; color: #64748b;">
+                            <i class="fas fa-list" style="font-size: 48px; opacity: 0.5;"></i>
+                            <p style="margin-top: 15px;">Решение не разбито на шаги</p>
+                        </div>
+                    `;
+                    return;
+                }
+                
+                steps.forEach((step, index) => {
+                    const stepDiv = document.createElement('div');
+                    stepDiv.className = 'formula-card';
+                    stepDiv.style.display = 'flex';
+                    stepDiv.style.alignItems = 'flex-start';
+                    stepDiv.style.gap = '15px';
+                    stepDiv.style.marginBottom = '15px';
+                    
+                    const numberDiv = document.createElement('div');
+                    numberDiv.style.cssText = `
+                        background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+                        color: white;
+                        width: 32px;
+                        height: 32px;
+                        border-radius: 50%;
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                        font-weight: 700;
+                        flex-shrink: 0;
+                    `;
+                    numberDiv.textContent = index + 1;
+                    
+                    const contentDiv = document.createElement('div');
+                    contentDiv.style.flex = '1';
+                    contentDiv.textContent = step.replace(/^\d+\.\s*/, '').replace(/^[•\-*]\s*/, '');
+                    
+                    stepDiv.appendChild(numberDiv);
+                    stepDiv.appendChild(contentDiv);
+                    container.appendChild(stepDiv);
+                });
+            }
+            
+            // Обновление статистики
+            updateStatistics(data, subjects) {
+                document.getElementById('formula-count').textContent = data.formulas?.length || 0;
+                document.getElementById('step-count').textContent = this.extractSteps(data.text).length;
+                document.getElementById('law-count').textContent = subjects.reduce((count, subject) => {
+                    return count + (this.config.laws[subject] ? Object.keys(this.config.laws[subject]).length : 0);
+                }, 0);
+                document.getElementById('char-count').textContent = data.text.length.toLocaleString();
+            }
+            
+            // Настройка обработчиков событий
+            setupEventListeners() {
+                // Вкладки
+                document.querySelectorAll('.tab').forEach(tab => {
+                    tab.addEventListener('click', (e) => {
+                        const tabId = e.currentTarget.getAttribute('data-tab');
+                        this.switchTab(tabId);
+                    });
+                });
+                
+                // Кнопка копирования ссылки
+                document.getElementById('copy-link').addEventListener('click', () => {
+                    this.copyToClipboard(window.location.href);
+                    this.showToast('Ссылка скопирована!');
+                });
+                
+                // Кнопка печати
+                document.getElementById('print-btn').addEventListener('click', () => {
+                    window.print();
+                });
+                
+                // Кнопка повтора
+                document.getElementById('retry-btn').addEventListener('click', () => {
+                    location.reload();
+                });
+            }
+            
+            // Переключение вкладок
+            switchTab(tabId) {
+                // Обновляем активную вкладку
+                document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+                document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+                
+                document.querySelector(`.tab[data-tab="${tabId}"]`).classList.add('active');
+                document.getElementById(`${tabId}-tab`).classList.add('active');
+            }
+            
+            // Показать основной контент
+            showMainContent() {
+                document.getElementById('loading').style.display = 'none';
+                document.querySelector('.content-area').style.display = 'grid';
+            }
+            
+            // Показать вкладки
+            showTabs() {
+                document.getElementById('tabs').style.display = 'flex';
+            }
+            
+            // Показать ошибку
+            showError(message) {
+                document.getElementById('loading').style.display = 'none';
+                document.getElementById('error-message').textContent = message;
+                document.getElementById('error-container').style.display = 'block';
+            }
+            
+            // Показать уведомление
+            showToast(message) {
+                const toast = document.createElement('div');
+                toast.style.cssText = `
+                    position: fixed;
+                    bottom: 20px;
+                    right: 20px;
+                    background: linear-gradient(135deg, #10b981, #059669);
+                    color: white;
+                    padding: 15px 25px;
+                    border-radius: 8px;
+                    box-shadow: 0 5px 20px rgba(0,0,0,0.2);
+                    z-index: 10000;
+                    animation: slideIn 0.3s ease;
+                `;
+                toast.textContent = message;
+                
+                document.body.appendChild(toast);
+                
+                setTimeout(() => {
+                    toast.style.animation = 'slideOut 0.3s ease';
+                    setTimeout(() => toast.remove(), 300);
+                }, 3000);
+                
+                // Добавляем стили для анимации
+                if (!document.getElementById('toast-styles')) {
+                    const style = document.createElement('style');
+                    style.id = 'toast-styles';
+                    style.textContent = `
+                        @keyframes slideIn {
+                            from { transform: translateX(100%); opacity: 0; }
+                            to { transform: translateX(0); opacity: 1; }
+                        }
+                        @keyframes slideOut {
+                            from { transform: translateX(0); opacity: 1; }
+                            to { transform: translateX(100%); opacity: 0; }
+                        }
+                    `;
+                    document.head.appendChild(style);
+                }
+            }
+            
+            // Копирование в буфер обмена
+            copyToClipboard(text) {
+                navigator.clipboard.writeText(text).catch(() => {
+                    // Fallback для старых браузеров
+                    const textarea = document.createElement('textarea');
+                    textarea.value = text;
+                    document.body.appendChild(textarea);
+                    textarea.select();
+                    document.execCommand('copy');
+                    document.body.removeChild(textarea);
+                });
+            }
+            
+            // Задержка (для асинхронных операций)
+            delay(ms) {
+                return new Promise(resolve => setTimeout(resolve, ms));
+            }
+            
+            // Логирование производительности
+            logPerformance() {
+                const perfTime = performance.now() - this.performanceStart;
+                console.log(`✅ Ответ загружен за ${perfTime.toFixed(0)}ms для пользователя ${this.userSession}`);
+                
+                // Можно отправлять метрики на сервер
+                if (navigator.sendBeacon) {
+                    const metrics = {
+                        session: this.userSession,
+                        loadTime: perfTime,
+                        url: window.location.href,
+                        timestamp: Date.now()
+                    };
+                    
+                    navigator.sendBeacon('https://your-analytics.com/metrics', JSON.stringify(metrics));
+                }
+            }
+        }
+        
+        // ============= ЗАПУСК ПРИ ЗАГРУЗКЕ СТРАНИЦЫ =============
+        document.addEventListener('DOMContentLoaded', () => {
+            // Проверяем поддержку браузером необходимых функций
+            if (!window.btoa || !window.atob) {
+                document.getElementById('error-message').textContent = 
+                    'Ваш браузер устарел. Пожалуйста, обновите его до последней версии.';
+                document.getElementById('loading').style.display = 'none';
+                document.getElementById('error-container').style.display = 'block';
+                return;
+            }
+            
+            // Запускаем движок
+            window.answerEngine = new AnswerEngine();
+        });
+        
+        // ============= ГЛОБАЛЬНЫЕ ФУНКЦИИ ДЛЯ БОТА =============
+        // Эти функции можно вызывать извне для управления страницей
+        window.AnswerAPI = {
+            // Перезагрузить ответ с новыми данными
+            reloadWithData: function(data) {
+                if (window.answerEngine) {
+                    window.answerEngine.currentAnswer = data;
+                    window.answerEngine.renderAnswer(data);
+                }
+            },
+            
+            // Получить текущие данные ответа
+            getCurrentData: function() {
+                return window.answerEngine ? window.answerEngine.currentAnswer : null;
+            },
+            
+            // Сгенерировать ссылку для бота
+            generateBotLink: function(data) {
+                try {
+                    const jsonStr = JSON.stringify(data);
+                    const base64 = btoa(jsonStr);
+                    return `${window.location.origin}${window.location.pathname}?data=${encodeURIComponent(base64)}`;
+                } catch {
+                    return null;
+                }
+            },
+            
+            // Проверить загрузку страницы
+            isReady: function() {
+                return !!window.answerEngine;
+            }
+        };
+        
+        // ============= SERVICE WORKER ДЛЯ ОФФЛАЙН-РЕЖИМА =============
+        // Регистрируем Service Worker для кэширования
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/sw.js').catch(() => {
+                    // Игнорируем ошибки - это не критично
+                });
+            });
+        }
+    </script>
+</body>
+</html>
