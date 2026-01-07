@@ -1,0 +1,650 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>🐍 Змейка Premium</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body, html {
+            height: 100vh;
+            overflow: hidden;
+            background: radial-gradient(circle at top, #111 0%, #000 45%, #000 100%);
+            font-family: 'Segoe UI', Arial, sans-serif;
+            touch-action: none;
+            -webkit-tap-highlight-color: transparent;
+        }
+        
+        #canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle at center, #050505 0%, #000 60%, #000 100%);
+        }
+        
+        .menu {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            background: radial-gradient(circle at top, rgba(0,255,128,0.08) 0%, rgba(0,0,0,0.98) 40%, #000 100%);
+            z-index: 1000;
+            opacity: 1;
+            transition: opacity 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            backdrop-filter: blur(8px);
+        }
+        
+        .menu.hidden {
+            opacity: 0;
+            pointer-events: none;
+        }
+        
+        .logo {
+            font-size: clamp(4rem, 15vw, 8rem);
+            background: linear-gradient(45deg, #0ff, #0f0, #f0f, #0ff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 3rem;
+            text-shadow: 
+                0 0 1rem rgba(0,255,255,0.9),
+                0 0 2.5rem rgba(0,255,128,0.8),
+                0 1.2rem 2.5rem rgba(0,0,0,0.9);
+            animation: glow 2.5s cubic-bezier(0.25, 0.46, 0.45, 0.94) infinite alternate;
+        }
+        
+        @keyframes glow {
+            0% { text-shadow: 0 0 1.5rem #0ff, 0 0 3rem rgba(0,255,0,0.7); }
+            100% { text-shadow: 0 0 2.5rem #0f0, 0 0 4rem rgba(0,255,255,0.9); }
+        }
+        
+        .play-btn {
+            padding: clamp(1.5rem, 4vw, 2.5rem) clamp(3rem, 8vw, 6rem);
+            font-size: clamp(1.5rem, 5vw, 2.5rem);
+            font-weight: 700;
+            background: linear-gradient(145deg, #4dff4d, #36ffff);
+            color: #000;
+            border: none;
+            border-radius: 5rem;
+            cursor: pointer;
+            box-shadow: 
+                0 1rem 2.2rem rgba(0,255,128,0.55),
+                0 0.4rem 0.6rem rgba(0,0,0,0.9),
+                inset 0 0 0.4rem rgba(255,255,255,0.45);
+            transition: all 0.35s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+        }
+        
+        .play-btn:hover {
+            transform: translateY(-0.2rem) scale(1.08);
+            box-shadow: 
+                0 1.8rem 3.5rem rgba(0,255,150,0.75),
+                0 0.8rem 1.2rem rgba(0,0,0,0.95),
+                inset 0 0 0.6rem rgba(255,255,255,0.65);
+        }
+        
+        .play-btn:active {
+            transform: translateY(0.05rem) scale(0.97);
+            box-shadow: 
+                0 0.5rem 1.5rem rgba(0,255,120,0.55),
+                inset 0 0 0.2rem rgba(0,0,0,0.85);
+        }
+        
+        .game-ui {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: none;
+            flex-direction: column;
+            justify-content: space-between;
+            align-items: center;
+            padding: 3vh 5vw;
+            z-index: 500;
+            box-sizing: border-box;
+            opacity: 0;
+            transform: scale(0.95);
+            transition: all 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        }
+        
+        .game-ui.active {
+            display: flex;
+            opacity: 1;
+            transform: scale(1);
+        }
+        
+        .header {
+            text-align: center;
+            width: 100%;
+            flex-shrink: 0;
+            filter: drop-shadow(0 0.6rem 1.4rem rgba(0,0,0,0.9));
+        }
+        
+        .title {
+            font-size: clamp(1.5rem, 6vw, 2.5rem);
+            background: linear-gradient(45deg, #0f0, #0ff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 1vh;
+            text-shadow: 
+                0 0 0.6rem rgba(0,255,120,0.9),
+                0 0 1.4rem rgba(0,255,255,0.9);
+        }
+        
+        #score {
+            font-size: clamp(1rem, 4vw, 1.5rem);
+            color: #0ff;
+            font-weight: 700;
+            text-shadow: 0 0.2rem 0.4rem rgba(0,0,0,0.9);
+        }
+        
+        .game-field {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            max-width: clamp(280px, 90vmin, 400px);
+            perspective: 1000px;
+        }
+        
+        #gameCanvas {
+            width: clamp(280px, 90vmin, 400px);
+            height: clamp(280px, 90vmin, 400px);
+            background: radial-gradient(circle at 20% 20%, #1d1d1d 0%, #070707 55%, #020202 100%);
+            border: 0.6rem solid #0f0;
+            border-radius: 0;
+            box-shadow: 
+                0 1.2rem 2.4rem rgba(0,0,0,0.95),
+                0 0 2.4rem rgba(0,255,80,0.65),
+                inset 0 0 2.5rem rgba(0,0,0,0.9),
+                inset 0 0 0.4rem rgba(255,255,255,0.18);
+            transform: rotateX(8deg);
+            touch-action: none;
+        }
+        
+        .controls {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            grid-template-rows: repeat(3, 1fr);
+            gap: 0.4rem;
+            width: clamp(200px, 65vmin, 280px);
+            height: clamp(200px, 65vmin, 280px);
+            max-width: 80vw;
+            flex-shrink: 0;
+            filter: drop-shadow(0 0.8rem 1.8rem rgba(0,0,0,0.95));
+        }
+        
+        .control-btn {
+            aspect-ratio: 1;
+            border: none;
+            border-radius: 1.5rem;
+            font-size: clamp(1.5rem, 5vw, 2.5rem);
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+            box-shadow: 
+                0 0.5rem 1rem rgba(0,0,0,0.9),
+                0 0.1rem 0.25rem rgba(255,255,255,0.25) inset;
+            color: #111;
+        }
+        
+        .control-btn.left {
+            background: linear-gradient(145deg, #ff416c, #ff4b2b);
+            grid-column: 1;
+            grid-row: 2;
+        }
+        .control-btn.up {
+            background: linear-gradient(145deg, #f7971e, #ffd200);
+            grid-column: 2;
+            grid-row: 1;
+        }
+        .control-btn.right {
+            background: linear-gradient(145deg, #56ab2f, #a8e6cf);
+            grid-column: 3;
+            grid-row: 2;
+        }
+        .control-btn.down {
+            background: linear-gradient(145deg, #11998e, #38ef7d);
+            grid-column: 2;
+            grid-row: 3;
+        }
+        
+        .control-btn:hover, .control-btn.active {
+            transform: translateY(-0.12rem) scale(1.12);
+            box-shadow: 
+                0 1.2rem 2.5rem rgba(0,0,0,1),
+                0 0.15rem 0.45rem rgba(255,255,255,0.4) inset;
+        }
+        
+        .control-btn:active {
+            transform: translateY(0.1rem) scale(0.92);
+            box-shadow: 
+                0 0.4rem 0.9rem rgba(0,0,0,0.95) inset;
+            transition: all 0.12s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+        
+        .game-over {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(0.8);
+            background: radial-gradient(circle at top, rgba(40,0,0,0.96) 0%, rgba(0,0,0,0.98) 55%, rgba(0,0,0,1) 100%);
+            padding: clamp(2.5rem, 10vw, 5rem);
+            border-radius: 3rem;
+            border: 0.4rem solid #f00;
+            text-align: center;
+            display: none;
+            box-shadow: 
+                0 2.2rem 4.5rem rgba(0,0,0,0.98),
+                0 0 3.5rem rgba(255,0,0,0.8),
+                inset 0 0 0.5rem rgba(255,255,255,0.1);
+            min-width: 85vw;
+            max-width: 95vw;
+            z-index: 2000;
+            backdrop-filter: blur(6px);
+            opacity: 0;
+            transition: all 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        }
+        
+        .game-over.show {
+            display: block;
+            opacity: 1;
+            transform: translate(-50%, -50%) scale(1);
+        }
+        
+        .game-over h2 {
+            font-size: clamp(1.8rem, 8vw, 3rem);
+            color: #f55;
+            margin-bottom: 2vh;
+            text-shadow: 
+                0 0 1.2rem rgba(255,0,0,1),
+                0 0 2.4rem rgba(255,80,80,0.9);
+        }
+        
+        #finalScore {
+            font-size: clamp(2.5rem, 10vw, 4rem);
+            color: #0ff;
+            margin: 3vh 0;
+            font-weight: 800;
+            text-shadow: 
+                0 0.4rem 0.9rem rgba(0,0,0,1),
+                0 0 1.5rem rgba(0,255,255,0.9);
+        }
+        
+        .restart-btn {
+            width: 100%;
+            padding: clamp(1.5rem, 5vw, 2.5rem);
+            font-size: clamp(1.2rem, 5vw, 2rem);
+            background: linear-gradient(135deg, #0f0, #0ff);
+            color: #000;
+            border: none;
+            border-radius: 4rem;
+            cursor: pointer;
+            font-weight: 800;
+            box-shadow: 
+                0 1.4rem 3.4rem rgba(0,255,0,0.7),
+                0 0.6rem 1.1rem rgba(0,0,0,0.95),
+                inset 0 0 0.5rem rgba(255,255,255,0.4);
+            transition: all 0.35s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        }
+        
+        .restart-btn:hover {
+            transform: translateY(-0.15rem) scale(1.05);
+            box-shadow: 
+                0 2.2rem 4.5rem rgba(0,255,0,0.85),
+                0 1rem 1.6rem rgba(0,0,0,1),
+                inset 0 0 0.8rem rgba(255,255,255,0.55);
+        }
+        
+        .restart-btn:active {
+            transform: translateY(0.05rem) scale(0.97);
+            box-shadow: 
+                0 0.6rem 2rem rgba(0,255,0,0.65),
+                inset 0 0 0.25rem rgba(0,0,0,0.95);
+        }
+    </style>
+</head>
+<body>
+    <canvas id="canvas"></canvas>
+    
+    <!-- Меню -->
+    <div class="menu" id="menu">
+        <div class="logo">🐍 ЗМЕЙКА</div>
+        <button class="play-btn" id="playBtn">▶️ ИГРАТЬ</button>
+    </div>
+    
+    <!-- Игровой интерфейс -->
+    <div class="game-ui" id="gameUI">
+        <div class="header">
+            <div class="title">🐍 ЗМЕЙКА</div>
+            <div id="score">Длина: 1</div>
+        </div>
+        
+        <div class="game-field">
+            <canvas id="gameCanvas" width="300" height="300"></canvas>
+        </div>
+        
+        <div class="controls">
+            <div></div>
+            <button class="control-btn up" data-dir="Up">🔼</button>
+            <div></div>
+            
+            <button class="control-btn left" data-dir="Left">◀️</button>
+            <div></div>
+            <button class="control-btn right" data-dir="Right">▶️</button>
+            
+            <div></div>
+            <button class="control-btn down" data-dir="Down">🔽</button>
+            <div></div>
+        </div>
+    </div>
+    
+    <!-- Game Over -->
+    <div class="game-over" id="gameOver">
+        <h2>💥 GAME OVER</h2>
+        <div id="finalScore">0</div>
+        <button class="restart-btn" id="restartBtn">🔄 НОВАЯ ИГРА</button>
+    </div>
+
+    <script>
+        const canvas = document.getElementById('canvas');
+        const ctx = canvas.getContext('2d');
+        const gameCanvas = document.getElementById('gameCanvas');
+        const gameCtx = gameCanvas.getContext('2d');
+        const menu = document.getElementById('menu');
+        const gameUI = document.getElementById('gameUI');
+        const playBtn = document.getElementById('playBtn');
+        const restartBtn = document.getElementById('restartBtn');
+        const gameOverEl = document.getElementById('gameOver');
+        const scoreEl = document.getElementById('score');
+        const finalScoreEl = document.getElementById('finalScore');
+        
+        // Фоновые змейки - ПЛАВНЫЙ фон
+        let bgSnakes = [];
+        function initBgSnakes() {
+            bgSnakes = [];
+            for(let i = 0; i < 15; i++) {
+                bgSnakes.push({
+                    x: Math.random() * window.innerWidth,
+                    y: Math.random() * window.innerHeight,
+                    dx: (Math.random() - 0.5) * 0.8,
+                    dy: (Math.random() - 0.5) * 0.8,
+                    size: 3 + Math.random() * 4,
+                    hue: Math.random() * 360,
+                    trail: []
+                });
+            }
+        }
+        
+        function updateBackground() {
+            ctx.fillStyle = 'rgba(0,0,0,0.06)';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            
+            for(let snake of bgSnakes) {
+                // плавный след
+                snake.trail.push({x: snake.x, y: snake.y});
+                if (snake.trail.length > 8) snake.trail.shift();
+                
+                // плавное движение
+                snake.x += snake.dx;
+                snake.y += snake.dy;
+                
+                if(snake.x < -20 || snake.x > canvas.width + 20) snake.dx *= -1;
+                if(snake.y < -20 || snake.y > canvas.height + 20) snake.dy *= -1;
+                
+                // след
+                for(let i = 0; i < snake.trail.length; i++) {
+                    const alpha = i / snake.trail.length * 0.3;
+                    ctx.fillStyle = `hsla(${snake.hue}, 70%, 50%, ${alpha})`;
+                    ctx.shadowColor = `hsla(${snake.hue}, 100%, 60%, ${alpha * 0.8})`;
+                    ctx.shadowBlur = 20;
+                    ctx.beginPath();
+                    ctx.arc(snake.trail[i].x, snake.trail[i].y, snake.size * (i/snake.trail.length + 0.3), 0, Math.PI * 2);
+                    ctx.fill();
+                }
+                
+                // голова
+                ctx.fillStyle = `hsl(${snake.hue}, 70%, 50%)`;
+                ctx.shadowColor = `hsl(${snake.hue}, 100%, 60%)`;
+                ctx.shadowBlur = 25;
+                ctx.beginPath();
+                ctx.arc(snake.x, snake.y, snake.size, 0, Math.PI * 2);
+                ctx.fill();
+            }
+            ctx.shadowBlur = 0;
+            requestAnimationFrame(updateBackground);
+        }
+        
+        // Размеры
+        function resizeCanvas() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+        resizeCanvas();
+        window.addEventListener('resize', resizeCanvas);
+        
+        // ИГРОВАЯ ЛОГИКА - ТОТ ЖЕ КОД
+        let snake_coords = [[14, 14]];
+        let apple_coords = [15, 15];
+        let direction = [1, 0];
+        let direction_key = "Right";
+        let gameRunning = false;
+        let lastUpdate = 0;
+        const UPDATE_INTERVAL = 140; // плавная скорость
+        
+        function coord_check(coord) {
+            return Math.max(0, Math.min(29, coord));
+        }
+        
+        function set_apple() {
+            let attempts = 0;
+            do {
+                apple_coords = [Math.floor(Math.random() * 30), Math.floor(Math.random() * 30)];
+                attempts++;
+            } while (snake_coords.some(pos => pos[0] === apple_coords[0] && pos[1] === apple_coords[1]) && attempts < 100);
+        }
+        
+        function set_direction(new_dir) {
+            const dir_map = {"Up": [0, -1], "Down": [0, 1], "Left": [-1, 0], "Right": [1, 0]};
+            if (dir_map[new_dir]) {
+                const opposite = {"Up":"Down", "Down":"Up", "Left":"Right", "Right":"Left"};
+                if (new_dir !== opposite[direction_key]) {
+                    direction_key = new_dir;
+                    direction = dir_map[new_dir];
+                }
+            }
+        }
+        
+        function drawGame() {
+            gameCtx.fillStyle = '#111';
+            gameCtx.fillRect(0, 0, 300, 300);
+            
+            // Сетка для поля
+            gameCtx.strokeStyle = 'rgba(20,20,20,0.3)';
+            gameCtx.lineWidth = 1;
+            for(let i = 0; i <= 30; i++) {
+                gameCtx.beginPath();
+                gameCtx.moveTo(i*10, 0);
+                gameCtx.lineTo(i*10, 300);
+                gameCtx.stroke();
+                
+                gameCtx.beginPath();
+                gameCtx.moveTo(0, i*10);
+                gameCtx.lineTo(300, i*10);
+                gameCtx.stroke();
+            }
+            
+            // Яблоко
+            if (apple_coords && apple_coords.length === 2) {
+                const x_apple = apple_coords[0] * 10;
+                const y_apple = apple_coords[1] * 10;
+                gameCtx.shadowColor = '#f00';
+                gameCtx.shadowBlur = 12;
+                gameCtx.fillStyle = "#f44";
+                gameCtx.fillRect(x_apple+0.5, y_apple+0.5, 9, 9);
+                gameCtx.shadowBlur = 0;
+            }
+            
+            // Змейка тело
+            if (snake_coords && snake_coords.length > 0) {
+                gameCtx.shadowColor = '#0f0';
+                gameCtx.shadowBlur = 8;
+                gameCtx.fillStyle = "#0f0";
+                for (let i = 1; i < snake_coords.length; i++) {
+                    let pos = snake_coords[i];
+                    if (pos && pos.length === 2) {
+                        const x = pos[0] * 10 + 0.5;
+                        const y = pos[1] * 10 + 0.5;
+                        gameCtx.fillRect(x, y, 9, 9);
+                    }
+                }
+                
+                // Голова змейки
+                const head = snake_coords[0];
+                if (head && head.length === 2) {
+                    const hx = head[0] * 10 + 0.5;
+                    const hy = head[1] * 10 + 0.5;
+                    gameCtx.shadowColor = '#0ff';
+                    gameCtx.shadowBlur = 16;
+                    gameCtx.fillStyle = "#0ff";
+                    gameCtx.fillRect(hx, hy, 9, 9);
+                    gameCtx.shadowBlur = 0;
+                    
+                    // Глаза головы
+                    gameCtx.fillStyle = '#000';
+                    gameCtx.fillRect(hx+2, hy+2, 2, 2);
+                    gameCtx.fillRect(hx+6, hy+2, 2, 2);
+                }
+                gameCtx.shadowBlur = 0;
+            }
+        }
+        
+        function severed_tail(timestamp) {
+            if (!gameRunning) return;
+            
+            if (timestamp - lastUpdate < UPDATE_INTERVAL) return;
+            lastUpdate = timestamp;
+            
+            if (!snake_coords || snake_coords.length === 0) return;
+            const head = snake_coords[0];
+            if (!head || head[0] === undefined || head[1] === undefined) return;
+            
+            const x_snake = head[0] + direction[0];
+            const y_snake = head[1] + direction[1];
+            const new_x = coord_check(x_snake);
+            const new_y = coord_check(y_snake);
+            
+            if (new_x === apple_coords[0] && new_y === apple_coords[1]) {
+                set_apple();
+            } else if (snake_coords.some(pos => pos && pos[0] === new_x && pos[1] === new_y)) {
+                snake_coords = [];
+                gameOver();
+                return;
+            } else {
+                snake_coords.pop();
+            }
+            snake_coords.unshift([new_x, new_y]);
+        }
+        
+        function gameOver() {
+            gameRunning = false;
+            finalScoreEl.textContent = snake_coords.length || 0;
+            scoreEl.textContent = 'Длина: ' + (snake_coords.length || 0);
+            gameOverEl.classList.add('show');
+        }
+        
+        // ПЛАВНЫЙ игровой цикл
+        function gameLoop(timestamp) {
+            severed_tail(timestamp);
+            drawGame();
+            scoreEl.textContent = 'Длина: ' + (snake_coords.length || 0);
+            if (gameRunning) {
+                requestAnimationFrame(gameLoop);
+            }
+        }
+        
+        // Обработчики событий
+        playBtn.addEventListener('click', function() {
+            menu.classList.add('hidden');
+            gameUI.classList.add('active');
+            snake_coords = [[14, 14]];
+            direction = [1, 0];
+            direction_key = "Right";
+            gameRunning = true;
+            set_apple();
+            scoreEl.textContent = 'Длина: 1';
+            lastUpdate = 0;
+            requestAnimationFrame(gameLoop);
+        });
+        
+        restartBtn.addEventListener('click', function() {
+            snake_coords = [[14, 14]];
+            direction = [1, 0];
+            direction_key = "Right";
+            gameRunning = true;
+            scoreEl.textContent = 'Длина: 1';
+            gameOverEl.classList.remove('show');
+            set_apple();
+            lastUpdate = 0;
+            requestAnimationFrame(gameLoop);
+        });
+        
+        // Кнопки управления
+        document.querySelectorAll('.control-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                if (gameRunning) {
+                    const dir = this.dataset.dir;
+                    set_direction(dir);
+                }
+            });
+        });
+        
+        // Touch управление
+        let startX, startY;
+        gameCanvas.addEventListener('touchstart', (e) => {
+            e.preventDefault();
+            startX = e.touches[0].clientX;
+            startY = e.touches[0].clientY;
+        });
+        
+        gameCanvas.addEventListener('touchend', (e) => {
+            e.preventDefault();
+            if (!gameRunning || !startX || !startY) return;
+            const endX = e.changedTouches[0].clientX;
+            const endY = e.changedTouches[0].clientY;
+            const diffX = endX - startX;
+            const diffY = endY - startY;
+            if (Math.abs(diffX) > Math.abs(diffY) && Math.abs(diffX) > 30) {
+                set_direction(diffX > 0 ? 'Right' : 'Left');
+            } else if (Math.abs(diffY) > 30) {
+                set_direction(diffY > 0 ? 'Down' : 'Up');
+            }
+            startX = startY = 0;
+        });
+        
+        document.addEventListener('keydown', (e) => {
+            if (!gameRunning) return;
+            const keyMap = {37: 'Left', 38: 'Up', 39: 'Right', 40: 'Down', 65: 'Left', 87: 'Up', 68: 'Right', 83: 'Down'};
+            if (keyMap[e.keyCode]) set_direction(keyMap[e.keyCode]);
+        });
+        
+        // Старт
+        initBgSnakes();
+        updateBackground();
+    </script>
+</body>
+</html>
