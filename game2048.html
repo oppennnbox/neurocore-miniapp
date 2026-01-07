@@ -1,0 +1,651 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>2048 Neon Pro</title>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+            background: linear-gradient(135deg, #0c0c1e 0%, #1a0033 50%, #2d1b69 100%);
+            color: white;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            touch-action: none;
+        }
+        .container { text-align: center; max-width: 450px; width: 100%; }
+        h1 {
+            font-size: 32px;
+            background: linear-gradient(45deg, #00ff88, #00ccff, #ff6b6b);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 20px;
+        }
+        .stats {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 20px;
+            font-size: 18px;
+            font-weight: bold;
+        }
+        .score-box {
+            background: rgba(255,255,255,0.1);
+            padding: 12px 20px;
+            border-radius: 12px;
+            min-width: 120px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+        .game-board {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 12px;
+            background: rgba(255,255,255,0.1);
+            padding: 18px;
+            border-radius: 20px;
+            backdrop-filter: blur(20px);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.5);
+            margin-bottom: 20px;
+            aspect-ratio: 1;
+            width: 100%;
+        }
+        .tile {
+            aspect-ratio: 1;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 28px;
+            font-weight: bold;
+            transition: all 0.15s ease;
+            position: relative;
+            font-weight: 800;
+        }
+        .tile-0 { background: rgba(255,255,255,0.05); }
+        .tile-2 { background: #eee4da; color: #776e65; box-shadow: 0 4px 10px rgba(238, 228, 218, 0.3); }
+        .tile-4 { background: #ede0c8; color: #776e65; box-shadow: 0 4px 10px rgba(237, 224, 200, 0.3); }
+        .tile-8 { background: #f2b179; color: #f9f6f2; box-shadow: 0 4px 15px rgba(242, 177, 121, 0.4); }
+        .tile-16 { background: #f59563; color: #f9f6f2; box-shadow: 0 4px 15px rgba(245, 149, 99, 0.4); }
+        .tile-32 { background: #f67c5f; color: #f9f6f2; box-shadow: 0 4px 15px rgba(246, 124, 95, 0.4); }
+        .tile-64 { background: #f65e3b; color: #f9f6f2; box-shadow: 0 4px 15px rgba(246, 94, 59, 0.4); }
+        .tile-128 { background: #edcf72; color: #f9f6f2; font-size: 24px; box-shadow: 0 4px 20px rgba(237, 207, 114, 0.5); }
+        .tile-256 { background: #edcc61; color: #f9f6f2; font-size: 24px; box-shadow: 0 4px 20px rgba(237, 204, 97, 0.5); }
+        .tile-512 { background: #edc850; color: #f9f6f2; font-size: 24px; box-shadow: 0 4px 20px rgba(237, 200, 80, 0.5); }
+        .tile-1024 { background: #edc53f; color: #f9f6f2; font-size: 22px; box-shadow: 0 4px 25px rgba(237, 197, 63, 0.6); }
+        .tile-2048 { background: #edc22e; color: #f9f6f2; font-size: 22px; box-shadow: 0 0 30px #edc22e, 0 4px 25px rgba(237, 194, 46, 0.7); }
+        .tile-4096 { background: #3c3a32; color: #f9f6f2; font-size: 22px; box-shadow: 0 4px 25px rgba(60, 58, 50, 0.7); }
+        
+        .new-tile {
+            animation: appear 0.2s ease;
+        }
+        .merged-tile {
+            animation: pop 0.3s ease;
+        }
+        @keyframes appear {
+            0% { opacity: 0; transform: scale(0.5); }
+            100% { opacity: 1; transform: scale(1); }
+        }
+        @keyframes pop {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.2); }
+            100% { transform: scale(1); }
+        }
+        .controls {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-top: 20px;
+        }
+        .btn {
+            height: 55px;
+            border: none;
+            border-radius: 15px;
+            font-size: 16px;
+            font-weight: bold;
+            background: linear-gradient(45deg, rgba(255,255,255,0.2), rgba(255,255,255,0.1));
+            color: white;
+            backdrop-filter: blur(10px);
+            border: 2px solid rgba(255,255,255,0.3);
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .btn:hover { background: rgba(255,255,255,0.25); }
+        .btn:active { transform: scale(0.95); }
+        .game-over, .win-screen {
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.9);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            opacity: 0;
+            pointer-events: none;
+            transition: all 0.3s;
+            z-index: 100;
+            padding: 20px;
+            text-align: center;
+        }
+        .game-over.show, .win-screen.show { opacity: 1; pointer-events: all; }
+        .win-screen h2 {
+            background: linear-gradient(45deg, #00ff88, #00ccff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            font-size: 48px;
+            margin-bottom: 20px;
+        }
+        .restart-btn {
+            background: linear-gradient(45deg, #00ff88, #00ccff);
+            color: black;
+            font-size: 20px;
+            padding: 18px 45px;
+            border-radius: 25px;
+            border: none;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 20px;
+            box-shadow: 0 15px 35px rgba(0,255,136,0.4);
+            transition: all 0.2s;
+        }
+        .restart-btn:active { transform: scale(0.95); }
+        .instructions {
+            margin-top: 15px;
+            font-size: 14px;
+            opacity: 0.7;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>2048 Neon Pro</h1>
+        <div class="stats">
+            <div class="score-box">
+                <div>Счёт</div>
+                <div id="score">0</div>
+            </div>
+            <div class="score-box">
+                <div>Рекорд</div>
+                <div id="highScore">0</div>
+            </div>
+        </div>
+        
+        <div class="game-board" id="gameBoard"></div>
+        
+        <div class="controls">
+            <button class="btn" id="restartBtn">🔄 Новая игра</button>
+            <button class="btn" id="undoBtn">↩️ Отменить</button>
+        </div>
+        
+        <div class="instructions">
+            Используйте стрелки или свайпы для перемещения плиток
+        </div>
+    </div>
+    
+    <div class="game-over" id="gameOver">
+        <h2>Игра окончена!</h2>
+        <p>Ваш счёт: <span id="finalScoreNum">0</span></p>
+        <button class="restart-btn" id="restartOverlayBtn">🎮 Играть снова</button>
+    </div>
+    
+    <div class="win-screen" id="winScreen">
+        <h2>Победа! 🎉</h2>
+        <p>Вы набрали 2048!</p>
+        <p>Продолжайте играть для нового рекорда</p>
+        <button class="restart-btn" id="continueBtn">▶️ Продолжить</button>
+    </div>
+
+    <script>
+        const tg = window.Telegram.WebApp;
+        tg.ready(); tg.expand();
+        
+        // Игровое состояние
+        let game = {
+            board: Array(4).fill().map(() => Array(4).fill(0)),
+            score: 0,
+            bestScore: parseInt(localStorage.getItem('best2048')) || 0,
+            gameOver: false,
+            won: false,
+            moved: false
+        };
+        
+        // История для отмены хода
+        let history = [];
+        const MAX_HISTORY = 10;
+        
+        const elements = {
+            boardEl: document.getElementById('gameBoard'),
+            score: document.getElementById('score'),
+            highScore: document.getElementById('highScore'),
+            gameOver: document.getElementById('gameOver'),
+            winScreen: document.getElementById('winScreen'),
+            finalScoreNum: document.getElementById('finalScoreNum')
+        };
+        
+        // Цвета для плиток больше 2048
+        const tileColors = {
+            4096: '#3c3a32',
+            8192: '#1c1b18',
+            16384: '#0c0b0a',
+            32768: '#040404'
+        };
+        
+        function initGame() {
+            game.board = Array(4).fill().map(() => Array(4).fill(0));
+            game.score = 0;
+            game.gameOver = false;
+            game.won = false;
+            history = [];
+            
+            addRandomTile();
+            addRandomTile();
+            updateBoard();
+            updateStats();
+            saveGameState();
+        }
+        
+        function saveGameState() {
+            const state = {
+                board: game.board.map(row => [...row]),
+                score: game.score,
+                won: game.won
+            };
+            history.push(state);
+            if (history.length > MAX_HISTORY) {
+                history.shift();
+            }
+        }
+        
+        function undoMove() {
+            if (history.length > 1) {
+                history.pop(); // Убираем текущее состояние
+                const prevState = history[history.length - 1];
+                game.board = prevState.board.map(row => [...row]);
+                game.score = prevState.score;
+                game.won = prevState.won;
+                game.gameOver = false;
+                updateBoard();
+                updateStats();
+            }
+        }
+        
+        function addRandomTile() {
+            const emptyCells = [];
+            for(let row = 0; row < 4; row++) {
+                for(let col = 0; col < 4; col++) {
+                    if(game.board[row][col] === 0) {
+                        emptyCells.push({row, col});
+                    }
+                }
+            }
+            
+            if(emptyCells.length === 0) return false;
+            
+            const randomCell = emptyCells[Math.floor(Math.random() * emptyCells.length)];
+            game.board[randomCell.row][randomCell.col] = Math.random() < 0.9 ? 2 : 4;
+            
+            // Помечаем плитку как новую для анимации
+            const tileIndex = randomCell.row * 4 + randomCell.col;
+            setTimeout(() => {
+                const tile = elements.boardEl.children[tileIndex];
+                if(tile) tile.classList.add('new-tile');
+                setTimeout(() => {
+                    tile.classList.remove('new-tile');
+                }, 200);
+            }, 10);
+            
+            return true;
+        }
+        
+        function slideAndMerge(line) {
+            let newLine = line.filter(cell => cell !== 0);
+            let merged = Array(4).fill(0);
+            let index = 0;
+            let scoreAdded = 0;
+            
+            for(let i = 0; i < newLine.length; i++) {
+                if(i < newLine.length - 1 && newLine[i] === newLine[i + 1]) {
+                    merged[index] = newLine[i] * 2;
+                    scoreAdded += merged[index];
+                    i++; // Пропускаем следующую плитку
+                } else {
+                    merged[index] = newLine[i];
+                }
+                index++;
+            }
+            
+            return { line: merged, scoreAdded };
+        }
+        
+        function moveLeft() {
+            let moved = false;
+            let scoreAdded = 0;
+            
+            for(let row = 0; row < 4; row++) {
+                const originalRow = [...game.board[row]];
+                const result = slideAndMerge(game.board[row]);
+                game.board[row] = result.line;
+                scoreAdded += result.scoreAdded;
+                
+                if(JSON.stringify(originalRow) !== JSON.stringify(game.board[row])) {
+                    moved = true;
+                }
+            }
+            
+            if(scoreAdded > 0) {
+                game.score += scoreAdded;
+            }
+            
+            return moved;
+        }
+        
+        function moveRight() {
+            let moved = false;
+            let scoreAdded = 0;
+            
+            for(let row = 0; row < 4; row++) {
+                const originalRow = [...game.board[row]];
+                const reversed = [...game.board[row]].reverse();
+                const result = slideAndMerge(reversed);
+                game.board[row] = result.line.reverse();
+                scoreAdded += result.scoreAdded;
+                
+                if(JSON.stringify(originalRow) !== JSON.stringify(game.board[row])) {
+                    moved = true;
+                }
+            }
+            
+            if(scoreAdded > 0) {
+                game.score += scoreAdded;
+            }
+            
+            return moved;
+        }
+        
+        function moveUp() {
+            let moved = false;
+            let scoreAdded = 0;
+            
+            for(let col = 0; col < 4; col++) {
+                const column = [
+                    game.board[0][col],
+                    game.board[1][col],
+                    game.board[2][col],
+                    game.board[3][col]
+                ];
+                const originalColumn = [...column];
+                const result = slideAndMerge(column);
+                scoreAdded += result.scoreAdded;
+                
+                for(let row = 0; row < 4; row++) {
+                    if(game.board[row][col] !== result.line[row]) {
+                        moved = true;
+                    }
+                    game.board[row][col] = result.line[row];
+                }
+            }
+            
+            if(scoreAdded > 0) {
+                game.score += scoreAdded;
+            }
+            
+            return moved;
+        }
+        
+        function moveDown() {
+            let moved = false;
+            let scoreAdded = 0;
+            
+            for(let col = 0; col < 4; col++) {
+                const column = [
+                    game.board[3][col],
+                    game.board[2][col],
+                    game.board[1][col],
+                    game.board[0][col]
+                ];
+                const originalColumn = [...column];
+                const result = slideAndMerge(column);
+                scoreAdded += result.scoreAdded;
+                
+                for(let row = 0; row < 4; row++) {
+                    if(game.board[3 - row][col] !== result.line[row]) {
+                        moved = true;
+                    }
+                    game.board[3 - row][col] = result.line[row];
+                }
+            }
+            
+            if(scoreAdded > 0) {
+                game.score += scoreAdded;
+            }
+            
+            return moved;
+        }
+        
+        function move(direction) {
+            if(game.gameOver) return false;
+            
+            saveGameState();
+            
+            let moved = false;
+            switch(direction) {
+                case 'left': moved = moveLeft(); break;
+                case 'right': moved = moveRight(); break;
+                case 'up': moved = moveUp(); break;
+                case 'down': moved = moveDown(); break;
+            }
+            
+            if(moved) {
+                addRandomTile();
+                checkGameState();
+                updateBoard();
+                updateStats();
+                saveGameState();
+                return true;
+            }
+            
+            // Убираем последнее сохранение если не было движения
+            history.pop();
+            return false;
+        }
+        
+        function checkGameState() {
+            // Проверка победы (2048)
+            if(!game.won) {
+                for(let row = 0; row < 4; row++) {
+                    for(let col = 0; col < 4; col++) {
+                        if(game.board[row][col] === 2048) {
+                            game.won = true;
+                            elements.winScreen.classList.add('show');
+                        }
+                    }
+                }
+            }
+            
+            // Проверка проигрыша
+            let hasEmpty = false;
+            let canMerge = false;
+            
+            // Есть пустые клетки?
+            for(let row = 0; row < 4; row++) {
+                for(let col = 0; col < 4; col++) {
+                    if(game.board[row][col] === 0) {
+                        hasEmpty = true;
+                    }
+                }
+            }
+            
+            // Можно слить?
+            if(!hasEmpty) {
+                for(let row = 0; row < 4; row++) {
+                    for(let col = 0; col < 3; col++) {
+                        if(game.board[row][col] === game.board[row][col + 1]) {
+                            canMerge = true;
+                        }
+                    }
+                }
+                for(let col = 0; col < 4; col++) {
+                    for(let row = 0; row < 3; row++) {
+                        if(game.board[row][col] === game.board[row + 1][col]) {
+                            canMerge = true;
+                        }
+                    }
+                }
+            }
+            
+            if(!hasEmpty && !canMerge) {
+                game.gameOver = true;
+                elements.finalScoreNum.textContent = game.score;
+                elements.gameOver.classList.add('show');
+                
+                // Обновляем рекорд
+                if(game.score > game.bestScore) {
+                    game.bestScore = game.score;
+                    localStorage.setItem('best2048', game.bestScore);
+                    updateStats();
+                }
+            }
+        }
+        
+        function updateBoard() {
+            elements.boardEl.innerHTML = '';
+            for(let row = 0; row < 4; row++) {
+                for(let col = 0; col < 4; col++) {
+                    const tile = document.createElement('div');
+                    const value = game.board[row][col];
+                    tile.className = `tile tile-${value}`;
+                    tile.textContent = value || '';
+                    
+                    // Динамические цвета для больших плиток
+                    if(value > 2048) {
+                        const color = tileColors[value] || '#000000';
+                        tile.style.background = color;
+                        tile.style.boxShadow = `0 4px 25px ${color}80`;
+                    }
+                    
+                    elements.boardEl.appendChild(tile);
+                }
+            }
+        }
+        
+        function updateStats() {
+            elements.score.textContent = game.score;
+            elements.highScore.textContent = game.bestScore;
+            
+            if(game.score > game.bestScore) {
+                game.bestScore = game.score;
+                localStorage.setItem('best2048', game.bestScore);
+            }
+        }
+        
+        // Управление клавиатурой
+        document.addEventListener('keydown', e => {
+            e.preventDefault();
+            switch(e.code) {
+                case 'ArrowUp': move('up'); break;
+                case 'ArrowDown': move('down'); break;
+                case 'ArrowLeft': move('left'); break;
+                case 'ArrowRight': move('right'); break;
+                case 'KeyZ': if(e.ctrlKey) undoMove(); break;
+            }
+        });
+        
+        // Сенсорное управление (свайпы)
+        let startX, startY;
+        const minSwipeDistance = 50;
+        
+        document.addEventListener('touchstart', e => {
+            startX = e.touches[0].clientX;
+            startY = e.touches[0].clientY;
+        }, { passive: true });
+        
+        document.addEventListener('touchmove', e => {
+            e.preventDefault();
+        }, { passive: false });
+        
+        document.addEventListener('touchend', e => {
+            if(!startX || !startY) return;
+            
+            const endX = e.changedTouches[0].clientX;
+            const endY = e.changedTouches[0].clientY;
+            const diffX = endX - startX;
+            const diffY = endY - startY;
+            
+            if(Math.abs(diffX) > Math.abs(diffY)) {
+                // Горизонтальный свайп
+                if(Math.abs(diffX) > minSwipeDistance) {
+                    if(diffX > 0) move('right');
+                    else move('left');
+                }
+            } else {
+                // Вертикальный свайп
+                if(Math.abs(diffY) > minSwipeDistance) {
+                    if(diffY > 0) move('down');
+                    else move('up');
+                }
+            }
+            
+            startX = startY = null;
+        });
+        
+        // Кнопки
+        document.getElementById('restartBtn').onclick = () => {
+            elements.gameOver.classList.remove('show');
+            elements.winScreen.classList.remove('show');
+            initGame();
+        };
+        
+        document.getElementById('undoBtn').onclick = () => {
+            undoMove();
+        };
+        
+        document.getElementById('restartOverlayBtn').onclick = () => {
+            elements.gameOver.classList.remove('show');
+            initGame();
+        };
+        
+        document.getElementById('continueBtn').onclick = () => {
+            elements.winScreen.classList.remove('show');
+        };
+        
+        // Telegram WebApp кнопка
+        tg.MainButton.setText(`🎮 2048 | Рекорд: ${game.bestScore}`).show();
+        tg.MainButton.onClick(() => {
+            tg.showAlert(`📊 Статистика игры:\n\nТекущий счёт: ${game.score}\nРекорд: ${game.bestScore}\n\nУправление: стрелки или свайпы`);
+        });
+        
+        // Загрузка сохранённой игры
+        const savedGame = localStorage.getItem('current2048');
+        if(savedGame) {
+            const parsed = JSON.parse(savedGame);
+            if(confirm('Найдена сохранённая игра. Продолжить?')) {
+                game.board = parsed.board;
+                game.score = parsed.score;
+                game.won = parsed.won || false;
+                updateBoard();
+                updateStats();
+                checkGameState();
+            } else {
+                initGame();
+            }
+        } else {
+            initGame();
+        }
+        
+        // Автосохранение
+        setInterval(() => {
+            const gameState = {
+                board: game.board,
+                score: game.score,
+                won: game.won
+            };
+            localStorage.setItem('current2048', JSON.stringify(gameState));
+        }, 10000);
+    </script>
+</body>
+  </html>
