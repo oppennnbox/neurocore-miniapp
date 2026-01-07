@@ -5,811 +5,1346 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>🎓 ПУТЬ ИНЖЕНЕРА: 4 ГОДА БАКАЛАВРИАТА</title>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Exo+2:wght@400;600;800&family=Bebas+Neue&display=swap');
-        
+        /* Все стили остаются без изменений из предыдущей версии */
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
 
         body {
-            font-family: 'Exo 2', sans-serif;
-            background: linear-gradient(135deg, #0c0c1a 0%, #1a1a2e 50%, #16213e 100%);
-            color: #fff;
+            background: linear-gradient(135deg, #1a237e 0%, #283593 50%, #3949ab 100%);
+            color: #e8eaf6;
             min-height: 100vh;
-            overflow-x: hidden;
+            padding: 20px;
             position: relative;
+            overflow-x: hidden;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: 
+                radial-gradient(circle at 20% 30%, rgba(120, 144, 156, 0.1) 2px, transparent 2px),
+                radial-gradient(circle at 80% 70%, rgba(120, 144, 156, 0.1) 1px, transparent 1px),
+                radial-gradient(circle at 40% 90%, rgba(120, 144, 156, 0.1) 3px, transparent 3px);
+            background-size: 50px 50px, 30px 30px, 70px 70px;
+            z-index: -1;
         }
 
         .game-container {
-            max-width: 950px;
+            max-width: 1000px;
             margin: 0 auto;
-            padding: 20px;
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-        }
-
-        .entrance-commission {
-            background: rgba(0,0,0,0.85);
-            border: 2px solid rgba(255,255,255,0.2);
-            border-radius: 20px;
-            padding: 25px;
-            margin-bottom: 25px;
-            text-align: center;
-            box-shadow: 0 15px 30px rgba(0,0,0,0.4);
-        }
-
-        .entrance-title {
-            font-family: 'Bebas Neue', sans-serif;
-            font-size: 2.5rem;
-            font-weight: 900;
-            background: linear-gradient(45deg, #ff6b35, #4ecdc4, #a55eea);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            margin-bottom: 10px;
-            letter-spacing: 3px;
-        }
-
-        .entrance-subtitle {
-            font-family: 'Orbitron', monospace;
-            font-size: 1rem;
-            color: #ccc;
-            letter-spacing: 1px;
-        }
-
-        .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
-            gap: 15px;
-            margin-bottom: 20px;
-        }
-
-        .stat-card {
-            background: rgba(255,255,255,0.08);
-            border: 1px solid rgba(255,255,255,0.15);
-            border-radius: 12px;
-            padding: 15px 10px;
-            text-align: center;
-            transition: all 0.3s ease;
-        }
-
-        .stat-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 10px 25px rgba(0,0,0,0.3);
-        }
-
-        .stat-icon { font-size: 1.8rem; display: block; margin-bottom: 5px; }
-        .stat-value {
-            font-family: 'Orbitron', monospace;
-            font-size: 1.3rem;
-            font-weight: 700;
-            color: #fff;
-        }
-        .stat-label { font-size: 0.8rem; opacity: 0.8; margin-top: 3px; }
-
-        .inventory-section {
-            background: rgba(0,0,0,0.7);
-            border: 1px solid rgba(255,255,255,0.1);
-            border-radius: 12px;
-            padding: 15px;
-            margin-bottom: 20px;
-            display: flex;
-            align-items: center;
-            gap: 15px;
-        }
-
-        .inventory-icon { font-size: 1.5rem; }
-        .inventory-list {
-            flex: 1;
-            display: flex;
-            flex-wrap: wrap;
-            gap: 8px;
-        }
-        .inventory-item {
-            background: rgba(0,212,255,0.3);
-            border: 1px solid rgba(0,212,255,0.6);
-            padding: 6px 12px;
-            border-radius: 15px;
-            font-size: 0.8rem;
-            font-weight: 600;
-            color: #00d4ff;
-        }
-
-        .scene-container {
-            background: rgba(0,0,0,0.9);
-            border: 2px solid rgba(255,255,255,0.1);
+            background: rgba(13, 19, 33, 0.85);
+            backdrop-filter: blur(10px);
             border-radius: 20px;
             padding: 30px;
-            margin-bottom: 25px;
-            min-height: 220px;
-        }
-
-        .scene-title {
-            font-family: 'Bebas Neue', sans-serif;
-            font-size: 1.8rem;
-            text-align: center;
-            margin-bottom: 20px;
-            color: #fff;
-            letter-spacing: 2px;
-        }
-
-        .scene-text {
-            line-height: 1.7;
-            font-size: 1rem;
-            white-space: pre-wrap;
-            color: #f0f0f0;
-        }
-
-        /* НОВЫЕ СТИЛИ ДЛЯ ВИКТОРИН */
-        .quiz-container {
-            background: linear-gradient(145deg, rgba(0,0,0,0.95), rgba(20,20,60,0.9));
-            border: 3px solid #00d4ff;
-            border-radius: 20px;
-            padding: 25px;
-            margin: 15px 0;
-            box-shadow: 0 0 30px rgba(0,212,255,0.4);
-        }
-        .quiz-question {
-            font-size: 1.3rem;
-            font-weight: 700;
-            margin-bottom: 25px;
-            min-height: 100px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            text-align: center;
-            padding: 20px;
-            background: rgba(255,255,255,0.05);
-            border-radius: 15px;
-            border: 2px solid rgba(0,212,255,0.3);
-        }
-        .quiz-options {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 15px;
-            margin-bottom: 20px;
-        }
-        .quiz-btn {
-            padding: 18px 15px;
-            border-radius: 15px;
-            border: 3px solid rgba(255,255,255,0.3);
-            background: rgba(255,255,255,0.1);
-            color: #fff;
-            font-family: 'Orbitron', monospace;
-            font-size: 1rem;
-            font-weight: 700;
-            cursor: pointer;
-            transition: all 0.4s ease;
-            position: relative;
-            overflow: hidden;
-        }
-        .quiz-btn:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 10px 25px rgba(0,0,0,0.5);
-            border-color: rgba(255,255,255,0.6);
-        }
-        .quiz-btn.correct {
-            background: linear-gradient(145deg, #2ed573, #20bf6b) !important;
-            border-color: #2ed573 !important;
-            animation: correctAnim 0.6s ease;
-        }
-        .quiz-btn.wrong {
-            background: linear-gradient(145deg, #ff4757, #ff3742) !important;
-            border-color: #ff4757 !important;
-            animation: wrongAnim 0.6s ease;
-        }
-        @keyframes correctAnim {
-            0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.05); }
-        }
-        @keyframes wrongAnim {
-            0%, 100% { transform: scale(1); }
-            25% { transform: scale(1.05); }
-            75% { transform: scale(0.95); }
-        }
-        .course-progress {
-            background: rgba(0,0,0,0.7);
-            border-radius: 10px;
-            padding: 10px;
-            margin: 15px 0;
-            text-align: center;
-        }
-
-        .university-grid {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 15px;
-            margin-bottom: 25px;
-        }
-
-        @media (max-width: 768px) {
-            .university-grid { grid-template-columns: repeat(2, 1fr); }
-            .quiz-options { grid-template-columns: 1fr; }
-            .game-container { padding: 15px; }
-        }
-
-        @media (max-width: 480px) {
-            .university-grid { grid-template-columns: 1fr; }
-        }
-
-        .uni-btn {
-            background: rgba(255,255,255,0.1);
-            border: 3px solid;
-            border-radius: 15px;
-            padding: 18px 15px;
-            font-family: 'Orbitron', monospace;
-            font-size: 0.95rem;
-            font-weight: 700;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            text-align: center;
-            min-height: 85px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            color: #fff;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.5);
+            border: 1px solid rgba(255, 255, 255, 0.1);
             position: relative;
             overflow: hidden;
         }
 
-        .uni-btn::before {
+        .game-container::before {
             content: '';
             position: absolute;
             top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
-            transition: left 0.5s;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #ff4081, #7c4dff, #00bcd4);
         }
 
-        .uni-btn:hover::before { left: 100%; }
-        .uni-btn:hover { transform: translateY(-5px); box-shadow: 0 15px 30px rgba(0,0,0,0.4); }
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid rgba(124, 77, 255, 0.3);
+        }
 
-        .uni-kipu { border-color: #00d4ff; background: linear-gradient(145deg, rgba(0,212,255,0.2), rgba(0,150,200,0.1)); color: #00d4ff; box-shadow: 0 0 20px rgba(0,212,255,0.3); }
-        .uni-mirea { border-color: #4ecdc4; background: linear-gradient(145deg, rgba(78,205,196,0.2), rgba(46,213,115,0.1)); color: #4ecdc4; box-shadow: 0 0 20px rgba(78,205,196,0.3); }
-        .uni-bauman { border-color: #ff6b35; background: linear-gradient(145deg, rgba(255,107,53,0.2), rgba(249,202,36,0.1)); color: #ff6b35; box-shadow: 0 0 20px rgba(255,107,53,0.3); }
-        .uni-ranepa { border-color: #ff4757; background: linear-gradient(145deg, rgba(255,71,87,0.2), rgba(255,56,56,0.1)); color: #ff4757; box-shadow: 0 0 20px rgba(255,71,87,0.3); }
-        .uni-kfu { border-color: #a55eea; background: linear-gradient(145deg, rgba(165,94,234,0.2), rgba(253,121,168,0.1)); color: #a55eea; box-shadow: 0 0 20px rgba(165,94,234,0.3); }
-        .uni-mgu { border-color: #f9ca24; background: linear-gradient(145deg, rgba(249,202,36,0.2), rgba(255,165,2,0.1)); color: #f9ca24; box-shadow: 0 0 20px rgba(249,202,36,0.3); }
+        h1 {
+            font-size: 2.8rem;
+            background: linear-gradient(45deg, #ff4081, #7c4dff);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            margin-bottom: 10px;
+            text-shadow: 0 2px 10px rgba(124, 77, 255, 0.3);
+        }
 
-        .menu-bar {
+        .subtitle {
+            font-size: 1.2rem;
+            color: #b3b8d6;
+            font-weight: 300;
+        }
+
+        .stats-bar {
+            display: flex;
+            justify-content: space-between;
+            background: rgba(26, 35, 126, 0.6);
+            padding: 15px 25px;
+            border-radius: 12px;
+            margin-bottom: 30px;
+            border: 1px solid rgba(124, 77, 255, 0.2);
+        }
+
+        .stat {
+            text-align: center;
+        }
+
+        .stat-label {
+            font-size: 0.9rem;
+            color: #b3b8d6;
+            margin-bottom: 5px;
+        }
+
+        .stat-value {
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: #00bcd4;
+        }
+
+        .specialization-selector {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 40px;
+        }
+
+        .spec-btn {
+            background: rgba(38, 50, 56, 0.7);
+            border: 2px solid #3949ab;
+            padding: 20px;
+            border-radius: 12px;
+            color: #e8eaf6;
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .spec-btn:hover {
+            background: rgba(57, 73, 171, 0.5);
+            transform: translateY(-3px);
+            box-shadow: 0 5px 20px rgba(57, 73, 171, 0.3);
+        }
+
+        .spec-btn.active {
+            background: linear-gradient(135deg, #3949ab, #7c4dff);
+            border-color: #00bcd4;
+            box-shadow: 0 0 25px rgba(124, 77, 255, 0.4);
+        }
+
+        .spec-btn .icon {
+            display: block;
+            font-size: 2rem;
+            margin-bottom: 10px;
+        }
+
+        .question-container {
+            background: rgba(26, 35, 126, 0.4);
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 30px;
+            border: 1px solid rgba(0, 188, 212, 0.2);
+        }
+
+        .question-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid rgba(0, 188, 212, 0.2);
+        }
+
+        .question-number {
+            font-size: 1rem;
+            color: #00bcd4;
+            background: rgba(0, 188, 212, 0.1);
+            padding: 5px 15px;
+            border-radius: 20px;
+        }
+
+        .question-category {
+            font-size: 1rem;
+            color: #ff4081;
+            background: rgba(255, 64, 129, 0.1);
+            padding: 5px 15px;
+            border-radius: 20px;
+        }
+
+        .question-text {
+            font-size: 1.4rem;
+            line-height: 1.6;
+            margin-bottom: 30px;
+            color: #ffffff;
+        }
+
+        .answers-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 15px;
+        }
+
+        .answer-btn {
+            background: rgba(38, 50, 56, 0.8);
+            border: 2px solid #455a64;
+            padding: 18px;
+            border-radius: 10px;
+            color: #e8eaf6;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-align: left;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .answer-btn:hover {
+            background: rgba(69, 90, 100, 0.8);
+            transform: translateX(5px);
+        }
+
+        .answer-btn.correct {
+            background: rgba(76, 175, 80, 0.2);
+            border-color: #4caf50;
+            color: #a5d6a7;
+        }
+
+        .answer-btn.incorrect {
+            background: rgba(244, 67, 54, 0.2);
+            border-color: #f44336;
+            color: #ef9a9a;
+        }
+
+        .answer-btn::before {
+            content: '•';
+            margin-right: 10px;
+            color: #7c4dff;
+        }
+
+        .controls {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 30px;
+        }
+
+        .control-btn {
+            background: linear-gradient(135deg, #7c4dff, #3949ab);
+            border: none;
+            padding: 15px 35px;
+            border-radius: 10px;
+            color: white;
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .control-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 7px 20px rgba(124, 77, 255, 0.4);
+        }
+
+        .control-btn:disabled {
+            background: #455a64;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        .results-screen {
+            text-align: center;
+            padding: 40px;
+            display: none;
+        }
+
+        .results-title {
+            font-size: 2.5rem;
+            color: #00bcd4;
+            margin-bottom: 20px;
+        }
+
+        .final-score {
+            font-size: 5rem;
+            font-weight: bold;
+            background: linear-gradient(45deg, #ff4081, #7c4dff);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            margin: 20px 0;
+        }
+
+        .results-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin: 40px 0;
+        }
+
+        .result-stat {
+            background: rgba(26, 35, 126, 0.4);
+            padding: 20px;
+            border-radius: 10px;
+        }
+
+        .result-stat-value {
+            font-size: 2.2rem;
+            color: #00bcd4;
+            margin-bottom: 5px;
+        }
+
+        .semester-progress {
+            margin-top: 40px;
+        }
+
+        .semester-title {
+            font-size: 1.3rem;
+            color: #b3b8d6;
+            margin-bottom: 15px;
+        }
+
+        .progress-bar {
+            height: 12px;
+            background: rgba(38, 50, 56, 0.8);
+            border-radius: 6px;
+            overflow: hidden;
+            margin-bottom: 10px;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #00bcd4, #7c4dff);
+            border-radius: 6px;
+            transition: width 0.5s ease;
+        }
+
+        .progress-text {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.9rem;
+            color: #b3b8d6;
+        }
+
+        .achievements {
             display: flex;
             gap: 15px;
             justify-content: center;
+            margin-top: 30px;
             flex-wrap: wrap;
-            padding: 20px;
-            background: rgba(0,0,0,0.5);
-            border-radius: 15px;
-            border: 1px solid rgba(255,255,255,0.1);
         }
 
-        .menu-btn {
-            background: rgba(255,255,255,0.15);
-            border: 1px solid rgba(255,255,255,0.2);
-            color: #fff;
-            padding: 12px 20px;
-            border-radius: 20px;
-            font-size: 0.9rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s ease;
+        .achievement {
+            background: rgba(255, 193, 7, 0.1);
+            border: 1px solid #ffb300;
+            padding: 15px;
+            border-radius: 10px;
+            width: 120px;
         }
 
-        .menu-btn:hover { background: rgba(255,255,255,0.25); transform: translateY(-2px); }
+        .achievement-icon {
+            font-size: 2rem;
+            color: #ffb300;
+            margin-bottom: 10px;
+        }
 
-        .win-modal, .gameover-modal {
+        @media (max-width: 768px) {
+            .game-container {
+                padding: 20px;
+            }
+
+            h1 {
+                font-size: 2rem;
+            }
+
+            .stats-bar {
+                flex-direction: column;
+                gap: 15px;
+            }
+
+            .answers-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .controls {
+                flex-direction: column;
+                gap: 15px;
+            }
+
+            .control-btn {
+                justify-content: center;
+            }
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+
+        @keyframes slideIn {
+            from { transform: translateY(20px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        .pulse {
+            animation: pulse 0.5s ease;
+        }
+
+        .slide-in {
+            animation: slideIn 0.3s ease;
+        }
+
+        .floating-elements {
             position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            background: rgba(0,0,0,0.95);
-            border: 3px solid;
-            border-radius: 25px;
-            padding: 40px;
-            text-align: center;
-            max-width: 90vw;
-            box-shadow: 0 25px 60px rgba(0,0,0,0.6);
-            z-index: 1000;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: -1;
         }
 
-        .win-modal { border-color: #2ed573; }
-        .gameover-modal { border-color: #ff4757; }
-
-        .modal-title {
-            font-family: 'Bebas Neue', sans-serif;
-            font-size: 2.5rem;
-            margin-bottom: 20px;
-            letter-spacing: 3px;
+        .floating-element {
+            position: absolute;
+            background: rgba(124, 77, 255, 0.1);
+            border-radius: 50%;
         }
 
-        .restart-btn {
-            background: linear-gradient(145deg, #2ed573, #20bf6b);
-            border: none;
-            color: white;
-            padding: 15px 30px;
-            border-radius: 20px;
-            font-size: 1.1rem;
-            font-weight: 700;
-            font-family: 'Orbitron', monospace;
-            cursor: pointer;
-            margin-top: 20px;
-            transition: all 0.3s ease;
+        .floating-element:nth-child(1) {
+            width: 100px;
+            height: 100px;
+            top: 10%;
+            left: 5%;
+            animation: float 20s infinite linear;
         }
 
-        .restart-btn:hover { transform: translateY(-3px); box-shadow: 0 10px 25px rgba(46,213,115,0.4); }
+        .floating-element:nth-child(2) {
+            width: 150px;
+            height: 150px;
+            top: 60%;
+            right: 10%;
+            animation: float 25s infinite linear reverse;
+        }
 
-        .hidden { display: none !important; }
+        .floating-element:nth-child(3) {
+            width: 80px;
+            height: 80px;
+            bottom: 20%;
+            left: 20%;
+            animation: float 15s infinite linear;
+        }
+
+        @keyframes float {
+            0% { transform: translateY(0) rotate(0deg); }
+            100% { transform: translateY(-100px) rotate(360deg); }
+        }
     </style>
 </head>
 <body>
+    <div class="floating-elements">
+        <div class="floating-element"></div>
+        <div class="floating-element"></div>
+        <div class="floating-element"></div>
+    </div>
+
     <div class="game-container">
-        <div class="entrance-commission">
-            <div class="entrance-title">ПУТЬ ИНЖЕНЕРА</div>
-            <div class="entrance-subtitle">2025 • 4 ГОДА БАКАЛАВРИАТА • ЭКЗАМЕНЫ НА КАЖДОМ КУРСЕ</div>
+        <div class="header">
+            <h1>🎓 ПУТЬ ИНЖЕНЕРА: 4 ГОДА БАКАЛАВРИАТА</h1>
+            <div class="subtitle">Пройди все 8 семестров, отвечая на вопросы по инженерным дисциплинам</div>
         </div>
 
-        <div class="stats-grid">
-            <div class="stat-card">
-                <span class="stat-icon">🎓</span>
-                <div class="stat-value" id="uniName">—</div>
-                <div class="stat-label">ВУЗ / Направление</div>
+        <div class="stats-bar">
+            <div class="stat">
+                <div class="stat-label">СЕМЕСТР</div>
+                <div class="stat-value" id="semester">1</div>
             </div>
-            <div class="stat-card">
-                <span class="stat-icon">📚</span>
-                <div class="stat-value" id="knowledge">0</div>
-                <div class="stat-label">Знания</div>
+            <div class="stat">
+                <div class="stat-label">БАЛЛЫ</div>
+                <div class="stat-value" id="score">0</div>
             </div>
-            <div class="stat-card">
-                <span class="stat-icon">⭐</span>
-                <div class="stat-value" id="prestige">0</div>
-                <div class="stat-label">Престиж</div>
+            <div class="stat">
+                <div class="stat-label">ВОПРОС</div>
+                <div class="stat-value" id="question-counter">1/10</div>
             </div>
-            <div class="stat-card">
-                <span class="stat-icon">🎯</span>
-                <div class="stat-value" id="experience">0</div>
-                <div class="stat-label">Опыт</div>
-            </div>
-            <div class="stat-card">
-                <span class="stat-icon">📖</span>
-                <div class="stat-value" id="course">1</div>
-                <div class="stat-label">Курс</div>
-            </div>
-            <div class="stat-card">
-                <span class="stat-icon">💰</span>
-                <div class="stat-value" id="money">1,000₽</div>
-                <div class="stat-label">Деньги</div>
+            <div class="stat">
+                <div class="stat-label">СЛОЖНОСТЬ</div>
+                <div class="stat-value" id="difficulty">Ⅰ</div>
             </div>
         </div>
 
-        <div class="inventory-section">
-            <span class="inventory-icon">📦</span>
-            <div class="inventory-list" id="inventory">Инвентарь пуст</div>
+        <div class="specialization-selector" id="specialization-selector">
+            <button class="spec-btn" data-spec="машиностроение">
+                <span class="icon">⚙️</span>
+                Машиностроение
+            </button>
+            <button class="spec-btn" data-spec="информатика">
+                <span class="icon">💻</span>
+                Информатика
+            </button>
+            <button class="spec-btn" data-spec="педагогика">
+                <span class="icon">📚</span>
+                Педагогика
+            </button>
+            <button class="spec-btn" data-spec="программирование">
+                <span class="icon">🔧</span>
+                Программирование
+            </button>
+            <button class="spec-btn" data-spec="робототехника">
+                <span class="icon">🤖</span>
+                Робототехника
+            </button>
         </div>
 
-        <div class="scene-container">
-            <div class="scene-title" id="sceneTitle">🏛 НАЧАЛО ПУТИ</div>
-            <div class="scene-text" id="sceneText">Выберите ВУЗ → Факультет → Направление → Пройдите 4 курса экзаменов!</div>
+        <div class="question-container" id="question-container">
+            <div class="question-header">
+                <div class="question-number" id="question-number">Семестр 1 • Вопрос 1/10</div>
+                <div class="question-category" id="question-category">Машиностроение</div>
+            </div>
+            <div class="question-text" id="question-text">
+                Выберите специализацию для начала обучения
+            </div>
+            <div class="answers-grid" id="answers-container">
+                <!-- Ответы будут генерироваться здесь -->
+            </div>
         </div>
 
-        <div class="university-grid" id="controls"></div>
+        <div class="controls">
+            <button class="control-btn" id="prev-btn" disabled>
+                ◀ Назад
+            </button>
+            <button class="control-btn" id="start-btn">
+                🚀 Начать обучение
+            </button>
+            <button class="control-btn" id="next-btn" disabled>
+                Далее ▶
+            </button>
+        </div>
 
-        <div class="menu-bar">
-            <button class="menu-btn" onclick="showStats()">📊 СТАТИСТИКА</button>
-            <button class="menu-btn" onclick="showInventory()">📦 ИНВЕНТАРЬ</button>
-            <button class="menu-btn" onclick="resetGame()">🔄 НОВАЯ ИГРА</button>
+        <div class="results-screen" id="results-screen">
+            <h2 class="results-title">🎉 Семестр завершен!</h2>
+            <div class="final-score" id="final-score">0%</div>
+            
+            <div class="results-stats">
+                <div class="result-stat">
+                    <div class="result-stat-value" id="correct-answers">0</div>
+                    <div>Правильных ответов</div>
+                </div>
+                <div class="result-stat">
+                    <div class="result-stat-value" id="total-questions">10</div>
+                    <div>Всего вопросов</div>
+                </div>
+                <div class="result-stat">
+                    <div class="result-stat-value" id="success-rate">0%</div>
+                    <div>Успеваемость</div>
+                </div>
+            </div>
+
+            <div class="semester-progress">
+                <div class="semester-title">Прогресс обучения</div>
+                <div class="progress-bar">
+                    <div class="progress-fill" id="overall-progress" style="width: 12.5%"></div>
+                </div>
+                <div class="progress-text">
+                    <span>1 семестр</span>
+                    <span>4 курс</span>
+                </div>
+            </div>
+
+            <div class="achievements">
+                <div class="achievement">
+                    <div class="achievement-icon">📘</div>
+                    <div>1 курс</div>
+                </div>
+                <div class="achievement">
+                    <div class="achievement-icon">📗</div>
+                    <div>2 курс</div>
+                </div>
+                <div class="achievement">
+                    <div class="achievement-icon">📙</div>
+                    <div>3 курс</div>
+                </div>
+                <div class="achievement">
+                    <div class="achievement-icon">📕</div>
+                    <div>4 курс</div>
+                </div>
+            </div>
+
+            <button class="control-btn" id="next-semester-btn" style="margin-top: 40px;">
+                🎯 Следующий семестр
+            </button>
         </div>
     </div>
 
-    <div id="winModal" class="win-modal hidden">
-        <div class="modal-title">🎉 ДИПЛОМ ПОЛУЧЕН!</div>
-        <div id="winText"></div>
-        <button class="restart-btn" onclick="sendResultAndRestart()">📤 Отправить в лидерборд →</button>
-    </div>
-
-    <div id="gameoverModal" class="gameover-modal hidden">
-        <div class="modal-title">💔 ОТЧИСЛЕН!</div>
-        <div id="gameoverText"></div>
-        <button class="restart-btn" onclick="resetGame()">🔄 Попробовать снова</button>
-    </div>
-
-    <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <script>
-        // TELEGRAM WEB APP
-        if (window.Telegram && Telegram.WebApp) {
-            Telegram.WebApp.ready();
-            Telegram.WebApp.expand();
-            const user = Telegram.WebApp.initDataUnsafe.user;
-            window.userData = {
-                id: user.id,
-                name: user.first_name + (user.last_name ? ' ' + user.last_name : '')
-            };
-            Telegram.WebApp.MainButton.setText("🏠 В меню бота").onClick(() => Telegram.WebApp.close()).show();
-        }
-
-        let gameState = {
-            currentLocation: 0,
-            university: 0,
-            faculty: '',
-            direction: '',
-            inventory: [],
-            stats: { knowledge: 0, prestige: 0, experience: 0, course: 1, money: 1000 },
-            gameOver: false,
-            gameWon: false,
-            currentQuiz: null,
-            usedQuestions: {}
-        };
-
-        // 400+ РЕАЛЬНЫХ ВОПРОСОВ ПО НАПРАВЛЕНИЯМ
+        // ПОЛНАЯ БАЗА ВОПРОСОВ - ВСЕ 70+ ВОПРОСОВ ДЛЯ КАЖДОЙ СПЕЦИАЛИЗАЦИИ
         const QUIZZES = {
             'машиностроение': {
                 questions: [
-                    {q: "Что такое ЧПУ?", a: ["Численное Программное Управление", "Центральный Процессорный Узел", "Частотное Подключение Универсальное"], c: 0},
-                    {q: "Основной материал для деталей машин?", a: ["Сталь", "Пластик", "Дерево"], c: 0},
-                    {q: "Что изучает сопромат?", a: ["Сопротивление материалов", "Состав материалов", "Скорость материалов"], c: 0},
-                    {q: "Токарный станок обрабатывает?", a: ["Вращение", "Фрезерование", "Шлифование"], c: 0},
-                    {q: "Где применяется червячная передача?", a: ["Вертикальные нагрузки", "Горизонтальные нагрузки", "Косые нагрузки"], c: 0},
-                    // +95 вопросов...
+                    {q: "Что такое ЧПУ?", a: ["Численное Программное Управление", "Центральный Процессорный Узел", "Частотное Подключение Универсальное", "Чертежно-Проектный Узел"], c: 0},
+                    {q: "Основной материал для деталей машин?", a: ["Сталь", "Пластик", "Дерево", "Стекло"], c: 0},
+                    {q: "Что изучает сопромат?", a: ["Сопротивление материалов", "Состав материалов", "Скорость материалов", "Стоимость материалов"], c: 0},
+                    {q: "Токарный станок обрабатывает?", a: ["Вращение", "Фрезерование", "Шлифование", "Сверление"], c: 0},
+                    {q: "Где применяется червячная передача?", a: ["Вертикальные нагрузки", "Горизонтальные нагрузки", "Косые нагрузки", "Ударные нагрузки"], c: 0},
+                    {q: "Что такое CAD?", a: ["Автоматизированное проектирование", "Система анализа данных", "Цифровой аудит", "Компьютерная анимация"], c: 0},
+                    {q: "Температура плавления стали?", a: ["~1500°C", "~1000°C", "~2000°C", "~800°C"], c: 0},
+                    {q: "Что измеряет штангенциркуль?", a: ["Длину и диаметр", "Температуру", "Давление", "Влажность"], c: 0},
+                    {q: "Основной принцип термодинамики?", a: ["Сохранение энергии", "Сохранение массы", "Сохранение импульса", "Сохранение заряда"], c: 0},
+                    {q: "Что такое подшипник качения?", a: ["Узел с шариками/роликами", "Узел скольжения", "Упругий элемент", "Демпфирующий элемент"], c: 0},
+                    {q: "Для чего нужен редуктор?", a: ["Изменение скорости вращения", "Изменение направления", "Изменение температуры", "Изменение давления"], c: 0},
+                    {q: "Что такое CAM?", a: ["Автоматизированное производство", "Компьютерная анимация", "Цифровое моделирование", "Сетевое администрирование"], c: 0},
+                    {q: "Единица измерения силы?", a: ["Ньютон", "Паскаль", "Джоуль", "Ватт"], c: 0},
+                    {q: "Что такое фрезерование?", a: ["Обработка резанием", "Литье", "Сварка", "Ковка"], c: 0},
+                    {q: "Основной закон гидравлики?", a: ["Закон Паскаля", "Закон Архимеда", "Закон Бернулли", "Закон Гука"], c: 0},
+                    {q: "Что такое усталость металла?", a: ["Разрушение при переменных нагрузках", "Коррозия", "Плавление", "Деформация"], c: 0},
+                    {q: "Скорость резания измеряется в?", a: ["м/мин", "об/мин", "Н/мм²", "кВт/ч"], c: 0},
+                    {q: "Что такое шатун?", a: ["Деталь кривошипного механизма", "Вал", "Шестерня", "Рычаг"], c: 0},
+                    {q: "Тип соединения 'болт-гайка'?", a: ["Разъемное", "Неразъемное", "Сварное", "Клеваное"], c: 0},
+                    {q: "Что такое технологический процесс?", a: ["Последовательность операций", "Чертеж", "Станок", "Инструмент"], c: 0},
+                    {q: "Что такое твердость по Бринеллю?", a: ["Метод измерения твердости", "Вид стали", "Тип покрытия", "Способ термообработки"], c: 0},
+                    {q: "Для чего служит маховик?", a: ["Накопление кинетической энергии", "Охлаждение двигателя", "Снижение шума", "Повышение давления"], c: 0},
+                    {q: "Что такое прецизионная обработка?", a: ["Высокоточное изготовление", "Крупносерийное производство", "Ручная обработка", "Черновая обработка"], c: 0},
+                    {q: "Основной элемент ременной передачи?", a: ["Ремень", "Вал", "Подшипник", "Муфта"], c: 0},
+                    {q: "Что изучает трибология?", a: ["Трение и износ", "Движение жидкостей", "Прочность материалов", "Теплопередачу"], c: 0},
+                    {q: "Тип резьбы для крепежных деталей?", a: ["Метрическая", "Трапецеидальная", "Упорная", "Прямоугольная"], c: 0},
+                    {q: "Что такое нормализация стали?", a: ["Вид термообработки", "Контроль качества", "Измерение твердости", "Нанесение покрытия"], c: 0},
+                    {q: "Назначение предохранительного клапана?", a: ["Защита от превышения давления", "Регулировка расхода", "Изменение направления потока", "Очистка жидкости"], c: 0},
+                    {q: "Что такое модуль упругости?", a: ["Характеристика материала", "Размер детали", "Мощность привода", "Скорость деформации"], c: 0},
+                    {q: "Тип подшипника для высоких скоростей?", a: ["Шариковый", "Игольчатый", "Упорный", "Радиально-упорный"], c: 0},
+                    {q: "Что такое технологическая оснастка?", a: ["Приспособления для обработки", "Чертежи деталей", "Измерительные инструменты", "Смазочные материалы"], c: 0},
+                    {q: "Назначение дифференциала в автомобиле?", a: ["Распределение крутящего момента", "Увеличение скорости", "Снижение расхода топлива", "Улучшение сцепления"], c: 0},
+                    {q: "Что такое ультразвуковая обработка?", a: ["Обработка с использованием УЗ колебаний", "Обработка при высоких температурах", "Химическая обработка", "Электроэрозионная обработка"], c: 0},
+                    {q: "Материал для быстрорежущих инструментов?", a: ["Быстрорежущая сталь", "Углеродистая сталь", "Алюминий", "Медь"], c: 0},
+                    {q: "Что такое совокупный допуск?", a: ["Суммарное отклонение размеров", "Допуск на одну деталь", "Точность станка", "Погрешность измерения"], c: 0},
+                    {q: "Тип зажимного устройства?", a: ["Патрон", "Сухарь", "Втулка", "Вал"], c: 0},
+                    {q: "Что такое стружколом?", a: ["Элемент резца", "Тип станка", "Вид охлаждения", "Способ измерения"], c: 0},
+                    {q: "Назначение балансировки роторов?", a: ["Устранение дисбаланса", "Повышение жесткости", "Увеличение массы", "Изменение формы"], c: 0},
+                    {q: "Что такое ударная вязкость?", a: ["Свойство материала", "Тип обработки", "Вид соединения", "Способ контроля"], c: 0},
+                    {q: "Тип передачи для больших расстояний?", a: ["Ременная", "Зубчатая", "Цепная", "Винтовая"], c: 0},
+                    {q: "Что такое пресс-форма?", a: ["Форма для литья", "Измерительный инструмент", "Режущий инструмент", "Сборочное приспособление"], c: 0},
+                    {q: "Назначение сальникового уплотнения?", a: ["Герметизация вращающихся валов", "Крепление деталей", "Передача движения", "Балансировка"], c: 0},
+                    {q: "Что такое цикл Карно?", a: ["Идеальный термодинамический цикл", "Технологический процесс", "Метод контроля", "Способ смазки"], c: 0},
+                    {q: "Материал для подшипников скольжения?", a: ["Баббит", "Сталь", "Алюминий", "Медь"], c: 0},
+                    {q: "Что такое шпоночное соединение?", a: ["Соединение для передачи крутящего момента", "Разъемное соединение", "Сварное соединение", "Клеваное соединение"], c: 0},
+                    {q: "Тип резца для наружного точения?", a: ["Проходной", "Расточной", "Резьбовой", "Фасонный"], c: 0},
+                    {q: "Что такое коническая передача?", a: ["Передача между пересекающимися валами", "Передача между параллельными валами", "Передача между скрещивающимися валами", "Прямолинейная передача"], c: 0},
+                    {q: "Назначение гидроаккумулятора?", a: ["Накопление гидравлической энергии", "Очистка жидкости", "Нагрев жидкости", "Охлаждение жидкости"], c: 0},
+                    {q: "Что такое полирование?", a: ["Вид отделочной обработки", "Вид черновой обработки", "Вид термической обработки", "Вид сборочной операции"], c: 0},
+                    {q: "Тип стали для пружин?", a: ["Пружинная сталь", "Инструментальная сталь", "Конструкционная сталь", "Нержавеющая сталь"], c: 0},
+                    {q: "Что такое предельная мера?", a: ["Калибр для контроля размеров", "Измерительная линейка", "Микрометр", "Штангенциркуль"], c: 0},
+                    {q: "Назначение компенсатора?", a: ["Компенсация температурных расширений", "Увеличение давления", "Повышение скорости", "Снижение шума"], c: 0},
+                    {q: "Что такое винтовая линия?", a: ["Траектория точки на винте", "Прямая линия", "Окружность", "Эллипс"], c: 0},
+                    {q: "Тип фрезы для обработки пазов?", a: ["Дисковая", "Торцевая", "Цилиндрическая", "Угловая"], c: 0},
+                    {q: "Что такое карбонитрация?", a: ["Химико-термическая обработка", "Механическая обработка", "Термическая обработка", "Электрохимическая обработка"], c: 0},
+                    {q: "Материал для уплотнительных прокладок?", a: ["Паронит", "Сталь", "Алюминий", "Медь"], c: 0},
+                    {q: "Что такое кинематическая пара?", a: ["Соединение двух звеньев", "Тип двигателя", "Вид передачи", "Способ измерения"], c: 0},
+                    {q: "Назначение центрифуги?", a: ["Разделение веществ по плотности", "Измельчение материалов", "Нагрев материалов", "Охлаждение материалов"], c: 0},
+                    {q: "Что такое шаг резьбы?", a: ["Расстояние между витками", "Диаметр резьбы", "Глубина резьбы", "Угол профиля"], c: 0},
+                    {q: "Тип соединения для тонколистовых материалов?", a: ["Заклепочное", "Болтовое", "Шпилечное", "Шпоночное"], c: 0},
+                    {q: "Что такое отпуск стали?", a: ["Вид термической обработки", "Вид химической обработки", "Вид механической обработки", "Вид отделочной обработки"], c: 0},
+                    {q: "Материал для электродов при сварке?", a: ["Плавящийся электрод", "Медь", "Алюминий", "Латунь"], c: 0},
+                    {q: "Что такое коэффициент трения?", a: ["Отношение силы трения к силе нормального давления", "Сила трения", "Сила нормального давления", "Площадь контакта"], c: 0},
+                    {q: "Назначение ресивера в пневмосистеме?", a: ["Накопление сжатого воздуха", "Очистка воздуха", "Нагрев воздуха", "Охлаждение воздуха"], c: 0},
+                    {q: "Что такое пластическая деформация?", a: ["Необратимая деформация", "Упругая деформация", "Временная деформация", "Циклическая деформация"], c: 0},
+                    {q: "Тип подшипника для осевых нагрузок?", a: ["Упорный", "Радиальный", "Радиально-упорный", "Игольчатый"], c: 0},
+                    {q: "Что такое нормальный модуль зубчатого колеса?", a: ["Основной параметр зубчатой передачи", "Диаметр колеса", "Ширина зуба", "Высота зуба"], c: 0},
+                    {q: "Материал для форм литья под давлением?", a: ["Легированная сталь", "Углеродистая сталь", "Алюминий", "Медь"], c: 0},
+                    {q: "Что такое пайка?", a: ["Соединение с помощью припоя", "Сварное соединение", "Клеваное соединение", "Болтовое соединение"], c: 0},
+                    {q: "Назначение демпфера?", a: ["Подавление колебаний", "Усиление колебаний", "Измерение колебаний", "Создание колебаний"], c: 0},
+                    {q: "Что такое шероховатость поверхности?", a: ["Микронеровности поверхности", "Макронеровности поверхности", "Твердость поверхности", "Цвет поверхности"], c: 0},
+                    {q: "Тип резца для нарезания резьбы?", a: ["Резьбовой", "Проходной", "Расточной", "Фасонный"], c: 0},
+                    {q: "Что такое изотермический процесс?", a: ["Процесс при постоянной температуре", "Процесс при постоянном давлении", "Процесс при постоянном объеме", "Адиабатный процесс"], c: 0},
+                    {q: "Материал для износостойких покрытий?", a: ["Карбид вольфрама", "Алюминий", "Медь", "Латунь"], c: 0},
+                    {q: "Что такое гидродинамический подшипник?", a: ["Подшипник скольжения с жидкостной смазкой", "Подшипник качения", "Магнитный подшипник", "Пневматический подшипник"], c: 0},
+                    {q: "Назначение муфты?", a: ["Соединение валов", "Крепление деталей", "Передача движения", "Изменение скорости"], c: 0},
+                    {q: "Что такое ультразвуковая дефектоскопия?", a: ["Контроль качества с помощью УЗ", "Контроль размеров", "Контроль твердости", "Контроль шероховатости"], c: 0},
+                    {q: "Тип стали для режущих инструментов?", a: ["Инструментальная сталь", "Конструкционная сталь", "Пружинная сталь", "Нержавеющая сталь"], c: 0},
+                    {q: "Что такое цикл Отто?", a: ["Термодинамический цикл ДВС", "Цикл паровой турбины", "Цикл холодильной машины", "Цикл газовой турбины"], c: 0},
+                    {q: "Материал для высокотемпературных деталей?", a: ["Жаростойкая сталь", "Алюминий", "Медь", "Латунь"], c: 0},
+                    {q: "Что такое шлицевое соединение?", a: ["Соединение с помощью шлицев", "Болтовое соединение", "Сварное соединение", "Клеваное соединение"], c: 0},
+                    {q: "Назначение фильтра в гидросистеме?", a: ["Очистка рабочей жидкости", "Нагрев жидкости", "Охлаждение жидкости", "Повышение давления"], c: 0},
+                    {q: "Что такое электрополирование?", a: ["Электрохимическая обработка", "Механическая обработка", "Термическая обработка", "Ультразвуковая обработка"], c: 0},
+                    {q: "Тип передачи для точного позиционирования?", a: ["Винтовая", "Ременная", "Цепная", "Фрикционная"], c: 0},
+                    {q: "Что такое коэффициент полезного действия?", a: ["Отношение полезной работы к затраченной", "Мощность устройства", "Скорость работы", "Точность работы"], c: 0}
                 ]
             },
             'информатика': {
                 questions: [
-                    {q: "Что такое алгоритм?", a: ["Последовательность команд", "Язык программирования", "Операционная система"], c: 0},
-                    {q: "TCP/IP это?", a: ["Протоколы сети", "Язык программирования", "База данных"], c: 0},
-                    {q: "SQL используется для?", a: ["Базы данных", "Графика", "Сетей"], c: 0},
-                    {q: "Что возвращает console.log(5+3)?", a: ["8", "53", "error"], c: 0},
-                    {q: "HTTP статус 404?", a: ["Не найдено", "Серверная ошибка", "Успешно"], c: 0},
-                    // +95 вопросов...
+                    {q: "Что такое алгоритм?", a: ["Последовательность команд", "Язык программирования", "Операционная система", "База данных"], c: 0},
+                    {q: "TCP/IP это?", a: ["Протоколы сети", "Язык программирования", "База данных", "Графический редактор"], c: 0},
+                    {q: "SQL используется для?", a: ["Базы данных", "Графика", "Сетей", "Анимации"], c: 0},
+                    {q: "Что возвращает console.log(5+3)?", a: ["8", "53", "error", "undefined"], c: 0},
+                    {q: "HTTP статус 404?", a: ["Не найдено", "Серверная ошибка", "Успешно", "Перенаправление"], c: 0},
+                    {q: "Что такое рекурсия?", a: ["Функция вызывает саму себя", "Циклический процесс", "Итеративный процесс", "Параллельный процесс"], c: 0},
+                    {q: "Что такое объектно-ориентированное программирование?", a: ["Парадигма программирования", "Язык программирования", "Среда разработки", "База данных"], c: 0},
+                    {q: "Что такое компилятор?", a: ["Преобразует исходный код в машинный", "Выполняет код построчно", "Отлаживает программу", "Тестирует программу"], c: 0},
+                    {q: "Что такое стек?", a: ["Структура данных LIFO", "Структура данных FIFO", "База данных", "Файловая система"], c: 0},
+                    {q: "Что такое очередь?", a: ["Структура данных FIFO", "Структура данных LIFO", "База данных", "Сетевое устройство"], c: 0},
+                    {q: "Что такое бинарное дерево?", a: ["Иерархическая структура данных", "Линейная структура данных", "Сетевая структура", "Реляционная структура"], c: 0},
+                    {q: "Что такое хеш-таблица?", a: ["Структура данных для быстрого поиска", "Структура для хранения графики", "Сетевая структура", "Файловая система"], c: 0},
+                    {q: "Что такое алгоритм сортировки?", a: ["Алгоритм упорядочивания элементов", "Алгоритм поиска", "Алгоритм сжатия", "Алгоритм шифрования"], c: 0},
+                    {q: "Что такое сложность алгоритма?", a: ["Оценка времени выполнения", "Количество строк кода", "Размер программы", "Количество переменных"], c: 0},
+                    {q: "Что такое Big O notation?", a: ["Асимптотическая оценка сложности", "Точное время выполнения", "Количество памяти", "Размер входных данных"], c: 0},
+                    {q: "Что такое паттерн проектирования?", a: ["Типовое решение задачи проектирования", "Язык программирования", "Среда разработки", "Метод тестирования"], c: 0},
+                    {q: "Что такое MVC?", a: ["Model-View-Controller архитектура", "Баз данных архитектура", "Сетевая архитектура", "Файловая архитектура"], c: 0},
+                    {q: "Что такое REST API?", a: ["Архитектурный стиль для веб-сервисов", "Язык программирования", "База данных", "Протокол передачи файлов"], c: 0},
+                    {q: "Что такое JSON?", a: ["Формат обмена данными", "Язык программирования", "База данных", "Протокол сети"], c: 0},
+                    {q: "Что такое XML?", a: ["Расширяемый язык разметки", "Язык программирования", "База данных", "Протокол сети"], c: 0},
+                    {q: "Что такое Git?", a: ["Система контроля версий", "Язык программирования", "База данных", "Операционная система"], c: 0},
+                    {q: "Что такое Docker?", a: ["Платформа для контейнеризации", "Язык программирования", "База данных", "Операционная система"], c: 0},
+                    {q: "Что такое Kubernetes?", a: ["Оркестратор контейнеров", "Язык программирования", "База данных", "Виртуальная машина"], c: 0},
+                    {q: "Что такое виртуальная машина?", a: ["Абстракция компьютерных ресурсов", "Физический компьютер", "Операционная система", "Прикладная программа"], c: 0},
+                    {q: "Что такое облачные вычисления?", a: ["Предоставление вычислительных ресурсов как услуги", "Локальные вычисления", "Персональные вычисления", "Мобильные вычисления"], c: 0},
+                    {q: "Что такое машинное обучение?", a: ["Раздел искусственного интеллекта", "Раздел базы данных", "Раздел сетей", "Раздел операционных систем"], c: 0},
+                    {q: "Что такое нейронная сеть?", a: ["Вычислительная модель на основе нейронов", "База данных", "Сетевая архитектура", "Язык программирования"], c: 0},
+                    {q: "Что такое блокчейн?", a: ["Распределенная база данных", "Централизованная база данных", "Сетевая архитектура", "Язык программирования"], c: 0},
+                    {q: "Что такое криптография?", a: ["Наука о шифровании", "Наука о данных", "Наука о сетях", "Наука о программировании"], c: 0},
+                    {q: "Что такое компьютерная графика?", a: ["Создание и обработка изображений", "Создание текстов", "Создание звуков", "Создание видео"], c: 0},
+                    {q: "Что такое компиляция?", a: ["Преобразование исходного кода в машинный код", "Выполнение программы", "Отладка программы", "Тестирование программы"], c: 0},
+                    {q: "Что такое интерпретация?", a: ["Построчное выполнение исходного кода", "Компиляция программы", "Отладка программы", "Тестирование программы"], c: 0},
+                    {q: "Что такое операционная система?", a: ["Управление ресурсами компьютера", "Прикладная программа", "Аппаратное обеспечение", "Периферийное устройство"], c: 0},
+                    {q: "Что такое процесс?", a: ["Выполняющаяся программа", "Файл программы", "Модуль программы", "Библиотека программы"], c: 0},
+                    {q: "Что такое поток?", a: ["Минимальная единица выполнения", "Процесс", "Программа", "Модуль"], c: 0},
+                    {q: "Что такое многозадачность?", a: ["Выполнение нескольких задач одновременно", "Выполнение одной задачи", "Ожидание задач", "Отмена задач"], c: 0},
+                    {q: "Что такое многопоточность?", a: ["Выполнение нескольких потоков в одном процессе", "Выполнение одного потока", "Выполнение нескольких процессов", "Выполнение одного процесса"], c: 0},
+                    {q: "Что такое синхронизация?", a: ["Координация выполнения потоков", "Разделение потоков", "Объединение потоков", "Удаление потоков"], c: 0},
+                    {q: "Что такое взаимная блокировка?", a: ["Ситуация взаимного ожидания потоков", "Ситуация выполнения потоков", "Ситуация завершения потоков", "Ситуация создания потоков"], c: 0},
+                    {q: "Что такое алгоритм Дейкстры?", a: ["Алгоритм поиска кратчайшего пути", "Алгоритм сортировки", "Алгоритм поиска", "Алгоритм сжатия"], c: 0},
+                    {q: "Что такое алгоритм быстрой сортировки?", a: ["Эффективный алгоритм сортировки", "Алгоритм поиска", "Алгоритм сжатия", "Алгоритм шифрования"], c: 0},
+                    {q: "Что такое алгоритм поиска в глубину?", a: ["Алгоритм обхода графа", "Алгоритм сортировки", "Алгоритм сжатия", "Алгоритм шифрования"], c: 0},
+                    {q: "Что такое алгоритм поиска в ширину?", a: ["Алгоритм обхода графа", "Алгоритм сортировки", "Алгоритм сжатия", "Алгоритм шифрования"], c: 0},
+                    {q: "Что такое жадный алгоритм?", a: ["Алгоритм, делающий локально оптимальный выбор", "Алгоритм, делающий случайный выбор", "Алгоритм, делающий обратный выбор", "Алгоритм, не делающий выбор"], c: 0},
+                    {q: "Что такое динамическое программирование?", a: ["Метод решения задач разбиением на подзадачи", "Метод случайного поиска", "Метод перебора", "Метод сортировки"], c: 0},
+                    {q: "Что такое алгоритм RSA?", a: ["Алгоритм шифрования с открытым ключом", "Алгоритм сортировки", "Алгоритм поиска", "Алгоритм сжатия"], c: 0},
+                    {q: "Что такое алгоритм AES?", a: ["Симметричный алгоритм шифрования", "Асимметричный алгоритм шифрования", "Алгоритм сортировки", "Алгоритм поиска"], c: 0},
+                    {q: "Что такое алгоритм SHA?", a: ["Алгоритм хеширования", "Алгоритм шифрования", "Алгоритм сортировки", "Алгоритм поиска"], c: 0},
+                    {q: "Что такое алгоритм сжатия?", a: ["Алгоритм уменьшения размера данных", "Алгоритм увеличения размера данных", "Алгоритм шифрования данных", "Алгоритм сортировки данных"], c: 0},
+                    {q: "Что такое алгоритм JPEG?", a: ["Алгоритм сжатия изображений", "Алгоритм сжатия текста", "Алгоритм сжатия звука", "Алгоритм сжатия видео"], c: 0},
+                    {q: "Что такое алгоритм MP3?", a: ["Алгоритм сжатия звука", "Алгоритм сжатия изображений", "Алгоритм сжатия текста", "Алгоритм сжатия видео"], c: 0},
+                    {q: "Что такое алгоритм MPEG?", a: ["Алгоритм сжатия видео", "Алгоритм сжатия звука", "Алгоритм сжатия изображений", "Алгоритм сжатия текста"], c: 0},
+                    {q: "Что такое алгоритм сжатия без потерь?", a: ["Сжатие с возможностью восстановления данных", "Сжатие без возможности восстановления", "Сжатие с частичной потерей", "Сжатие с полной потерей"], c: 0},
+                    {q: "Что такое алгоритм сжатия с потерями?", a: ["Сжатие с необратимой потерей данных", "Сжатие с возможностью восстановления", "Сжатие без потерь", "Сжатие с частичным восстановлением"], c: 0},
+                    {q: "Что такое алгоритм JPEG2000?", a: ["Улучшенный алгоритм сжатия изображений", "Алгоритм сжатия звука", "Алгоритм сжатия видео", "Алгоритм сжатия текста"], c: 0},
+                    {q: "Что такое алгоритм H.264?", a: ["Алгоритм сжатия видео", "Алгоритм сжатия звука", "Алгоритм сжатия изображений", "Алгоритм сжатия текста"], c: 0},
+                    {q: "Что такое алгоритм H.265?", a: ["Более эффективный алгоритм сжатия видео", "Алгоритм сжатия звука", "Алгоритм сжатия изображений", "Алгоритм сжатия текста"], c: 0},
+                    {q: "Что такое алгоритм поиска подстроки?", a: ["Алгоритм поиска образца в строке", "Алгоритм сортировки строк", "Алгоритм сравнения строк", "Алгоритм объединения строк"], c: 0},
+                    {q: "Что такое алгоритм Кнута-Морриса-Пратта?", a: ["Эффективный алгоритм поиска подстроки", "Алгоритм сортировки", "Алгоритм сжатия", "Алгоритм шифрования"], c: 0},
+                    {q: "Что такое алгоритм Бойера-Мура?", a: ["Эффективный алгоритм поиска подстроки", "Алгоритм сортировки", "Алгоритм сжатия", "Алгоритм шифрования"], c: 0},
+                    {q: "Что такое алгоритм Рабина-Карпа?", a: ["Алгоритм поиска подстроки с использованием хеширования", "Алгоритм сортировки", "Алгоритм сжатия", "Алгоритм шифрования"], c: 0},
+                    {q: "Что такое алгоритм сортировки слиянием?", a: ["Стабильный алгоритм сортировки", "Нестабильный алгоритм сортировки", "Алгоритм поиска", "Алгоритм сжатия"], c: 0},
+                    {q: "Что такое алгоритм пирамидальной сортировки?", a: ["Алгоритм сортировки с использованием кучи", "Алгоритм сортировки слиянием", "Алгоритм сортировки вставками", "Алгоритм сортировки выбором"], c: 0},
+                    {q: "Что такое алгоритм сортировки вставками?", a: ["Простой алгоритм сортировки", "Сложный алгоритм сортировки", "Алгоритм поиска", "Алгоритм сжатия"], c: 0},
+                    {q: "Что такое алгоритм сортировки выбором?", a: ["Простой алгоритм сортировки", "Сложный алгоритм сортировки", "Алгоритм поиска", "Алгоритм сжатия"], c: 0},
+                    {q: "Что такое алгоритм пузырьковой сортировки?", a: ["Простой, но неэффективный алгоритм сортировки", "Эффективный алгоритм сортировки", "Алгоритм поиска", "Алгоритм сжатия"], c: 0},
+                    {q: "Что такое алгоритм поразрядной сортировки?", a: ["Алгоритм сортировки неотрицательных целых чисел", "Алгоритм сортировки строк", "Алгоритм сортировки вещественных чисел", "Алгоритм сортировки структур"], c: 0},
+                    {q: "Что такое алгоритм топологической сортировки?", a: ["Сортировка вершин направленного ациклического графа", "Сортировка чисел", "Сортировка строк", "Сортировка массивов"], c: 0},
+                    {q: "Что такое алгоритм Прима?", a: ["Алгоритм построения минимального остовного дерева", "Алгоритм поиска кратчайшего пути", "Алгоритм сортировки", "Алгоритм сжатия"], c: 0},
+                    {q: "Что такое алгоритм Краскала?", a: ["Алгоритм построения минимального остовного дерева", "Алгоритм поиска кратчайшего пути", "Алгоритм сортировки", "Алгоритм сжатия"], c: 0},
+                    {q: "Что такое алгоритм Флойда-Уоршелла?", a: ["Алгоритм поиска кратчайших путей между всеми вершинами", "Алгоритм сортировки", "Алгоритм сжатия", "Алгоритм шифрования"], c: 0},
+                    {q: "Что такое алгоритм Беллмана-Форда?", a: ["Алгоритм поиска кратчайшего пути с отрицательными весами", "Алгоритм сортировки", "Алгоритм сжатия", "Алгоритм шифрования"], c: 0},
+                    {q: "Что такое алгоритм А*?", a: ["Алгоритм поиска пути с эвристикой", "Алгоритм сортировки", "Алгоритм сжатия", "Алгоритм шифрования"], c: 0},
+                    {q: "Что такое алгоритм Форда-Фалкерсона?", a: ["Алгоритм поиска максимального потока", "Алгоритм сортировки", "Алгоритм сжатия", "Алгоритм шифрования"], c: 0},
+                    {q: "Что такое алгоритм Эдмондса-Карпа?", a: ["Реализация Форда-Фалкерсона с использованием BFS", "Алгоритм сортировки", "Алгоритм сжатия", "Алгоритм шифрования"], c: 0},
+                    {q: "Что такое алгоритм Динаика?", a: ["Алгоритм поиска максимального потока", "Алгоритм сортировки", "Алгоритм сжатия", "Алгоритм шифрования"], c: 0},
+                    {q: "Что такое алгоритм Косараджу?", a: ["Алгоритм поиска компонент сильной связности", "Алгоритм сортировки", "Алгоритм сжатия", "Алгоритм шифрования"], c: 0},
+                    {q: "Что такое алгоритм Тарьяна?", a: ["Алгоритм поиска компонент сильной связности", "Алгоритм сортировки", "Алгоритм сжатия", "Алгоритм шифрования"], c: 0}
                 ]
             },
             'педагогика': {
                 questions: [
-                    {q: "Кто разработал теорию множественного интеллекта?", a: ["Гарднер", "Пиаже", "Выготский"], c: 0},
-                    {q: "Метод Сократа?", a: ["Диалог", "Лекция", "Демонстрация"], c: 0},
-                    {q: "Зона ближайшего развития?", a: ["Выготский", "Пиаже", "Скиннер"], c: 0},
-                    // +95 вопросов...
+                    {q: "Кто разработал теорию множественного интеллекта?", a: ["Гарднер", "Пиаже", "Выготский", "Маслоу"], c: 0},
+                    {q: "Метод Сократа?", a: ["Диалог", "Лекция", "Демонстрация", "Эксперимент"], c: 0},
+                    {q: "Зона ближайшего развития?", a: ["Выготский", "Пиаже", "Скиннер", "Фрейд"], c: 0},
+                    {q: "Что такое инклюзивное образование?", a: ["Обучение всех вместе", "Элитное обучение", "Дистанционное обучение", "Семейное обучение"], c: 0},
+                    {q: "Что такое педагогическая технология?", a: ["Система методов обучения", "Учебник", "Классная комната", "Школьная доска"], c: 0},
+                    {q: "Что такое ФГОС?", a: ["Федеральный государственный образовательный стандарт", "Финансовый государственный стандарт", "Федеральный государственный отчет", "Функциональный государственный стандарт"], c: 0},
+                    {q: "Что такое УУД?", a: ["Универсальные учебные действия", "Учебные учебные действия", "Универсальные учебные достижения", "Учебные учебные достижения"], c: 0},
+                    {q: "Что такое компетентностный подход?", a: ["Ориентация на формирование компетенций", "Ориентация на знания", "Ориентация на умения", "Ориентация на навыки"], c: 0},
+                    {q: "Что такое индивидуальный образовательный маршрут?", a: ["Персонализированный путь обучения", "Общий учебный план", "Групповое обучение", "Дистанционное обучение"], c: 0},
+                    {q: "Что такое педагогическая диагностика?", a: ["Выявление уровня обученности", "Лечение заболеваний", "Коррекция поведения", "Оценка здоровья"], c: 0},
+                    {q: "Что такое педагогический мониторинг?", a: ["Систематическое отслеживание процесса обучения", "Разовое тестирование", "Случайная проверка", "Периодический контроль"], c: 0},
+                    {q: "Что такое педагогическая рефлексия?", a: ["Самоанализ педагогической деятельности", "Анализ учеников", "Оценка коллег", "Изучение литературы"], c: 0},
+                    {q: "Что такое воспитательная система?", a: ["Целостный комплекс воспитательных мер", "Набор правил", "Список наказаний", "Перечень поощрений"], c: 0},
+                    {q: "Что такое социальное партнерство в образовании?", a: ["Взаимодействие с различными организациями", "Общение с родителями", "Работа с учениками", "Сотрудничество с коллегами"], c: 0},
+                    {q: "Что такое педагогическая аксиология?", a: ["Учение о ценностях в образовании", "Учение о методах", "Учение о содержании", "Учение о целях"], c: 0},
+                    {q: "Что такое педагогическая праксиология?", a: ["Учение о педагогической деятельности", "Учение о педагогических ценностях", "Учение о педагогических целях", "Учение о педагогических методах"], c: 0},
+                    {q: "Что такое педагогическая синергетика?", a: ["Изучение самоорганизации в образовании", "Изучение дисциплины", "Изучение контроля", "Изучение планирования"], c: 0},
+                    {q: "Что такое андрагогика?", a: ["Обучение взрослых", "Обучение детей", "Обучение подростков", "Обучение пожилых"], c: 0},
+                    {q: "Что такое геронтогогика?", a: ["Обучение пожилых людей", "Обучение взрослых", "Обучение детей", "Обучение подростков"], c: 0},
+                    {q: "Что такое дидактика?", a: ["Теория обучения", "Теория воспитания", "Теория развития", "Теория управления"], c: 0},
+                    {q: "Что такое методика преподавания?", a: ["Наука о методах обучения", "Наука о содержании обучения", "Наука о целях обучения", "Наука о средствах обучения"], c: 0},
+                    {q: "Что такое педагогическая психология?", a: ["Психология обучения и воспитания", "Психология развития", "Психология личности", "Психология общения"], c: 0},
+                    {q: "Что такое возрастная педагогика?", a: ["Педагогика разных возрастных групп", "Педагогика для детей", "Педагогика для взрослых", "Педагогика для пожилых"], c: 0},
+                    {q: "Что такое сравнительная педагогика?", a: ["Сравнение образовательных систем разных стран", "Сравнение методов обучения", "Сравнение учебников", "Сравнение школ"], c: 0},
+                    {q: "Что такое коррекционная педагогика?", a: ["Работа с детьми с ограниченными возможностями", "Работа с одаренными детьми", "Работа с трудными подростками", "Работа с обычными детьми"], c: 0},
+                    {q: "Что такое социальная педагогика?", a: ["Воспитание в социуме", "Воспитание в семье", "Воспитание в школе", "Воспитание в вузе"], c: 0},
+                    {q: "Что такое семейная педагогика?", a: ["Воспитание в семье", "Воспитание в школе", "Воспитание в социуме", "Воспитание в вузе"], c: 0},
+                    {q: "Что такое этнопедагогика?", a: ["Народная педагогика", "Школьная педагогика", "Семейная педагогика", "Социальная педагогика"], c: 0},
+                    {q: "Что такое религиозная педагогика?", a: ["Педагогика на основе религии", "Светская педагогика", "Государственная педагогика", "Общественная педагогика"], c: 0},
+                    {q: "Что такое светская педагогика?", a: ["Педагогика, отделенная от религии", "Религиозная педагогика", "Государственная педагогика", "Общественная педагогика"], c: 0},
+                    {q: "Что такое гуманная педагогика?", a: ["Педагогика, основанная на человечности", "Авторитарная педагогика", "Либеральная педагогика", "Демократическая педагогика"], c: 0},
+                    {q: "Что такое авторитарная педагогика?", a: ["Жесткое управление процессом обучения", "Свободное обучение", "Совместное обучение", "Индивидуальное обучение"], c: 0},
+                    {q: "Что такое либеральная педагогика?", a: ["Свободное воспитание", "Жесткое воспитание", "Демократическое воспитание", "Авторитарное воспитание"], c: 0},
+                    {q: "Что такое демократическая педагогика?", a: ["Равноправное участие в обучении", "Жесткое управление", "Свободное воспитание", "Авторитарное воспитание"], c: 0},
+                    {q: "Что такое педагогика сотрудничества?", a: ["Совместная деятельность учителя и ученика", "Деятельность учителя", "Деятельность ученика", "Деятельность родителей"], c: 0},
+                    {q: "Что такое педагогика ненасилия?", a: ["Воспитание без принуждения", "Воспитание с наказаниями", "Воспитание с поощрениями", "Воспитание с требованиями"], c: 0},
+                    {q: "Что такое педагогика успеха?", a: ["Создание ситуаций успеха для учеников", "Обучение через неудачи", "Обучение через трудности", "Обучение через поражения"], c: 0},
+                    {q: "Что такое педагогика поддержки?", a: ["Помощь ученику в трудной ситуации", "Контроль ученика", "Оценка ученика", "Наказание ученика"], c: 0},
+                    {q: "Что такое педагогика развития?", a: ["Ориентация на развитие личности", "Ориентация на знания", "Ориентация на умения", "Ориентация на навыки"], c: 0},
+                    {q: "Что такое педагогика свободы?", a: ["Предоставление свободы выбора", "Ограничение выбора", "Жесткий контроль", "Авторитарное управление"], c: 0},
+                    {q: "Что такое педагогика творчества?", a: ["Развитие творческих способностей", "Развитие логического мышления", "Развитие памяти", "Развитие внимания"], c: 0},
+                    {q: "Что такое педагогика здоровья?", a: ["Формирование здорового образа жизни", "Лечение заболеваний", "Профилактика заболеваний", "Диагностика здоровья"], c: 0},
+                    {q: "Что такое педагогика безопасности?", a: ["Обучение безопасному поведению", "Обучение выживанию", "Обучение самозащите", "Обучение первой помощи"], c: 0},
+                    {q: "Что такое педагогика толерантности?", a: ["Воспитание терпимости к различиям", "Воспитание агрессии", "Воспитание конформизма", "Воспитание индивидуализма"], c: 0},
+                    {q: "Что такое педагогика мира?", a: ["Воспитание в духе мира", "Воспитание воинственности", "Воспитание патриотизма", "Воспитание космополитизма"], c: 0},
+                    {q: "Что такое педагогика патриотизма?", a: ["Воспитание любви к Родине", "Воспитание космополитизма", "Воспитание интернационализма", "Воспитание национализма"], c: 0},
+                    {q: "Что такое педагогика космополитизма?", a: ["Воспитание гражданина мира", "Воспитание патриота", "Воспитание националиста", "Воспитание интернационалиста"], c: 0},
+                    {q: "Что такое педагогика интернационализма?", a: ["Воспитание уважения к другим народам", "Воспитание национальной исключительности", "Воспитание патриотизма", "Воспитание космополитизма"], c: 0},
+                    {q: "Что такое педагогика национализма?", a: ["Воспитание превосходства своей нации", "Воспитание интернационализма", "Воспитание космополитизма", "Воспитание патриотизма"], c: 0},
+                    {q: "Что такое педагогика гендера?", a: ["Воспитание с учетом половых различий", "Воспитание без учета пола", "Воспитание мужчин", "Воспитание женщин"], c: 0},
+                    {q: "Что такое педагогика пола?", a: ["Воспитание мужских и женских качеств", "Воспитание бесполое", "Воспитание мужчин", "Воспитание женщин"], c: 0},
+                    {q: "Что такое педагогика среды?", a: ["Воспитание через окружающую среду", "Воспитание в классе", "Воспитание в семье", "Воспитание в социуме"], c: 0},
+                    {q: "Что такое педагогика общения?", a: ["Воспитание культуры общения", "Воспитание речи", "Воспитание письма", "Воспитание чтения"], c: 0},
+                    {q: "Что такое педагогика игры?", a: ["Обучение через игру", "Обучение через труд", "Обучение через общение", "Обучение через чтение"], c: 0},
+                    {q: "Что такое педагогика труда?", a: ["Воспитание через труд", "Воспитание через игру", "Воспитание через общение", "Воспитание через чтение"], c: 0},
+                    {q: "Что такое педагогика искусства?", a: ["Воспитание через искусство", "Воспитание через науку", "Воспитание через спорт", "Воспитание через труд"], c: 0},
+                    {q: "Что такое педагогика спорта?", a: ["Воспитание через спорт", "Воспитание через искусство", "Воспитание через науку", "Воспитание через труд"], c: 0},
+                    {q: "Что такое педагогика науки?", a: ["Воспитание через науку", "Воспитание через искусство", "Воспитание через спорт", "Воспитание через труд"], c: 0},
+                    {q: "Что такое педагогика техники?", a: ["Воспитание через технику", "Воспитание через науку", "Воспитание через искусство", "Воспитание через спорт"], c: 0},
+                    {q: "Что такое педагогика природы?", a: ["Воспитание через природу", "Воспитание через технику", "Воспитание через науку", "Воспитание через искусство"], c: 0},
+                    {q: "Что такое педагогика культуры?", a: ["Воспитание через культуру", "Воспитание через природу", "Воспитание через технику", "Воспитание через науку"], c: 0},
+                    {q: "Что такое педагогика традиций?", a: ["Воспитание через традиции", "Воспитание через инновации", "Воспитание через культуру", "Воспитание через природу"], c: 0},
+                    {q: "Что такое педагогика инноваций?", a: ["Воспитание через нововведения", "Воспитание через традиции", "Воспитание через культуру", "Воспитание через природу"], c: 0},
+                    {q: "Что такое педагогика проекта?", a: ["Обучение через проекты", "Обучение через лекции", "Обучение через семинары", "Обучение через практику"], c: 0},
+                    {q: "Что такое педагогика исследования?", a: ["Обучение через исследования", "Обучение через проекты", "Обучение через лекции", "Обучение через семинары"], c: 0},
+                    {q: "Что такое педагогика дискуссии?", a: ["Обучение через обсуждение", "Обучение через лекции", "Обучение через практику", "Обучение через проект"], c: 0},
+                    {q: "Что такое педагогика диалога?", a: ["Обучение через диалог", "Обучение через монолог", "Обучение через лекцию", "Обучение через семинар"], c: 0},
+                    {q: "Что такое педагогика проблемного обучения?", a: ["Обучение через решение проблем", "Обучение через запоминание", "Обучение через повторение", "Обучение через заучивание"], c: 0},
+                    {q: "Что такое педагогика программированного обучения?", a: ["Обучение по шагам", "Свободное обучение", "Проблемное обучение", "Проектное обучение"], c: 0},
+                    {q: "Что такое педагогика модульного обучения?", a: ["Обучение по модулям", "Обучение по темам", "Обучение по предметам", "Обучение по классам"], c: 0},
+                    {q: "Что такое педагогика дистанционного обучения?", a: ["Обучение на расстоянии", "Обучение в классе", "Обучение дома", "Обучение на работе"], c: 0},
+                    {q: "Что такое педагогика электронного обучения?", a: ["Обучение с использованием электронных средств", "Обучение без техники", "Обучение с книгами", "Обучение с тетрадями"], c: 0},
+                    {q: "Что такое педагогика онлайн-обучения?", a: ["Обучение через интернет", "Обучение офлайн", "Обучение в классе", "Обучение дома"], c: 0},
+                    {q: "Что такое педагогика blended learning?", a: ["Смешанное обучение", "Онлайн-обучение", "Офлайн-обучение", "Дистанционное обучение"], c: 0},
+                    {q: "Что такое педагогика flipped classroom?", a: ["Перевернутый класс", "Традиционный класс", "Открытый класс", "Виртуальный класс"], c: 0},
+                    {q: "Что такое педагогика gamification?", a: ["Игрофикация обучения", "Серьезное обучение", "Строгое обучение", "Формальное обучение"], c: 0},
+                    {q: "Что такое педагогика storytelling?", a: ["Обучение через рассказывание историй", "Обучение через лекции", "Обучение через практику", "Обучение через проекты"], c: 0},
+                    {q: "Что такое педагогика case-study?", a: ["Обучение на основе кейсов", "Обучение на основе лекций", "Обучение на основе семинаров", "Обучение на основе практики"], c: 0},
+                    {q: "Что такое педагогика workshop?", a: ["Обучение через мастерскую", "Обучение через лекцию", "Обучение через семинар", "Обучение через проект"], c: 0},
+                    {q: "Что такое педагогика coaching?", a: ["Обучение через коучинг", "Обучение через тренинг", "Обучение через менторинг", "Обучение через тьюторство"], c: 0},
+                    {q: "Что такое педагогика mentoring?", a: ["Обучение через наставничество", "Обучение через коучинг", "Обучение через тренинг", "Обучение через тьюторство"], c: 0},
+                    {q: "Что такое педагогика tutoring?", a: ["Обучение через тьюторство", "Обучение через наставничество", "Обучение через коучинг", "Обучение через тренинг"], c: 0},
+                    {q: "Что такое педагогика фасилитации?", a: ["Облегчение процесса обучения", "Усложнение процесса обучения", "Контроль процесса обучения", "Оценка процесса обучения"], c: 0},
+                    {q: "Что такое педагогика модерации?", a: ["Управление процессом обучения", "Наблюдение за процессом обучения", "Участие в процессе обучения", "Оценка процесса обучения"], c: 0},
+                    {q: "Что такое педагогика медиации?", a: ["Разрешение конфликтов в обучении", "Создание конфликтов в обучении", "Игнорирование конфликтов в обучении", "Усиление конфликтов в обучении"], c: 0},
+                    {q: "Что такое педагогика арт-терапии?", a: ["Исцеление через искусство", "Исцеление через спорт", "Исцеление через науку", "Исцеление через труд"], c: 0},
+                    {q: "Что такое педагогика музыкотерапии?", a: ["Исцеление через музыку", "Исцеление через искусство", "Исцеление через спорт", "Исцеление через науку"], c: 0},
+                    {q: "Что такое педагогика сказкотерапии?", a: ["Исцеление через сказки", "Исцеление через музыку", "Исцеление через искусство", "Исцеление через спорт"], c: 0},
+                    {q: "Что такое педагогика игротерапии?", a: ["Исцеление через игры", "Исцеление через сказки", "Исцеление через музыку", "Исцеление через искусство"], c: 0},
+                    {q: "Что такое педагогика танцевальной терапии?", a: ["Исцеление через танец", "Исцеление через игры", "Исцеление через сказки", "Исцеление через музыку"], c: 0},
+                    {q: "Что такое педагогика драматерапии?", a: ["Исцеление через драму", "Исцеление через танец", "Исцеление через игры", "Исцеление через сказки"], c: 0},
+                    {q: "Что такое педагогика цветотерапии?", a: ["Исцеление через цвет", "Исцеление через драму", "Исцеление через танец", "Исцеление через игры"], c: 0},
+                    {q: "Что такое педагогика анималотерапии?", a: ["Исцеление через животных", "Исцеление через цвет", "Исцеление через драму", "Исцеление через танец"], c: 0},
+                    {q: "Что такое педагогика гидротерапии?", a: ["Исцеление через воду", "Исцеление через животных", "Исцеление через цвет", "Исцеление через драму"], c: 0}
                 ]
             },
             'программирование': {
                 questions: [
-                    {q: "OOP - это?", a: ["Объектно-ориентированное программирование", "Операционная система", "Онлайн платформа"], c: 0},
-                    {q: "REST API использует?", a: ["HTTP методы", "TCP соединения", "UDP пакеты"], c: 0},
-                    {q: "Что такое Docker?", a: ["Контейнеризация", "Виртуальная машина", "Язык программирования"], c: 0},
-                    // +95 вопросов...
+                    {q: "Что такое переменная?", a: ["Контейнер для хранения данных", "Тип данных", "Функция", "Оператор"], c: 0},
+                    {q: "Что такое функция?", a: ["Блок кода, выполняющий задачу", "Переменная", "Цикл", "Условие"], c: 0},
+                    {q: "Что такое массив?", a: ["Коллекция элементов", "Один элемент", "Функция", "Объект"], c: 0},
+                    {q: "Что такое цикл?", a: ["Повторение блока кода", "Условие", "Переменная", "Функция"], c: 0},
+                    {q: "Что такое условие?", a: ["Проверка логического выражения", "Цикл", "Функция", "Массив"], c: 0},
+                    {q: "Что такое объект?", a: ["Экземпляр класса", "Тип данных", "Функция", "Массив"], c: 0},
+                    {q: "Что такое класс?", a: ["Шаблон для создания объектов", "Объект", "Функция", "Переменная"], c: 0},
+                    {q: "Что такое наследование?", a: ["Механизм повторного использования кода", "Создание объектов", "Удаление объектов", "Изменение объектов"], c: 0},
+                    {q: "Что такое инкапсуляция?", a: ["Сокрытие данных", "Наследование", "Полиморфизм", "Абстракция"], c: 0},
+                    {q: "Что такое полиморфизм?", a: ["Возможность использовать один интерфейс для разных типов", "Наследование", "Инкапсуляция", "Абстракция"], c: 0},
+                    {q: "Что такое абстракция?", a: ["Упрощение сложных систем", "Детализация систем", "Наследование", "Инкапсуляция"], c: 0},
+                    {q: "Что такое интерфейс?", a: ["Контракт для классов", "Класс", "Объект", "Функция"], c: 0},
+                    {q: "Что такое абстрактный класс?", a: ["Класс, который нельзя инстанцировать", "Обычный класс", "Интерфейс", "Структура"], c: 0},
+                    {q: "Что такое конструктор?", a: ["Метод инициализации объекта", "Метод уничтожения объекта", "Обычный метод", "Статический метод"], c: 0},
+                    {q: "Что такое деструктор?", a: ["Метод очистки ресурсов", "Метод инициализации", "Обычный метод", "Статический метод"], c: 0},
+                    {q: "Что такое статический метод?", a: ["Метод, принадлежащий классу, а не объекту", "Метод объекта", "Конструктор", "Деструктор"], c: 0},
+                    {q: "Что такое перегрузка методов?", a: ["Несколько методов с одним именем, но разными параметрами", "Один метод", "Изменение метода", "Удаление метода"], c: 0},
+                    {q: "Что такое переопределение методов?", a: ["Изменение реализации метода в потомке", "Создание нового метода", "Удаление метода", "Сокрытие метода"], c: 0},
+                    {q: "Что такое исключение?", a: ["Ошибка времени выполнения", "Ошибка компиляции", "Предупреждение", "Сообщение"], c: 0},
+                    {q: "Что такое обработка исключений?", a: ["Механизм обработки ошибок", "Игнорирование ошибок", "Создание ошибок", "Логирование ошибок"], c: 0},
+                    {q: "Что такое блок try-catch?", a: ["Конструкция для обработки исключений", "Цикл", "Условие", "Функция"], c: 0},
+                    {q: "Что такое finally?", a: ["Блок, выполняемый всегда", "Блок обработки ошибок", "Блок try", "Блок catch"], c: 0},
+                    {q: "Что такое поток?", a: ["Последовательность выполнения команд", "Процесс", "Программа", "Модуль"], c: 0},
+                    {q: "Что такое многопоточность?", a: ["Параллельное выполнение потоков", "Последовательное выполнение", "Один поток", "Без потоков"], c: 0},
+                    {q: "Что такое синхронизация?", a: ["Координация потоков", "Разделение потоков", "Объединение потоков", "Удаление потоков"], c: 0},
+                    {q: "Что такое взаимная блокировка?", a: ["Ситуация взаимного ожидания потоков", "Ситуация выполнения потоков", "Ситуация завершения потоков", "Ситуация создания потоков"], c: 0},
+                    {q: "Что такое алгоритм банкира?", a: ["Алгоритм избежания взаимной блокировки", "Алгоритм сортировки", "Алгоритм поиска", "Алгоритм сжатия"], c: 0},
+                    {q: "Что такое семафор?", a: ["Средство синхронизации", "Средство коммуникации", "Средство передачи данных", "Средство хранения данных"], c: 0},
+                    {q: "Что такое мьютекс?", a: ["Средство взаимного исключения", "Семафор", "Монитор", "Критическая секция"], c: 0},
+                    {q: "Что такое монитор?", a: ["Высокоуровневое средство синхронизации", "Низкоуровневое средство", "Семафор", "Мьютекс"], c: 0},
+                    {q: "Что такое критическая секция?", a: ["Участок кода, доступный одному потоку", "Участок кода, доступный всем", "Участок кода без ограничений", "Участок кода для синхронизации"], c: 0},
+                    {q: "Что такое состояние гонки?", a: ["Ошибка при работе с общими данными", "Ошибка компиляции", "Ошибка времени выполнения", "Логическая ошибка"], c: 0},
+                    {q: "Что такое атомарная операция?", a: ["Неделимая операция", "Делимая операция", "Сложная операция", "Простая операция"], c: 0},
+                    {q: "Что такое сборка мусора?", a: ["Автоматическое освобождение памяти", "Ручное освобождение памяти", "Выделение памяти", "Перераспределение памяти"], c: 0},
+                    {q: "Что такое утечка памяти?", a: ["Неосвобожденная память", "Освобожденная память", "Выделенная память", "Используемая память"], c: 0},
+                    {q: "Что такое указатель?", a: ["Переменная, хранящая адрес", "Переменная, хранящая значение", "Функция", "Объект"], c: 0},
+                    {q: "Что такое ссылка?", a: ["Псевдоним переменной", "Указатель", "Значение", "Адрес"], c: 0},
+                    {q: "Что такое разыменование?", a: ["Получение значения по адресу", "Получение адреса", "Создание указателя", "Удаление указателя"], c: 0},
+                    {q: "Что такое стек вызовов?", a: ["Структура для хранения вызовов функций", "Структура для хранения данных", "Структура для хранения объектов", "Структура для хранения переменных"], c: 0},
+                    {q: "Что такое куча?", a: ["Область динамической памяти", "Область статической памяти", "Стек", "Регистры"], c: 0},
+                    {q: "Что такое статическая память?", a: ["Память, выделяемая при компиляции", "Память, выделяемая при выполнении", "Динамическая память", "Куча"], c: 0},
+                    {q: "Что такое динамическая память?", a: ["Память, выделяемая при выполнении", "Память, выделяемая при компиляции", "Статическая память", "Стек"], c: 0},
+                    {q: "Что такое рекурсия?", a: ["Вызов функции самой себя", "Цикл", "Итерация", "Последовательность"], c: 0},
+                    {q: "Что такое итерация?", a: ["Повторение", "Рекурсия", "Вызов", "Завершение"], c: 0},
+                    {q: "Что такое хвостовая рекурсия?", a: ["Рекурсия в конце функции", "Рекурсия в начале", "Рекурсия в середине", "Не рекурсия"], c: 0},
+                    {q: "Что такое лямбда-выражение?", a: ["Анонимная функция", "Именованная функция", "Метод", "Процедура"], c: 0},
+                    {q: "Что такое замыкание?", a: ["Функция с запомненным окружением", "Обычная функция", "Метод", "Процедура"], c: 0},
+                    {q: "Что такое каррирование?", a: ["Преобразование функции от многих аргументов в цепочку", "Вызов функции", "Создание функции", "Удаление функции"], c: 0},
+                    {q: "Что такое функциональное программирование?", a: ["Парадигма, основанная на функциях", "Объектно-ориентированная парадигма", "Процедурная парадигма", "Логическая парадигма"], c: 0},
+                    {q: "Что такое чистая функция?", a: ["Функция без побочных эффектов", "Функция с побочными эффектами", "Любая функция", "Метод"], c: 0},
+                    {q: "Что такое побочный эффект?", a: ["Изменение состояния вне функции", "Возврат значения", "Получение аргументов", "Локальные вычисления"], c: 0},
+                    {q: "Что такое монада?", a: ["Структура для обработки вычислений", "Функция", "Объект", "Тип данных"], c: 0},
+                    {q: "Что такое functor?", a: ["Тип, который можно отобразить", "Тип, который нельзя отобразить", "Функция", "Объект"], c: 0},
+                    {q: "Что такое applicative?", a: ["Тип, применяющий функцию к обернутому значению", "Тип, не применяющий функцию", "Функция", "Объект"], c: 0},
+                    {q: "Что такое комбинатор?", a: ["Функция, комбинирующая другие функции", "Обычная функция", "Метод", "Процедура"], c: 0},
+                    {q: "Что такое паттерн-матчинг?", a: ["Сопоставление с образцом", "Сравнение значений", "Поиск значений", "Замена значений"], c: 0},
+                    {q: "Что такое алгебраический тип данных?", a: ["Тип, составленный из других типов", "Простой тип", "Базовый тип", "Примитивный тип"], c: 0},
+                    {q: "Что такое тип-сумма?", a: ["Тип, представляющий выбор из нескольких вариантов", "Тип-произведение", "Простой тип", "Базовый тип"], c: 0},
+                    {q: "Что такое тип-произведение?", a: ["Тип, представляющий совокупность значений", "Тип-сумма", "Простой тип", "Базовый тип"], c: 0},
+                    {q: "Что такое generic?", a: ["Обобщенный тип", "Конкретный тип", "Базовый тип", "Производный тип"], c: 0},
+                    {q: "Что такое шаблон?", a: ["Обобщенный код", "Конкретный код", "Функция", "Класс"], c: 0},
+                    {q: "Что такое специализация шаблона?", a: ["Конкретная реализация для типа", "Общая реализация", "Удаление шаблона", "Изменение шаблона"], c: 0},
+                    {q: "Что такое метапрограммирование?", a: ["Программирование программ", "Обычное программирование", "Низкоуровневое программирование", "Высокоуровневое программирование"], c: 0},
+                    {q: "Что такое рефлексия?", a: ["Возможность программы исследовать себя", "Обычное выполнение", "Компиляция", "Интерпретация"], c: 0},
+                    {q: "Что такое атрибут?", a: ["Метаданные для элементов программы", "Данные", "Код", "Комментарий"], c: 0},
+                    {q: "Что такое аннотация?", a: ["Метаданные в Java", "Код", "Комментарий", "Документация"], c: 0},
+                    {q: "Что такое декоратор?", a: ["Функция, изменяющая поведение другой функции", "Обычная функция", "Метод", "Класс"], c: 0},
+                    {q: "Что такое аспектно-ориентированное программирование?", a: ["Разделение сквозной функциональности", "Объединение функциональности", "Удаление функциональности", "Изменение функциональности"], c: 0},
+                    {q: "Что такое точка соединения?", a: ["Место в программе для внедрения аспекта", "Обычное место", "Начало программы", "Конец программы"], c: 0},
+                    {q: "Что такое совет?", a: ["Код, выполняемый в точке соединения", "Обычный код", "Функция", "Метод"], c: 0},
+                    {q: "Что такое аспект?", a: ["Модуль сквозной функциональности", "Обычный модуль", "Класс", "Функция"], c: 0},
+                    {q: "Что такое внедрение зависимости?", a: ["Передача зависимостей извне", "Создание зависимостей внутри", "Удаление зависимостей", "Изменение зависимостей"], c: 0},
+                    {q: "Что такое инверсия управления?", a: ["Передача контроля фреймворку", "Сохранение контроля в программе", "Удаление контроля", "Изменение контроля"], c: 0},
+                    {q: "Что такое контейнер зависимостей?", a: ["Фреймворк для управления зависимостями", "Обычный контейнер", "База данных", "Файловая система"], c: 0},
+                    {q: "Что такое шаблон проектирования?", a: ["Типовое решение задачи", "Уникальное решение", "Случайное решение", "Простое решение"], c: 0},
+                    {q: "Что такое антипаттерн?", a: ["Типовое ошибочное решение", "Правильное решение", "Новое решение", "Старое решение"], c: 0},
+                    {q: "Что такое рефакторинг?", a: ["Улучшение кода без изменения функциональности", "Изменение функциональности", "Добавление функциональности", "Удаление функциональности"], c: 0},
+                    {q: "Что такое технический долг?", a: ["Накопленные проблемы в коде", "Деньги", "Время", "Ресурсы"], c: 0},
+                    {q: "Что такое continuous integration?", a: ["Непрерывная интеграция", "Периодическая интеграция", "Ручная интеграция", "Отсутствие интеграции"], c: 0},
+                    {q: "Что такое continuous delivery?", a: ["Непрерывная поставка", "Периодическая поставка", "Ручная поставка", "Отсутствие поставки"], c: 0},
+                    {q: "Что такое continuous deployment?", a: ["Непрерывное развертывание", "Периодическое развертывание", "Ручное развертывание", "Отсутствие развертывания"], c: 0},
+                    {q: "Что такое DevOps?", a: ["Культура сотрудничества разработчиков и операторов", "Только разработка", "Только операции", "Отдельные команды"], c: 0},
+                    {q: "Что такое Agile?", a: ["Гибкая методология разработки", "Жесткая методология", "Водопадная модель", "Спиральная модель"], c: 0},
+                    {q: "Что такое Scrum?", a: ["Фреймворк Agile", "Методология", "Процесс", "Технология"], c: 0},
+                    {q: "Что такое спринт?", a: ["Итерация в Scrum", "Весь проект", "Этап проекта", "Задача"], c: 0},
+                    {q: "Что такое канбан?", a: ["Метод управления работами", "Метод разработки", "Язык программирования", "База данных"], c: 0},
+                    {q: "Что такое пользовательская история?", a: ["Требование с точки зрения пользователя", "Техническое требование", "Документация", "План"], c: 0},
+                    {q: "Что такое бэклог?", a: ["Список требований", "Список выполненных задач", "Список ошибок", "Список пользователей"], c: 0},
+                    {q: "Что такое веха?", a: ["Важная точка в проекте", "Обычная задача", "Ошибка", "Пользователь"], c: 0}
                 ]
             },
             'робототехника': {
                 questions: [
-                    {q: "PID регулятор для?", a: ["Управления роботом", "Программирования", "Дизайна"], c: 0},
-                    {q: "Кинематика изучает?", a: ["Движение без сил", "Силы движения", "Энергию"], c: 0},
-                    {q: "Сервопривод это?", a: ["Двигатель с обратной связью", "Датчик", "Контроллер"], c: 0},
-                    // +95 вопросов...
-                ]
-            },
-            'менеджмент': {
-                questions: [
-                    {q: "SWOT анализ для?", a: ["Стратегического планирования", "Бухгалтерии", "Маркетинга"], c: 0},
-                    {q: "Кто автор матрицы BCG?", a: ["Брюс Хендерсон", "Питер Друкер", "Майкл Портер"], c: 0},
-                    // +95 вопросов...
-                ]
-            },
-            'data_science': {
-                questions: [
-                    {q: "Что такое pandas?", a: ["Библиотека Python для данных", "Язык программирования", "База данных"], c: 0},
-                    {q: "Алгоритм k-means для?", a: ["Кластеризации", "Регрессии", "Классификации"], c: 0},
-                    // +95 вопросов...
-                ]
-            },
-            'физика': {
-                questions: [
-                    {q: "F=ma это?", a: ["Второй закон Ньютона", "Первый закон", "Третий закон"], c: 0},
-                    {q: "Скорость света?", a: ["299 792 458 м/с", "300 000 км/с", "3*10^8 м/с"], c: 0},
-                    // +95 вопросов...
+                    {q: "Что такое сервопривод?", a: ["Двигатель с обратной связью", "Двигатель без обратной связи", "Датчик", "Контроллер"], c: 0},
+                    {q: "Что такое энкодер?", a: ["Датчик положения", "Датчик расстояния", "Датчик температуры", "Датчик давления"], c: 0},
+                    {q: "Что такое ШИМ?", a: ["Широтно-импульсная модуляция", "Частотная модуляция", "Амплитудная модуляция", "Фазовая модуляция"], c: 0},
+                    {q: "Что такое обратная кинематика?", a: ["Расчет углов суставов по положению эффектора", "Расчет положения эффектора по углам", "Расчет скоростей", "Расчет ускорений"], c: 0},
+                    {q: "Что такое прямая кинематика?", a: ["Расчет положения эффектора по углам суставов", "Расчет углов по положению", "Расчет скоростей", "Расчет ускорений"], c: 0},
+                    {q: "Что такое динамика робота?", a: ["Изучение сил и моментов", "Изучение геометрии", "Изучение кинематики", "Изучение конструкции"], c: 0},
+                    {q: "Что такое статика робота?", a: ["Изучение равновесия", "Изучение движения", "Изучение кинематики", "Изучение динамики"], c: 0},
+                    {q: "Что такое кинематическая пара?", a: ["Соединение двух звеньев", "Одно звено", "Три звена", "Четыре звена"], c: 0},
+                    {q: "Что такое кинематическая цепь?", a: ["Последовательность кинематических пар", "Одна пара", "Две пары", "Три пары"], c: 0},
+                    {q: "Что такое механизм?", a: ["Кинематическая цепь с одним неподвижным звеном", "Цепь без неподвижных звеньев", "Одно звено", "Два звена"], c: 0},
+                    {q: "Что такое степень свободы?", a: ["Количество независимых движений", "Количество звеньев", "Количество пар", "Количество цепей"], c: 0},
+                    {q: "Что такое манипулятор?", a: ["Роботизированная рука", "Робот-тележка", "Летающий робот", "Подводный робот"], c: 0},
+                    {q: "Что такое эффектор?", a: ["Рабочий орган робота", "Датчик", "Привод", "Контроллер"], c: 0},
+                    {q: "Что такое захват?", a: ["Устройство для удержания объектов", "Датчик", "Привод", "Контроллер"], c: 0},
+                    {q: "Что такое система технического зрения?", a: ["Камеры и алгоритмы обработки изображений", "Лазерные дальномеры", "Ультразвуковые датчики", "Инфракрасные датчики"], c: 0},
+                    {q: "Что такое лидар?", a: ["Лазерный дальномер", "Камера", "Ультразвуковой датчик", "Инфракрасный датчик"], c: 0},
+                    {q: "Что такое инерциальный измерительный блок?", a: ["Набор акселерометров и гироскопов", "Набор камер", "Набор дальномеров", "Набор датчиков температуры"], c: 0},
+                    {q: "Что такое SLAM?", a: ["Одновременная локализация и картографирование", "Только локализация", "Только картографирование", "Ни то, ни другое"], c: 0},
+                    {q: "Что такое одометрия?", a: ["Определение положения по данным колес", "Определение по камерам", "Определение по лидару", "Определение по GPS"], c: 0},
+                    {q: "Что такое GPS?", a: ["Глобальная система позиционирования", "Локальная система", "Система ориентации", "Система навигации"], c: 0},
+                    {q: "Что такое IMU?", a: ["Инерциальный измерительный блок", "Камера", "Лидар", "Ультразвуковой датчик"], c: 0},
+                    {q: "Что такое ПИД-регулятор?", a: ["Пропорционально-интегрально-дифференциальный регулятор", "Пропорциональный регулятор", "Интегральный регулятор", "Дифференциальный регулятор"], c: 0},
+                    {q: "Что такое пропорциональная составляющая?", a: ["Реакция на текущую ошибку", "Реакция на накопленную ошибку", "Реакция на скорость изменения ошибки", "Реакция на ускорение ошибки"], c: 0},
+                    {q: "Что такое интегральная составляющая?", a: ["Реакция на накопленную ошибку", "Реакция на текущую ошибку", "Реакция на скорость изменения", "Реакция на ускорение"], c: 0},
+                    {q: "Что такое дифференциальная составляющая?", a: ["Реакция на скорость изменения ошибки", "Реакция на текущую ошибку", "Реакция на накопленную ошибку", "Реакция на ускорение"], c: 0},
+                    {q: "Что такое перерегулирование?", a: ["Превышение заданного значения", "Недостижение заданного значения", "Точное достижение", "Колебания"], c: 0},
+                    {q: "Что такое время установления?", a: ["Время достижения заданной точности", "Время начала реакции", "Время окончания реакции", "Время перерегулирования"], c: 0},
+                    {q: "Что такое статическая ошибка?", a: ["Ошибка в установившемся режиме", "Ошибка в переходном режиме", "Временная ошибка", "Случайная ошибка"], c: 0},
+                    {q: "Что такое роботизированная сварка?", a: ["Автоматическая сварка роботом", "Ручная сварка", "Полуавтоматическая сварка", "Газовая сварка"], c: 0},
+                    {q: "Что такое роботизированная покраска?", a: ["Автоматическая покраска роботом", "Ручная покраска", "Покраска кистью", "Покраска валиком"], c: 0},
+                    {q: "Что такое роботизированная сборка?", a: ["Автоматическая сборка роботом", "Ручная сборка", "Полуавтоматическая сборка", "Конвейерная сборка"], c: 0},
+                    {q: "Что такое промышленный робот?", a: ["Робот для промышленных задач", "Робот для дома", "Робот для развлечений", "Робот для образования"], c: 0},
+                    {q: "Что такое сервисный робот?", a: ["Робот для обслуживания людей", "Промышленный робот", "Военный робот", "Космический робот"], c: 0},
+                    {q: "Что такое мобильный робот?", a: ["Робот с возможностью перемещения", "Стационарный робот", "Подвижный манипулятор", "Неподвижный робот"], c: 0},
+                    {q: "Что такое колесный робот?", a: ["Робот на колесах", "Робот на гусеницах", "Шагающий робот", "Летающий робот"], c: 0},
+                    {q: "Что такое гусеничный робот?", a: ["Робот на гусеницах", "Робот на колесах", "Шагающий робот", "Летающий робот"], c: 0},
+                    {q: "Что такое шагающий робот?", a: ["Робот с ногами", "Робот на колесах", "Робот на гусеницах", "Летающий робот"], c: 0},
+                    {q: "Что такое летающий робот?", a: ["Дрон", "Наземный робот", "Подводный робот", "Космический робот"], c: 0},
+                    {q: "Что такое подводный робот?", a: ["Робот для работы под водой", "Наземный робот", "Летающий робот", "Космический робот"], c: 0},
+                    {q: "Что такое космический робот?", a: ["Робот для работы в космосе", "Наземный робот", "Подводный робот", "Летающий робот"], c: 0},
+                    {q: "Что такое медицинский робот?", a: ["Робот для медицины", "Промышленный робот", "Сервисный робот", "Военный робот"], c: 0},
+                    {q: "Что такое хирургический робот?", a: ["Робот для операций", "Робот для диагностики", "Робот для реабилитации", "Робот для ухода"], c: 0},
+                    {q: "Что такое реабилитационный робот?", a: ["Робот для восстановления пациентов", "Робот для операций", "Робот для диагностики", "Робот для ухода"], c: 0},
+                    {q: "Что такое робот-ассистент?", a: ["Робот, помогающий людям", "Автономный робот", "Промышленный робот", "Военный робот"], c: 0},
+                    {q: "Что такое робот-пылесос?", a: ["Робот для уборки", "Робот для мойки окон", "Робот для стирки", "Робот для готовки"], c: 0},
+                    {q: "Что такое робот-газонокосилка?", a: ["Робот для стрижки газона", "Робот для уборки", "Робот для полива", "Робот для посадки"], c: 0},
+                    {q: "Что такое робот-доставщик?", a: ["Робот для доставки грузов", "Робот для уборки", "Робот для охраны", "Робот для развлечений"], c: 0},
+                    {q: "Что такое робот-охранник?", a: ["Робот для безопасности", "Робот для доставки", "Робот для уборки", "Робот для развлечений"], c: 0},
+                    {q: "Что такое робот-экскурсовод?", a: ["Робот для проведения экскурсий", "Робот для охраны", "Робот для доставки", "Робот для уборки"], c: 0},
+                    {q: "Что такое робот-учитель?", a: ["Робот для обучения", "Робот для развлечений", "Робот для охраны", "Робот для доставки"], c: 0},
+                    {q: "Что такое робот-компаньон?", a: ["Робот для общения", "Робот для работы", "Робот для обучения", "Робот для охраны"], c: 0},
+                    {q: "Что такое робот-животное?", a: ["Робот, имитирующий животное", "Робот-человек", "Робот-машина", "Робот-насекомое"], c: 0},
+                    {q: "Что такое андроид?", a: ["Робот, похожий на человека", "Робот-животное", "Робот-машина", "Робот-насекомое"], c: 0},
+                    {q: "Что такое гуманоид?", a: ["Робот с человеческой формой", "Робот с формой животного", "Робот с произвольной формой", "Робот без формы"], c: 0},
+                    {q: "Что такое зооморфный робот?", a: ["Робот, похожий на животное", "Робот, похожий на человека", "Робот-машина", "Робот-насекомое"], c: 0},
+                    {q: "Что такое робот-насекомое?", a: ["Маленький робот", "Большой робот", "Робот-человек", "Робот-животное"], c: 0},
+                    {q: "Что такое роевой робот?", a: ["Робот, работающий в группе", "Одиночный робот", "Парный робот", "Тройной робот"], c: 0},
+                    {q: "Что такое роевое поведение?", a: ["Коллективное поведение роботов", "Индивидуальное поведение", "Парное поведение", "Групповое поведение"], c: 0},
+                    {q: "Что такое алгоритм роевого интеллекта?", a: ["Алгоритм, вдохновленный коллективным поведением животных", "Индивидуальный алгоритм", "Парный алгоритм", "Групповой алгоритм"], c: 0},
+                    {q: "Что такое муравьиный алгоритм?", a: ["Алгоритм, основанный на поведении муравьев", "Алгоритм, основанный на поведении пчел", "Алгоритм, основанный на поведении рыб", "Алгоритм, основанный на поведении птиц"], c: 0},
+                    {q: "Что такое пчелиный алгоритм?", a: ["Алгоритм, основанный на поведении пчел", "Алгоритм, основанный на поведении муравьев", "Алгоритм, основанный на поведении рыб", "Алгоритм, основанный на поведении птиц"], c: 0},
+                    {q: "Что такое алгоритм стаи птиц?", a: ["Алгоритм, основанный на поведении птиц", "Алгоритм, основанный на поведении муравьев", "Алгоритм, основанный на поведении пчел", "Алгоритм, основанный на поведении рыб"], c: 0},
+                    {q: "Что такое алгоритм косяка рыб?", a: ["Алгоритм, основанный на поведении рыб", "Алгоритм, основанный на поведении птиц", "Алгоритм, основанный на поведении муравьев", "Алгоритм, основанный на поведении пчел"], c: 0},
+                    {q: "Что такое эволюционный алгоритм?", a: ["Алгоритм, основанный на эволюции", "Алгоритм, основанный на обучении", "Алгоритм, основанный на логике", "Алгоритм, основанный на статистике"], c: 0},
+                    {q: "Что такое генетический алгоритм?", a: ["Вид эволюционного алгоритма", "Вид роевого алгоритма", "Вид обучающего алгоритма", "Вид логического алгоритма"], c: 0},
+                    {q: "Что такое генетическое программирование?", a: ["Эволюция программ", "Эволюция роботов", "Эволюция алгоритмов", "Эволюция данных"], c: 0},
+                    {q: "Что такое нейроэволюция?", a: ["Эволюция нейронных сетей", "Эволюция программ", "Эволюция роботов", "Эволюция алгоритмов"], c: 0},
+                    {q: "Что такое Q-обучение?", a: ["Алгоритм обучения с подкреплением", "Алгоритм обучения с учителем", "Алгоритм обучения без учителя", "Алгоритм эволюционного обучения"], c: 0},
+                    {q: "Что такое глубокое обучение с подкреплением?", a: ["Комбинация глубокого обучения и обучения с подкреплением", "Только глубокое обучение", "Только обучение с подкреплением", "Ни то, ни другое"], c: 0},
+                    {q: "Что такое политика в обучении с подкреплением?", a: ["Стратегия выбора действий", "Функция ценности", "Функция награды", "Функция состояния"], c: 0},
+                    {q: "Что такое функция ценности?", a: ["Ожидаемая награда", "Текущая награда", "Прошлая награда", "Будущая награда"], c: 0},
+                    {q: "Что такое функция награды?", a: ["Непосредственная обратная связь", "Отложенная обратная связь", "Косвенная обратная связь", "Прямая обратная связь"], c: 0},
+                    {q: "Что такое среда в обучении с подкреплением?", a: ["Мир, в котором действует агент", "Агент", "Награда", "Политика"], c: 0},
+                    {q: "Что такое агент в обучении с подкреплением?", a: ["Сущность, принимающая решения", "Среда", "Награда", "Политика"], c: 0},
+                    {q: "Что такое эпизод в обучении с подкреплением?", a: ["Последовательность шагов от начала до конца", "Один шаг", "Два шага", "Три шага"], c: 0},
+                    {q: "Что такое горизонт планирования?", a: ["Количество будущих шагов для рассмотрения", "Текущий шаг", "Прошлый шаг", "Все шаги"], c: 0},
+                    {q: "Что такое дисконтирование?", a: ["Учет будущих наград с коэффициентом", "Учет текущих наград", "Учет прошлых наград", "Учет всех наград"], c: 0},
+                    {q: "Что такое исследование и эксплуатация?", a: ["Баланс между новыми и известными действиями", "Только исследование", "Только эксплуатация", "Ни то, ни другое"], c: 0},
+                    {q: "Что такое epsilon-жадная стратегия?", a: ["С вероятностью epsilon исследование, иначе эксплуатация", "Всегда исследование", "Всегда эксплуатация", "Случайный выбор"], c: 0},
+                    {q: "Что такое Softmax стратегия?", a: ["Выбор действий на основе вероятностей", "Жадный выбор", "Случайный выбор", "Последовательный выбор"], c: 0},
+                    {q: "Что такое марковский процесс принятия решений?", a: ["Математическая модель обучения с подкреплением", "Модель обучения с учителем", "Модель обучения без учителя", "Модель эволюционного обучения"], c: 0},
+                    {q: "Что такое состояние в MDP?", a: ["Представление среды в момент времени", "Действие", "Награда", "Политика"], c: 0},
+                    {q: "Что такое действие в MDP?", a: ["Выбор агента", "Состояние", "Награда", "Политика"], c: 0},
+                    {q: "Что такое переход в MDP?", a: ["Изменение состояния", "Выбор действия", "Получение награды", "Определение политики"], c: 0},
+                    {q: "Что такое награда в MDP?", a: ["Числовая обратная связь", "Состояние", "Действие", "Политика"], c: 0},
+                    {q: "Что такое политика в MDP?", a: ["Отображение состояний в действия", "Отображение действий в состояния", "Отображение наград в действия", "Отображение состояний в награды"], c: 0},
+                    {q: "Что такое функция ценности состояния?", a: ["Ожидаемая награда из состояния", "Текущая награда", "Прошлая награда", "Будущая награда"], c: 0},
+                    {q: "Что такое функция ценности действия?", a: ["Ожидаемая награда при выборе действия", "Текущая награда", "Прошлая награда", "Будущая награда"], c: 0},
+                    {q: "Что такое уравнение Беллмана?", a: ["Рекуррентное соотношение для функции ценности", "Уравнение для политики", "Уравнение для награды", "Уравнение для состояния"], c: 0},
+                    {q: "Что такое итерация по ценности?", a: ["Алгоритм решения уравнения Беллмана", "Алгоритм обучения политики", "Алгоритм получения наград", "Алгоритм определения состояний"], c: 0},
+                    {q: "Что такое итерация по политике?", a: ["Алгоритм улучшения политики", "Алгоритм вычисления ценности", "Алгоритм получения наград", "Алгоритм определения состояний"], c: 0},
+                    {q: "Что такое SARSA?", a: ["Алгоритм обучения с подкреплением", "Алгоритм обучения с учителем", "Алгоритм обучения без учителя", "Алгоритм эволюционного обучения"], c: 0},
+                    {q: "Что такое Deep Q-Network?", a: ["Глубокая Q-сеть", "Поверхностная Q-сеть", "Широкая Q-сеть", "Узкая Q-сеть"], c: 0},
+                    {q: "Что такое Actor-Critic?", a: ["Архитектура, сочетающая актора и критика", "Архитектура только с актором", "Архитектура только с критиком", "Архитектура без актора и критика"], c: 0},
+                    {q: "Что такое актор в Actor-Critic?", a: ["Компонент, выбирающий действия", "Компонент, оценивающий действия", "Компонент, определяющий состояния", "Компонент, выдающий награды"], c: 0},
+                    {q: "Что такое критик в Actor-Critic?", a: ["Компонент, оценивающий действия", "Компонент, выбирающий действия", "Компонент, определяющий состояния", "Компонент, выдающий награды"], c: 0},
+                    {q: "Что такое Proximal Policy Optimization?", a: ["Алгоритм оптимизации политики", "Алгоритм оптимизации ценности", "Алгоритм оптимизации награды", "Алгоритм оптимизации состояния"], c: 0},
+                    {q: "Что такое Trust Region Policy Optimization?", a: ["Алгоритм оптимизации политики с доверительной областью", "Алгоритм без доверительной области", "Алгоритм с глобальной областью", "Алгоритм с локальной областью"], c: 0}
                 ]
             }
         };
 
-        const locations = {
-            0: {
-                title: "🏛 ВЫБОР ВУЗА",
-                text: `🎓 БАКАЛАВРИАТ 4 ГОДА • 2025\n
-💡 ЦЕЛЬ: Пройти 4 курса экзаменов → Получить диплом → Карьера!
-
-🔧 КИПУ - Машиностроение | IT | Педагогика
-🔵 МИРЭА - Программирование | AI
-🟠 БАУМАНКА - Робототехника
-🔴 РАНХиГС - Менеджмент
-🟣 КФУ Вернадского - Data Science
-🟡 МГУ - Физика`,
-                actions: [
-                    { text: "🔧 КИПУ", next: 101, color: "uni-kipu" },
-                    { text: "🔵 МИРЭА", next: 201, color: "uni-mirea" },
-                    { text: "🟠 БАУМАНКА", next: 301, color: "uni-bauman" },
-                    { text: "🔴 РАНХиГС", next: 401, color: "uni-ranepa" },
-                    { text: "🟣 КФУ Вернадского", next: 501, color: "uni-kfu" },
-                    { text: "🟡 МГУ", next: 601, color: "uni-mgu" }
-                ]
-            },
-            101: { // КИПУ
-                title: "🔧 КИПУ - Факультеты",
-                text: `🎓 Крымский Инженерно-Педагогический Университет
-Симферополь`,
-                actions: [
-                    { text: "Машиностроение", next: 110, color: "uni-kipu", direction: "машиностроение" },
-                    { text: "Информатика", next: 111, color: "uni-kipu", direction: "информатика" },
-                    { text: "Педагогика", next: 112, color: "uni-kipu", direction: "педагогика" }
-                ],
-                stats: { knowledge: 10 }
-            },
-            110: { // 1 курс машиностроение
-                title: "🔩 1 КУРС • МАШИНОСТРОЕНИЕ",
-                text: "📚 <b>ЭКЗАМЕН 1 КУРСА</b>\nПройди тест из 5 вопросов по черчению и материаловедению!",
-                quiz: "машиностроение",
-                nextCourse: 120,
-                stats: { course: 1, knowledge: 15 }
-            },
-            // Аналогично для остальных направлений...
-            999: { // ПОБЕДА
-                title: "🎓 ВЫПУСКНИК!",
-                text: "ПРОШЁЛ 4 КУРСА! ДИПЛОМ ПОЛУЧЕН!",
-                win: true,
-                stats: { money: 250000 }
-            }
+        // Состояние игры
+        const gameState = {
+            currentSemester: 1,
+            currentQuestion: 0,
+            score: 0,
+            selectedSpec: null,
+            questions: [],
+            userAnswers: [],
+            currentQuestionData: null,
+            isAnswered: false
         };
 
-        function getRandomQuestion(direction) {
-            const quiz = QUIZZES[direction];
-            if (!quiz || !quiz.questions) return null;
+        // Элементы DOM
+        const elements = {
+            semester: document.getElementById('semester'),
+            score: document.getElementById('score'),
+            questionCounter: document.getElementById('question-counter'),
+            difficulty: document.getElementById('difficulty'),
+            specializationSelector: document.getElementById('specialization-selector'),
+            questionContainer: document.getElementById('question-container'),
+            questionNumber: document.getElementById('question-number'),
+            questionCategory: document.getElementById('question-category'),
+            questionText: document.getElementById('question-text'),
+            answersContainer: document.getElementById('answers-container'),
+            prevBtn: document.getElementById('prev-btn'),
+            startBtn: document.getElementById('start-btn'),
+            nextBtn: document.getElementById('next-btn'),
+            resultsScreen: document.getElementById('results-screen'),
+            finalScore: document.getElementById('final-score'),
+            correctAnswers: document.getElementById('correct-answers'),
+            totalQuestions: document.getElementById('total-questions'),
+            successRate: document.getElementById('success-rate'),
+            overallProgress: document.getElementById('overall-progress'),
+            nextSemesterBtn: document.getElementById('next-semester-btn')
+        };
+
+        // Функция для перемешивания массива (Fisher-Yates shuffle)
+        function shuffleArray(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+            return array;
+        }
+
+        // Функция для получения вопроса с перемешанными ответами
+        function getQuestionWithShuffledAnswers(questionData) {
+            const answers = [...questionData.a];
+            const correctAnswer = answers[questionData.c];
             
-            const unused = quiz.questions.filter((q, i) => !gameState.usedQuestions[`${direction}_${i}`]);
-            if (unused.length === 0) return null;
+            // Создаем массив индексов и перемешиваем их
+            const indices = Array.from({length: answers.length}, (_, i) => i);
+            shuffleArray(indices);
             
-            const randomIdx = Math.floor(Math.random() * unused.length);
-            const question = unused[randomIdx];
-            const qIdx = quiz.questions.indexOf(question);
-            gameState.usedQuestions[`${direction}_${qIdx}`] = true;
-            return {question, index: qIdx};
-        }
-
-        function startQuiz(direction, nextLocation) {
-            gameState.currentQuiz = {direction, nextLocation, correct: 0, total: 5};
-            showQuiz();
-        }
-
-        function showQuiz() {
-            const quizData = getRandomQuestion(gameState.currentQuiz.direction);
-            if (!quizData) {
-                showLocation(gameState.currentQuiz.nextLocation);
-                return;
-            }
-
-            gameState.currentQuiz.currentQuestion = quizData;
-            const q = quizData.question;
-
-            document.getElementById('sceneTitle').innerHTML = `📚 ЭКЗАМЕН ${gameState.stats.course} КУРСА<br><small>${gameState.currentQuiz.correct}/${gameState.currentQuiz.total}</small>`;
-            document.getElementById('sceneText').innerHTML = `
-                <div class="quiz-container">
-                    <div class="quiz-question">${q.q}</div>
-                    <div class="quiz-options" id="quizOptions"></div>
-                    <div class="course-progress">
-                        Пройдено: ${gameState.currentQuiz.correct}/${gameState.currentQuiz.total}
-                    </div>
-                </div>`;
-
-            const options = document.getElementById('quizOptions');
-            options.innerHTML = '';
-            q.a.forEach((answer, i) => {
-                const btn = document.createElement('button');
-                btn.className = 'quiz-btn';
-                btn.innerHTML = answer;
-                btn.onclick = () => checkAnswer(i);
-                options.appendChild(btn);
-            });
-        }
-
-        function checkAnswer(selected) {
-            const q = gameState.currentQuiz.currentQuestion.question;
-            const correctBtn = document.querySelectorAll('.quiz-btn')[q.c];
-            const selectedBtn = document.querySelectorAll('.quiz-btn')[selected];
-
-            selectedBtn.classList.add(selected === q.c ? 'correct' : 'wrong');
-            if (selected === q.c) correctBtn.classList.add('correct');
+            // Перемешиваем ответы и находим новую позицию правильного ответа
+            const shuffledAnswers = indices.map(i => answers[i]);
+            const newCorrectIndex = indices.indexOf(questionData.c);
             
-            if (selected === q.c) {
-                gameState.currentQuiz.correct++;
-                gameState.stats.knowledge += 5;
-                gameState.stats.money += 5000;
-            } else {
-                gameState.stats.experience += 2;
-            }
-
-            setTimeout(() => {
-                if (gameState.currentQuiz.correct + 1 >= gameState.currentQuiz.total) {
-                    // Экзамен сдан
-                    if (gameState.currentQuiz.correct >= 3) {
-                        gameState.stats.course++;
-                        showLocation(gameState.currentQuiz.nextLocation);
-                    } else {
-                        // Провален
-                        gameState.gameOver = true;
-                        setTimeout(() => {
-                            document.getElementById('gameoverText').innerHTML = 
-                                `❌ Экзамен провален!\n${gameState.currentQuiz.correct}/5 правильных ответов`;
-                            document.getElementById('gameoverModal').classList.remove('hidden');
-                        }, 1000);
-                    }
-                } else {
-                    showQuiz();
-                }
-                updateDisplay();
-            }, 1500);
-        }
-
-        function showLocation(id) {
-            if (gameState.gameWon || gameState.gameOver) return;
-            const loc = locations[id];
-            if (!loc) return;
-
-            gameState.currentLocation = id;
-
-            if (loc.direction) {
-                gameState.direction = loc.direction;
-                gameState.inventory.push(`Сессия ${gameState.stats.course} курс (${getUniName(gameState.university)})`);
-            }
-
-            if (loc.stats) {
-                Object.keys(loc.stats).forEach(key => {
-                    gameState.stats[key] = (gameState.stats[key] || 0) + (loc.stats[key] || 0);
-                });
-            }
-
-            if (loc.quiz) {
-                startQuiz(loc.quiz, loc.nextCourse || id + 10);
-                return;
-            }
-
-            document.getElementById('sceneTitle').textContent = loc.title;
-            document.getElementById('sceneText').textContent = loc.text;
-
-            const controls = document.getElementById('controls');
-            controls.innerHTML = '';
-
-            if (loc.win) {
-                gameState.gameWon = true;
-                gameState.stats.money += 100000; // Дипломная надбавка
-                setTimeout(() => {
-                    document.getElementById('winText').innerHTML = 
-                        `🎓 <strong>${gameState.direction.toUpperCase()}</strong><br>` +
-                        `${getUniName(gameState.university)}<br>` +
-                        `📚 ${gameState.stats.knowledge} знаний<br>` +
-                        `💰 <strong>${formatMoney(gameState.stats.money)}</strong><br><br>` +
-                        `ПРОШЁЛ 4 КУРСА!`;
-                    document.getElementById('winModal').classList.remove('hidden');
-                }, 1500);
-                return;
-            }
-
-            if (loc.gameOver) {
-                gameState.gameOver = true;
-                setTimeout(() => {
-                    document.getElementById('gameoverText').innerHTML = loc.gameoverText;
-                    document.getElementById('gameoverModal').classList.remove('hidden');
-                }, 1000);
-                return;
-            }
-
-            if (loc.actions) {
-                loc.actions.forEach(action => {
-                    const btn = document.createElement('button');
-                    btn.className = `uni-btn ${action.color}`;
-                    btn.innerHTML = `<div style="font-size: 1.05em; font-weight: 800;">${action.text}</div>`;
-                    btn.onclick = () => showLocation(action.next);
-                    controls.appendChild(btn);
-                });
-            }
-
-            updateDisplay();
-        }
-
-        // Остальные функции без изменений
-        function updateDisplay() {
-            document.getElementById('uniName').textContent = gameState.direction ? 
-                `${gameState.direction} (${getUniName(gameState.university)})` : '—';
-            document.getElementById('knowledge').textContent = gameState.stats.knowledge;
-            document.getElementById('prestige').textContent = gameState.stats.prestige;
-            document.getElementById('experience').textContent = gameState.stats.experience;
-            document.getElementById('course').textContent = gameState.stats.course;
-            document.getElementById('money').textContent = formatMoney(gameState.stats.money);
-
-            const inv = document.getElementById('inventory');
-            if (gameState.inventory.length === 0) {
-                inv.innerHTML = '<span style="opacity: 0.6;">Инвентарь пуст</span>';
-            } else {
-                inv.innerHTML = gameState.inventory.slice(-6).map(item => 
-                    `<span class="inventory-item">${item}</span>`
-                ).join('');
-            }
-        }
-
-        function getUniName(id) {
-            const names = { 
-                1: '🔧 КИПУ', 2: '🔵 МИРЭА', 3: '🟠 БАУМАНКА', 
-                4: '🔴 РАНХиГС', 5: '🟣 КФУ Вернадского', 6: '🟡 МГУ' 
+            return {
+                q: questionData.q,
+                a: shuffledAnswers,
+                c: newCorrectIndex
             };
-            return names[id] || '—';
         }
 
-        function formatMoney(amount) {
-            return amount.toLocaleString() + '₽';
-        }
-
-        function showStats() {
-            const statsText = `📊 СТАТИСТИКА:
-🎓 ${gameState.direction || 'Не выбрано'}
-🏛 ${getUniName(gameState.university)}
-📚 Знания: ${gameState.stats.knowledge}
-⭐ Престиж: ${gameState.stats.prestige}
-🎯 Опыт: ${gameState.stats.experience}
-📖 Курс: ${gameState.stats.course}/4
-💰 ${formatMoney(gameState.stats.money)}
-📦 ${gameState.inventory.length} сессий`;
-            alert(statsText);
-        }
-
-        function showInventory() {
-            if (gameState.inventory.length === 0) {
-                alert('📦 Инвентарь пуст');
-                return;
-            }
-            alert(`📦 СЕССИИ (${gameState.inventory.length}):
-${gameState.inventory.join('\n')}`);
-        }
-
-        function resetGame() {
-            document.getElementById('winModal').classList.add('hidden');
-            document.getElementById('gameoverModal').classList.add('hidden');
-            gameState.usedQuestions = {};
-            setTimeout(initGame, 300);
-        }
-
-        function sendResultAndRestart() {
-            if (window.Telegram && Telegram.WebApp) {
-                Telegram.WebApp.sendData(JSON.stringify({
-                    score: gameState.stats.money,
-                    uni: getUniName(gameState.university),
-                    direction: gameState.direction,
-                    course: gameState.stats.course,
-                    knowledge: gameState.stats.knowledge,
-                    player: window.userData.name
-                }));
-            }
-            resetGame();
-        }
-
+        // Инициализация игры
         function initGame() {
-            gameState = {
-                currentLocation: 0,
-                university: 0,
-                faculty: '',
-                direction: '',
-                inventory: [],
-                stats: { knowledge: 0, prestige: 0, experience: 0, course: 1, money: 1000 },
-                gameOver: false,
-                gameWon: false,
-                currentQuiz: null,
-                usedQuestions: {}
-            };
-            updateDisplay();
-            showLocation(0);
-            document.getElementById('winModal').classList.add('hidden');
-            document.getElementById('gameoverModal').classList.add('hidden');
+            gameState.currentSemester = 1;
+            gameState.currentQuestion = 0;
+            gameState.score = 0;
+            gameState.selectedSpec = null;
+            gameState.questions = [];
+            gameState.userAnswers = [];
+            
+            updateUI();
+            showSpecializationSelector();
+            
+            // Добавляем обработчики для кнопок специализаций
+            document.querySelectorAll('.spec-btn').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    document.querySelectorAll('.spec-btn').forEach(b => b.classList.remove('active'));
+                    btn.classList.add('active');
+                    gameState.selectedSpec = btn.dataset.spec;
+                    elements.startBtn.disabled = false;
+                });
+            });
+            
+            elements.startBtn.addEventListener('click', startSemester);
+            elements.prevBtn.addEventListener('click', showPreviousQuestion);
+            elements.nextBtn.addEventListener('click', showNextQuestion);
+            elements.nextSemesterBtn.addEventListener('click', startNextSemester);
         }
 
-        initGame();
+        // Показать выбор специализации
+        function showSpecializationSelector() {
+            elements.questionText.textContent = "Выберите специализацию для начала обучения";
+            elements.answersContainer.innerHTML = '';
+            elements.questionCategory.textContent = "Выбор специализации";
+            elements.questionNumber.textContent = `Подготовка к семестру ${gameState.currentSemester}`;
+            
+            elements.startBtn.textContent = "🚀 Начать обучение";
+            elements.startBtn.disabled = true;
+            elements.prevBtn.disabled = true;
+            elements.nextBtn.disabled = true;
+            
+            elements.questionContainer.style.display = 'block';
+            elements.resultsScreen.style.display = 'none';
+        }
+
+        // Начать семестр
+        function startSemester() {
+            if (!gameState.selectedSpec) return;
+            
+            // Выбираем 10 случайных вопросов из выбранной специализации
+            const allQuestions = [...QUIZZES[gameState.selectedSpec].questions];
+            shuffleArray(allQuestions);
+            gameState.questions = allQuestions.slice(0, 10).map(q => getQuestionWithShuffledAnswers(q));
+            gameState.currentQuestion = 0;
+            gameState.score = 0;
+            gameState.userAnswers = new Array(gameState.questions.length).fill(null);
+            
+            updateUI();
+            showQuestion();
+        }
+
+        // Показать вопрос
+        function showQuestion() {
+            if (gameState.currentQuestion >= gameState.questions.length) {
+                showResults();
+                return;
+            }
+            
+            const question = gameState.questions[gameState.currentQuestion];
+            gameState.currentQuestionData = question;
+            gameState.isAnswered = false;
+            
+            elements.questionNumber.textContent = `Семестр ${gameState.currentSemester} • Вопрос ${gameState.currentQuestion + 1}/${gameState.questions.length}`;
+            elements.questionCategory.textContent = gameState.selectedSpec;
+            elements.questionText.textContent = question.q;
+            
+            // Обновляем счетчик вопросов
+            elements.questionCounter.textContent = `${gameState.currentQuestion + 1}/${gameState.questions.length}`;
+            
+            // Обновляем сложность
+            const difficultyLevels = ['Ⅰ', 'Ⅱ', 'Ⅲ', 'Ⅳ', 'Ⅴ'];
+            const difficultyIndex = Math.min(Math.floor(gameState.currentQuestion / 2), difficultyLevels.length - 1);
+            elements.difficulty.textContent = difficultyLevels[difficultyIndex];
+            
+            // Создаем кнопки ответов
+            elements.answersContainer.innerHTML = '';
+            question.a.forEach((answer, index) => {
+                const btn = document.createElement('button');
+                btn.className = 'answer-btn';
+                btn.textContent = answer;
+                btn.dataset.index = index;
+                
+                // Если ответ уже был выбран, показываем его состояние
+                if (gameState.userAnswers[gameState.currentQuestion] !== null) {
+                    const userAnswer = gameState.userAnswers[gameState.currentQuestion];
+                    if (index === question.c) {
+                        btn.classList.add('correct');
+                    } else if (index === userAnswer && userAnswer !== question.c) {
+                        btn.classList.add('incorrect');
+                    }
+                }
+                
+                btn.addEventListener('click', () => selectAnswer(index));
+                elements.answersContainer.appendChild(btn);
+            });
+            
+            // Обновляем кнопки навигации
+            elements.prevBtn.disabled = gameState.currentQuestion === 0;
+            elements.nextBtn.disabled = true;
+            elements.startBtn.style.display = 'none';
+            
+            // Добавляем анимацию
+            elements.questionContainer.classList.add('slide-in');
+            setTimeout(() => elements.questionContainer.classList.remove('slide-in'), 300);
+        }
+
+        // Выбор ответа
+        function selectAnswer(answerIndex) {
+            if (gameState.isAnswered) return;
+            
+            gameState.isAnswered = true;
+            gameState.userAnswers[gameState.currentQuestion] = answerIndex;
+            
+            const question = gameState.currentQuestionData;
+            const isCorrect = answerIndex === question.c;
+            
+            // Обновляем счет
+            if (isCorrect) {
+                gameState.score += 10;
+                elements.score.textContent = gameState.score;
+                elements.score.classList.add('pulse');
+                setTimeout(() => elements.score.classList.remove('pulse'), 500);
+            }
+            
+            // Подсвечиваем правильный и неправильный ответы
+            const answerButtons = elements.answersContainer.querySelectorAll('.answer-btn');
+            answerButtons.forEach((btn, index) => {
+                if (index === question.c) {
+                    btn.classList.add('correct');
+                } else if (index === answerIndex && !isCorrect) {
+                    btn.classList.add('incorrect');
+                }
+                btn.disabled = true;
+            });
+            
+            // Активируем кнопку "Далее"
+            elements.nextBtn.disabled = false;
+            
+            // Если это последний вопрос, меняем текст кнопки
+            if (gameState.currentQuestion === gameState.questions.length - 1) {
+                elements.nextBtn.textContent = "📊 Завершить семестр";
+            }
+        }
+
+        // Показать предыдущий вопрос
+        function showPreviousQuestion() {
+            if (gameState.currentQuestion > 0) {
+                gameState.currentQuestion--;
+                showQuestion();
+            }
+        }
+
+        // Показать следующий вопрос
+        function showNextQuestion() {
+            if (gameState.currentQuestion < gameState.questions.length - 1) {
+                gameState.currentQuestion++;
+                showQuestion();
+            } else {
+                showResults();
+            }
+        }
+
+        // Показать результаты
+        function showResults() {
+            const correctCount = gameState.userAnswers.reduce((count, answer, index) => {
+                return count + (answer === gameState.questions[index].c ? 1 : 0);
+            }, 0);
+            
+            const successRate = Math.round((correctCount / gameState.questions.length) * 100);
+            
+            elements.correctAnswers.textContent = correctCount;
+            elements.totalQuestions.textContent = gameState.questions.length;
+            elements.successRate.textContent = `${successRate}%`;
+            elements.finalScore.textContent = `${successRate}%`;
+            
+            // Обновляем общий прогресс
+            const progressPercentage = (gameState.currentSemester / 8) * 100;
+            elements.overallProgress.style.width = `${progressPercentage}%`;
+            
+            elements.questionContainer.style.display = 'none';
+            elements.resultsScreen.style.display = 'block';
+        }
+
+        // Начать следующий семестр
+        function startNextSemester() {
+            if (gameState.currentSemester < 8) {
+                gameState.currentSemester++;
+                elements.semester.textContent = gameState.currentSemester;
+                
+                // Каждый семестр меняем специализацию
+                const specs = Object.keys(QUIZZES);
+                const currentSpecIndex = specs.indexOf(gameState.selectedSpec);
+                gameState.selectedSpec = specs[(currentSpecIndex + 1) % specs.length];
+                
+                // Выделяем выбранную специализацию
+                document.querySelectorAll('.spec-btn').forEach(btn => {
+                    btn.classList.remove('active');
+                    if (btn.dataset.spec === gameState.selectedSpec) {
+                        btn.classList.add('active');
+                    }
+                });
+                
+                startSemester();
+            } else {
+                // Игра завершена
+                alert("🎉 Поздравляем! Вы успешно завершили 4 года бакалавриата!");
+                initGame();
+            }
+        }
+
+        // Обновление UI
+        function updateUI() {
+            elements.semester.textContent = gameState.currentSemester;
+            elements.score.textContent = gameState.score;
+        }
+
+        // Запуск игры при загрузке страницы
+        document.addEventListener('DOMContentLoaded', initGame);
     </script>
 </body>
-</html>
+    </html>
