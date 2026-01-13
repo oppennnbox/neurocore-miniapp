@@ -1,0 +1,1071 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>GameWallet</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * { box-sizing: border-box; }
+        html, body { 
+            margin: 0; padding: 0; width: 100%; height: 100%; 
+            font-family: "Roboto", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; 
+        }
+        body { 
+            display: flex; align-items: center; justify-content: center; padding: 12px;
+            background: radial-gradient(circle at top, #0ea5e9 0, #020617 50%, #000000 100%);
+            color: #e5e7eb; animation: bgShift 14s infinite alternate ease-in-out; 
+            min-height: 100vh; 
+            /* УМЕНЬШАЕМ ОТСТУП СНИЗУ */
+            padding-bottom: 100px;
+        }
+        .card { 
+            width: 100%; max-width: 540px; 
+            background: rgba(15, 23, 42, 0.92); border-radius: 20px; padding: 20px 16px;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.8), 0 0 0 1px rgba(59, 130, 246, 0.3);
+            backdrop-filter: blur(14px); display: flex; flex-direction: column; gap: 16px; 
+            /* УМЕНЬШАЕМ ОТСТУП СНИЗУ */
+            margin-bottom: 80px;
+            /* ДЕЛАЕМ КАРТОЧКУ ПРОКРУЧИВАЕМОЙ ВНУТРИ */
+            max-height: 85vh;
+            overflow-y: auto;
+        }
+        
+        .lang-selector { display: flex; justify-content: flex-end; margin-bottom: 12px; }
+        .lang-dropdown { background: rgba(30, 64, 175, 0.55); border: 1px solid rgba(129, 140, 248, 0.5); border-radius: 8px; padding: 6px 10px; color: #e5e7eb; font-size: 12px; cursor: pointer; outline: none; }
+        .lang-dropdown:hover { background: rgba(30, 64, 175, 0.7); }
+        
+        .card-header { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
+        .avatar { width: 40px; height: 40px; border-radius: 12px; background: conic-gradient(from 140deg, #22c55e, #22d3ee, #6366f1, #ec4899, #22c55e); display: flex; align-items: center; justify-content: center; color: #020617; font-weight: 700; font-size: 18px; text-shadow: 0 0 6px rgba(15, 23, 42, 0.8); animation: pulseGlow 3s infinite ease-in-out; }
+        .title-block { flex: 1; }
+        .title { font-size: 18px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: #e0f2fe; text-shadow: 0 0 8px rgba(56, 189, 248, 0.9), 0 0 16px rgba(59, 130, 246, 0.8); animation: titleGlow 4s infinite ease-in-out; }
+        .subtitle { font-size: 12px; color: #9ca3af; }
+        .badge { font-size: 11px; padding: 3px 7px; border-radius: 999px; background: rgba(59, 130, 246, 0.15); border: 1px solid rgba(59, 130, 246, 0.6); color: #bfdbfe; text-transform: uppercase; letter-spacing: 0.08em; }
+        
+        .buttons-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; margin: 10px 0 12px; }
+        .btn { padding: 11px 12px; border-radius: 12px; border: 0; cursor: pointer; font-size: 14px; display: flex; flex-direction: column; align-items: flex-start; gap: 3px; transition: transform 0.12s ease, box-shadow 0.12s ease, background 0.12s ease; color: #e5e7eb; letter-spacing: 0.01em; }
+        .btn span.label { font-weight: 600; }
+        .btn span.desc { font-size: 11px; color: #cbd5f5; }
+        .btn.primary { background: linear-gradient(135deg, #2563eb, #7c3aed); box-shadow: 0 10px 25px rgba(37, 99, 235, 0.45); }
+        .btn.secondary { background: rgba(30, 64, 175, 0.55); border: 1px solid rgba(129, 140, 248, 0.5); }
+        .btn.green { background: linear-gradient(135deg, #22c55e, #16a34a); box-shadow: 0 10px 25px rgba(34, 197, 94, 0.45); }
+        .btn.orange { background: linear-gradient(135deg, #f97316, #ec4899); box-shadow: 0 10px 25px rgba(249, 115, 22, 0.45); }
+        .btn:hover { transform: translateY(-1px); box-shadow: 0 12px 26px rgba(59, 130, 246, 0.45); }
+        .btn:active { transform: translateY(0); box-shadow: none; }
+        
+        textarea { width: 100%; min-height: 90px; border-radius: 14px; border: 1px solid rgba(75, 85, 99, 0.9); padding: 9px 10px; font-size: 13px; resize: vertical; background: radial-gradient(circle at top left, #0f172a 0, #020617 60%); color: #e5e7eb; outline: none; font-family: "Roboto", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; }
+        textarea::placeholder { color: #6b7280; }
+        textarea:focus { border-color: #38bdf8; box-shadow: 0 0 0 1px rgba(56, 189, 248, 0.8); }
+        
+        .bottom-row { margin-top: 8px; display: flex; align-items: center; justify-content: space-between; gap: 8px; flex-wrap: wrap; }
+        .hint { font-size: 11px; color: #9ca3af; flex: 1 1 60%; }
+        .send-btn { padding: 8px 12px; border-radius: 999px; border: 0; font-size: 13px; font-weight: 500; cursor: pointer; background: linear-gradient(135deg, #22c55e, #16a34a); color: #022c22; display: flex; align-items: center; gap: 4px; box-shadow: 0 10px 22px rgba(34, 197, 94, 0.5); flex-shrink: 0; }
+        .send-btn:active { transform: translateY(1px); box-shadow: none; }
+        
+        .add-group-btn { width: 100%; padding: 10px 14px; border-radius: 999px; border: 0; cursor: pointer; font-size: 14px; font-weight: 600; background: linear-gradient(135deg, #f97316, #ec4899); color: #fefce8; display: flex; align-items: center; justify-content: center; gap: 6px; box-shadow: 0 10px 25px rgba(248, 113, 113, 0.5); text-decoration: none; transition: all 0.2s ease; }
+        .add-group-btn:hover { filter: brightness(1.05); transform: translateY(-1px); }
+        .add-group-btn:active { transform: translateY(1px); box-shadow: none; }
+        
+        .section-divider { height: 1px; background: linear-gradient(90deg, transparent, rgba(59, 130, 246, 0.6), transparent); margin: 20px 0; }
+        .section-title { display: flex; align-items: center; gap: 12px; font-size: 16px; font-weight: 600; color: #e0f2fe; margin-bottom: 16px; }
+        .section-icon { width: 32px; height: 32px; border-radius: 8px; display: flex; align-items: center; justify-content: center; }
+        .games-icon { background: rgba(75, 85, 99, 0.6); border: 1px solid rgba(156, 163, 175, 0.4); position: relative; overflow: hidden; }
+        .game-sphere { position: absolute; width: 8px; height: 8px; background: #f8fafc; border-radius: 50%; animation: sphereFloat 6s infinite linear; }
+        .sphere-1 { animation-delay: 0s; top: 4px; left: 4px; }
+        .sphere-2 { animation-delay: 2s; top: 12px; right: 4px; }
+        .sphere-3 { animation-delay: 4s; bottom: 4px; left: 12px; }
+        
+        .crypto-icon { 
+            background: rgba(75, 85, 99, 0.6); 
+            border: 1px solid rgba(156, 163, 175, 0.4); 
+            position: relative; overflow: hidden; 
+        }
+        .crypto-arrow { 
+            position: absolute; width: 6px; height: 6px; 
+            background: #10b981; 
+            clip-path: polygon(20% 0%, 100% 50%, 20% 100%); 
+            animation: arrowFloat 4s infinite ease-in-out; 
+        }
+        .crypto-arrow:nth-child(1) { animation-delay: 0s; top: 4px; left: 8px; }
+        .crypto-arrow:nth-child(2) { animation-delay: 1.3s; top: 12px; right: 4px; background: #f59e0b; }
+        .crypto-arrow:nth-child(3) { animation-delay: 2.6s; bottom: 4px; left: 12px; background: #ef4444; }
+        
+        .converter-icon {
+            background: rgba(75, 85, 99, 0.6); 
+            border: 1px solid rgba(156, 163, 175, 0.4); 
+            position: relative; overflow: hidden; 
+        }
+        .rub-sign { 
+            position: absolute; font-size: 16px; font-weight: 700; color: #f59e0b; 
+            animation: rubPulse 2s infinite ease-in-out; 
+        }
+        .rub-sign:nth-child(1) { top: 6px; left: 8px; animation-delay: 0s; }
+        .rub-sign:nth-child(2) { top: 10px; right: 6px; font-size: 14px; animation-delay: 0.7s; }
+        
+        .currency-icon {
+            background: rgba(75, 85, 99, 0.6); 
+            border: 1px solid rgba(156, 163, 175, 0.4); 
+            position: relative; overflow: hidden; 
+        }
+        .currency-dollar { 
+            position: absolute; font-size: 14px; font-weight: 700; color: #10b981; 
+            animation: currencyFloat 3s infinite ease-in-out; 
+        }
+        .currency-dollar:nth-child(1) { top: 4px; left: 6px; }
+        .currency-dollar:nth-child(2) { bottom: 4px; right: 6px; font-size: 12px; animation-delay: 1s; }
+        
+        .coming-soon { font-size: 13px; color: #9ca3af; font-style: italic; }
+        
+        /* БАЛАНС */
+        .balance-section { background: rgba(17, 24, 39, 0.5); border-radius: 16px; padding: 20px; border: 1px solid rgba(59, 130, 246, 0.3); text-align: center; }
+        .balance-label { font-size: 14px; color: #9ca3af; margin-bottom: 8px; }
+        .balance-amount { font-size: 36px; font-weight: 700; background: linear-gradient(135deg, #22c55e, #3b82f6); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 5px; }
+        .balance-change { font-size: 12px; color: #10b981; }
+        
+        /* КАРТОЧКИ КОШЕЛЬКОВ */
+        .wallet-cards { display: flex; flex-direction: column; gap: 12px; }
+        .wallet-card { background: rgba(30, 64, 175, 0.2); border-radius: 14px; padding: 16px; border: 1px solid rgba(129, 140, 248, 0.3); display: flex; align-items: center; gap: 12px; transition: all 0.3s ease; cursor: pointer; }
+        .wallet-card:hover { background: rgba(30, 64, 175, 0.35); transform: translateY(-2px); border-color: rgba(129, 140, 248, 0.6); }
+        .wallet-card.active { background: rgba(30, 64, 175, 0.4); border-color: #3b82f6; }
+        .wallet-logo { width: 40px; height: 40px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 20px; }
+        .wallet-logo.telegram { background: linear-gradient(135deg, #0088cc, #34b7f1); color: white; }
+        .wallet-logo.tonkeeper { background: linear-gradient(135deg, #0077ff, #00a8ff); color: white; }
+        .wallet-logo.metamask { background: linear-gradient(135deg, #f6851b, #e2761b); color: white; }
+        .wallet-info { flex: 1; }
+        .wallet-name { font-weight: 600; font-size: 14px; color: #e0f2fe; }
+        .wallet-status { font-size: 11px; color: #9ca3af; margin-top: 2px; }
+        .wallet-status.connected { color: #10b981; }
+        .connect-btn { padding: 6px 12px; border-radius: 8px; border: 1px solid rgba(59, 130, 246, 0.6); background: rgba(59, 130, 246, 0.2); color: #60a5fa; font-size: 12px; font-weight: 600; cursor: pointer; transition: all 0.2s ease; }
+        .connect-btn:hover { background: rgba(59, 130, 246, 0.4); }
+        .connect-btn.connected { background: rgba(34, 197, 94, 0.2); border-color: #22c55e; color: #22c55e; }
+        
+        /* ИСТОРИЯ ТРАНЗАКЦИЙ */
+        .transactions-section { background: rgba(17, 24, 39, 0.5); border-radius: 16px; padding: 16px; border: 1px solid rgba(59, 130, 246, 0.3); }
+        .transactions-list { display: flex; flex-direction: column; gap: 12px; max-height: 200px; overflow-y: auto; }
+        .transaction-item { display: flex; align-items: center; gap: 12px; padding: 10px; background: rgba(15, 23, 42, 0.6); border-radius: 10px; }
+        .transaction-icon { width: 32px; height: 32px; border-radius: 8px; display: flex; align-items: center; justify-content: center; }
+        .transaction-icon.deposit { background: rgba(34, 197, 94, 0.2); color: #22c55e; }
+        .transaction-icon.withdraw { background: rgba(239, 68, 68, 0.2); color: #ef4444; }
+        .transaction-icon.game { background: rgba(168, 85, 247, 0.2); color: #a855f7; }
+        .transaction-details { flex: 1; }
+        .transaction-title { font-weight: 600; font-size: 13px; color: #e0f2fe; }
+        .transaction-date { font-size: 11px; color: #9ca3af; margin-top: 2px; }
+        .transaction-amount { font-weight: 600; font-size: 14px; }
+        .transaction-amount.positive { color: #22c55e; }
+        .transaction-amount.negative { color: #ef4444; }
+        
+        /* МОНЕТЫ ИГР */
+        .game-coins-section { background: rgba(17, 24, 39, 0.5); border-radius: 16px; padding: 16px; border: 1px solid rgba(59, 130, 246, 0.3); }
+        .game-coins-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 12px; }
+        .game-coin { background: rgba(15, 23, 42, 0.8); border-radius: 12px; padding: 12px; display: flex; flex-direction: column; align-items: center; text-align: center; border: 1px solid rgba(75, 85, 99, 0.6); transition: all 0.2s ease; cursor: pointer; }
+        .game-coin:hover { border-color: #f59e0b; transform: scale(1.05); }
+        .game-coin-icon { width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 16px; margin-bottom: 8px; }
+        .game-coin-name { font-size: 12px; font-weight: 600; color: #e0f2fe; }
+        .game-coin-amount { font-size: 11px; color: #9ca3af; margin-top: 4px; }
+        
+        /* МЕТА БЛОК */
+        .meta-block { 
+            margin-top: auto; padding-top: 16px; border-top: 1px solid rgba(55, 65, 81, 0.8); 
+            font-size: 11px; color: #9ca3af; display: flex; flex-direction: column; gap: 4px; 
+            padding-bottom: 15px;
+            margin-bottom: 20px;
+        }
+        .meta-title { font-size: 11px; letter-spacing: 0.16em; text-transform: uppercase; color: #a5b4fc; text-shadow: 0 0 8px rgba(129, 140, 248, 0.6); }
+        .meta-links { display: flex; justify-content: space-between; gap: 8px; flex-wrap: wrap; }
+        .meta-link { color: #38bdf8; text-decoration: none; font-size: 11px; cursor: pointer; }
+        .meta-link:hover { text-decoration: underline; }
+        
+        @media (max-width: 480px) { 
+            body { 
+                padding: 15px 10px 110px; /* УМЕНЬШАЕМ ОТСТУП НА МОБИЛЬНЫХ */
+            }
+            .card { 
+                padding: 14px 10px; 
+                margin-bottom: 90px; /* УМЕНЬШАЕМ ОТСТУП НА МОБИЛЬНЫХ */
+                max-height: 80vh;
+            } 
+            .title { font-size: 16px; } 
+            textarea { min-height: 80px; } 
+            .balance-amount { font-size: 28px; }
+        }
+        
+        @keyframes pulseGlow { 
+            0%, 100% { box-shadow: 0 0 0 rgba(56, 189, 248, 0); } 
+            50% { box-shadow: 0 0 18px rgba(56, 189, 248, 0.9); } 
+        }
+        @keyframes titleGlow { 
+            0%, 100% { text-shadow: 0 0 4px rgba(56, 189, 248, 0.5), 0 0 8px rgba(59, 130, 246, 0.4); } 
+            50% { text-shadow: 0 0 10px rgba(56, 189, 248, 1), 0 0 22px rgba(59, 130, 246, 0.9); } 
+        }
+        @keyframes bgShift { 
+            0% { background: radial-gradient(circle at top, #0ea5e9 0, #020617 50%, #000000 100%); } 
+            50% { background: radial-gradient(circle at top, #6366f1 0, #020617 55%, #000000 100%); } 
+            100% { background: radial-gradient(circle at top, #ec4899 0, #020617 50%, #000000 100%); } 
+        }
+        @keyframes sphereFloat { 
+            0% { transform: translateY(0px) rotate(0deg); opacity: 0.7; } 
+            50% { transform: translateY(-8px) rotate(180deg); opacity: 1; } 
+            100% { transform: translateY(0px) rotate(360deg); opacity: 0.7; } 
+        }
+        @keyframes arrowFloat { 
+            0%, 100% { transform: translateY(0px) rotate(0deg); opacity: 0.7; } 
+            50% { transform: translateY(-6px) rotate(0deg); opacity: 1; } 
+        }
+        @keyframes rubPulse {
+            0%, 100% { transform: scale(1) rotate(0deg); opacity: 0.8; } 
+            50% { transform: scale(1.1) rotate(0deg); opacity: 1; } 
+        }
+        @keyframes currencyFloat {
+            0%, 100% { transform: translateY(0px); } 
+            50% { transform: translateY(-4px); } 
+        }
+
+        /* НАВИГАЦИОННАЯ ПАНЕЛЬ - ТОЧНЫЙ ВАШ ДИЗАЙН */
+        .bottom-nav-wrapper * { -webkit-tap-highlight-color: transparent !important; outline: none !important; user-select: none !important; }
+
+        .bottom-nav-wrapper {
+            position: fixed; bottom: 16px; left: 50%; transform: translateX(-50%);
+            width: 100%; max-width: 460px; z-index: 100; pointer-events: none;
+        }
+
+        .bottom-nav {
+            pointer-events: auto; display: flex; justify-content: space-evenly; align-items: center;
+            background: rgba(10, 15, 30, 0.95); 
+            border: 1px solid rgba(255,255,255,0.1);
+            box-shadow: 0 0 40px rgba(59,130,246,0.3); 
+            border-radius: 28px; height: 82px; /* ВОЗВРАЩАЕМ ВЫСОТУ */
+            backdrop-filter: blur(25px); 
+            overflow: hidden;
+        }
+
+        .bottom-item {
+            flex: 1; height: 100%; display: flex; flex-direction: column;
+            justify-content: center; align-items: center; gap: 4px; /* ВОЗВРАЩАЕМ РАССТОЯНИЕ */
+            color: #e0f2fe; font-size: 11px; font-weight: 600; cursor: pointer;
+            transition: all 0.3s ease; position: relative;
+        }
+
+        .bottom-item.active { color: #00f2fe; }
+
+        .bottom-item-icon {
+            width: 40px; height: 40px; border-radius: 15px; /* ВОЗВРАЩАЕМ РАЗМЕР */
+            position: relative; overflow: hidden; transition: all 0.3s cubic-bezier(0.4,0,0.2,1);
+        }
+
+        .icon-emoji {
+            font-size: 18px; position: absolute; top: 55%; left: 50%;
+            transform: translate(-50%,-50%); z-index: 2;
+            animation: liveEmoji 3s ease-in-out infinite;
+        }
+
+        .icon-emoji:nth-child(1) { animation-delay: 0s; }
+        .icon-emoji:nth-child(3) { animation-delay: 0.5s; }
+        .icon-emoji:nth-child(5) { animation-delay: 1s; }
+        .icon-emoji:nth-child(7) { animation-delay: 1.5s; }
+
+        @keyframes liveEmoji {
+            0%, 100% { transform: translate(-50%,-50%) scale(1) rotate(0deg); }
+            50% { transform: translate(-50%,-50%) scale(1.05) rotate(2deg); }
+        }
+
+        .bottom-item:hover .bottom-item-icon { 
+            transform: translateY(-5px) scale(1.12); 
+            box-shadow: 0 20px 40px rgba(59,130,246,0.4); 
+        }
+        .bottom-item:active .bottom-item-icon { transform: scale(0.95); }
+
+        .holo-friends { background: linear-gradient(45deg, #ff0080, #00f2fe, #ff0080); background-size: 400% 400%; animation: holoShift 4s ease infinite; }
+        .holo-wheel { background: linear-gradient(45deg, #00f2fe, #ff0080, #00f2fe); background-size: 300% 300%; animation: holoShift 5s ease infinite reverse; }
+        .holo-boost { background: linear-gradient(45deg, #ff6b00, #00f2fe, #ff6b00); background-size: 400% 400%; animation: holoShift 3s ease infinite; }
+        .holo-wallet { background: linear-gradient(45deg, #00f2fe, #39ff14, #00f2fe); background-size: 350% 350%; animation: holoShift 4.5s ease infinite reverse; }
+
+        .eye-normal {
+            position: absolute; top: 3px; width: 6px; height: 6px; border-radius: 50%;
+            z-index: 10; transition: all 0.25s ease; animation: blinkFast 2s infinite;
+        }
+        .eye-normal.left { left: 10px; background: rgba(0,0,0,0.85); }
+        .eye-normal.right { right: 10px; background: rgba(0,0,0,0.85); }
+
+        .eye-reacting { animation: none !important; transition: all 0.25s ease; }
+
+        .holo-friends .eye-reacting.left { width: 8px; height: 3px; border-radius: 2px; background: #ff4444; top: 5px; left: 8px; transform: scaleX(1.3); }
+        .holo-friends .eye-reacting.right { width: 8px; height: 3px; border-radius: 2px; background: #ff4444; top: 5px; right: 8px; transform: scaleX(1.3); }
+
+        .holo-wheel .eye-reacting.left { width: 6px; height: 4px; border-radius: 50% 50% 70% 30%; background: #ffd700; top: 4px; left: 10px; transform: rotate(-15deg); }
+        .holo-wheel .eye-reacting.right { width: 6px; height: 4px; border-radius: 30% 70% 50% 50%; background: #ffd700; top: 4px; right: 10px; transform: rotate(15deg); }
+
+        .holo-boost .eye-reacting.left { width: 7px; height: 5px; border-radius: 40% 60% 50% 50%; background: linear-gradient(45deg, #ff69b4, #ff1493); top: 3px; left: 10px; box-shadow: 0 0 5px rgba(255,105,180,0.9); }
+        .holo-boost .eye-reacting.right { width: 7px; height: 5px; border-radius: 50% 40% 60% 50%; background: linear-gradient(45deg, #ff69b4, #ff1493); top: 3px; right: 10px; box-shadow: 0 0 5px rgba(255,105,180,0.9); }
+
+        .holo-wallet .eye-reacting.left { width: 6px; height: 6px; border-radius: 50%; background: #00ff88; top: 3px; left: 10px; box-shadow: 0 0 8px #00ff88; border: 1px solid #fff; }
+        .holo-wallet .eye-reacting.right { width: 6px; height: 6px; border-radius: 50%; background: #00ff88; top: 3px; right: 10px; box-shadow: 0 0 8px #00ff88; border: 1px solid #fff; }
+
+        @keyframes holoShift { 0%, 100% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } }
+        @keyframes blinkFast { 0%, 80%, 100% { transform: scaleY(1); } 85% { transform: scaleY(0.1); } 90% { transform: scaleY(1); } }
+    </style>
+</head>
+<body>
+    <div class="card">
+        <div class="lang-selector">
+            <select class="lang-dropdown" id="langSelect" onchange="changeLanguage(this.value)">
+                <option value="ru">🇷🇺 Русский</option>
+                <option value="en">🇬🇧 English</option>
+                <option value="tt">🇹🇹 Татарский</option>
+            </select>
+        </div>
+ 
+        <div class="card-header">
+            <div class="avatar">GW</div>
+            <div class="title-block">
+                <div class="title">GAMEWALLET</div>
+                <div class="subtitle" id="subtitle">Игровые деньги • Крипто • TON</div>
+            </div>
+            <div class="badge">beta</div>
+        </div>
+ 
+        <!-- БАЛАНС -->
+        <div class="balance-section">
+            <div class="balance-label" id="balanceLabel">Общий баланс</div>
+            <div class="balance-amount" id="balanceAmount">1,245.75 ₽</div>
+            <div class="balance-change" id="balanceChange">+125.50 ₽ за неделю</div>
+        </div>
+ 
+        <!-- КНОПКИ ОСНОВНЫХ ДЕЙСТВИЙ -->
+        <div class="buttons-grid">
+            <button class="btn green" onclick="depositFunds()">
+                <span class="label" id="btnDeposit">Пополнить</span>
+                <span class="desc" id="btnDepositDesc">Добавить деньги</span>
+            </button>
+            <button class="btn orange" onclick="withdrawFunds()">
+                <span class="label" id="btnWithdraw">Вывести</span>
+                <span class="desc" id="btnWithdrawDesc">На карту или кошелек</span>
+            </button>
+            <button class="btn secondary" onclick="showHistory()">
+                <span class="label" id="btnHistory">История</span>
+                <span class="desc" id="btnHistoryDesc">Все транзакции</span>
+            </button>
+            <button class="btn secondary" onclick="convertFunds()">
+                <span class="label" id="btnConvert">Обменять</span>
+                <span class="desc" id="btnConvertDesc">Валюты и крипту</span>
+            </button>
+        </div>
+ 
+        <!-- МОНЕТЫ ИГР -->
+        <div class="section-divider"></div>
+        <div class="section-title">
+            <div class="section-icon games-icon">
+                <div class="game-sphere sphere-1"></div>
+                <div class="game-sphere sphere-2"></div>
+                <div class="game-sphere sphere-3"></div>
+            </div>
+            <span id="gameCoinsTitle">Игровые монеты</span>
+        </div>
+        <div class="game-coins-section">
+            <div class="game-coins-grid">
+                <div class="game-coin" onclick="showCoinDetails('diamonds')">
+                    <div class="game-coin-icon" style="background: linear-gradient(135deg, #0ea5e9, #3b82f6);">💎</div>
+                    <div class="game-coin-name">Diamonds</div>
+                    <div class="game-coin-amount" id="diamondsAmount">1,250</div>
+                </div>
+                <div class="game-coin" onclick="showCoinDetails('gold')">
+                    <div class="game-coin-icon" style="background: linear-gradient(135deg, #f59e0b, #d97706);">🪙</div>
+                    <div class="game-coin-name">Gold</div>
+                    <div class="game-coin-amount" id="goldAmount">25,400</div>
+                </div>
+                <div class="game-coin" onclick="showCoinDetails('gems')">
+                    <div class="game-coin-icon" style="background: linear-gradient(135deg, #8b5cf6, #7c3aed);">💎</div>
+                    <div class="game-coin-name">Gems</div>
+                    <div class="game-coin-amount" id="gemsAmount">320</div>
+                </div>
+            </div>
+        </div>
+ 
+        <!-- ПОДКЛЮЧЕНИЕ КОШЕЛЬКОВ -->
+        <div class="section-divider"></div>
+        <div class="section-title">
+            <div class="section-icon crypto-icon">
+                <div class="crypto-arrow"></div>
+                <div class="crypto-arrow"></div>
+                <div class="crypto-arrow"></div>
+            </div>
+            <span id="walletsTitle">Подключенные кошельки</span>
+        </div>
+        <div class="wallet-cards">
+            <div class="wallet-card" id="telegramWalletCard" onclick="connectWallet('telegram')">
+                <div class="wallet-logo telegram"><i class="fab fa-telegram"></i></div>
+                <div class="wallet-info">
+                    <div class="wallet-name">Telegram Wallet</div>
+                    <div class="wallet-status" id="telegramStatus">Не подключен</div>
+                </div>
+                <button class="connect-btn" id="telegramConnectBtn">Подключить</button>
+            </div>
+            
+            <div class="wallet-card" id="tonkeeperWalletCard" onclick="connectWallet('tonkeeper')">
+                <div class="wallet-logo tonkeeper">TON</div>
+                <div class="wallet-info">
+                    <div class="wallet-name">Tonkeeper</div>
+                    <div class="wallet-status" id="tonkeeperStatus">Не подключен</div>
+                </div>
+                <button class="connect-btn" id="tonkeeperConnectBtn">Подключить</button>
+            </div>
+            
+            <div class="wallet-card" id="metamaskWalletCard" onclick="connectWallet('metamask')">
+                <div class="wallet-logo metamask"><i class="fab fa-ethereum"></i></div>
+                <div class="wallet-info">
+                    <div class="wallet-name">MetaMask</div>
+                    <div class="wallet-status" id="metamaskStatus">Не подключен</div>
+                </div>
+                <button class="connect-btn" id="metamaskConnectBtn">Подключить</button>
+            </div>
+        </div>
+ 
+        <!-- ИСТОРИЯ ТРАНЗАКЦИЙ -->
+        <div class="section-divider"></div>
+        <div class="section-title">
+            <div class="section-icon currency-icon">
+                <div class="currency-dollar"></div>
+                <div class="currency-dollar"></div>
+            </div>
+            <span id="transactionsTitle">Последние транзакции</span>
+        </div>
+        <div class="transactions-section">
+            <div class="transactions-list" id="transactionsList">
+                <!-- Транзакции будут добавлены через JavaScript -->
+            </div>
+        </div>
+ 
+        <!-- ССЫЛКИ -->
+        <div class="meta-block">
+            <div class="meta-title">SYSTEM</div>
+            <div class="meta-links">
+                <a class="meta-link" href="#" onclick="showPrivacy()" id="privacyLink">Политика конфиденциальности</a>
+                <a class="meta-link" href="#" onclick="contactSupport()" id="supportLink">Поддержка</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- НАВИГАЦИОННАЯ ПАНЕЛЬ (ВАШ ОРИГИНАЛЬНЫЙ ДИЗАЙН) -->
+    <div class="bottom-nav-wrapper">
+        <div class="bottom-nav">
+            <div class="bottom-item" data-page="friends">
+                <div class="bottom-item-icon holo-friends">
+                    <span class="icon-emoji">👥</span>
+                    <div class="eye-normal left"></div>
+                    <div class="eye-normal right"></div>
+                </div>
+                <div>Друзья</div>
+            </div>
+            
+            <div class="bottom-item" data-page="wheel">
+                <div class="bottom-item-icon holo-wheel">
+                    <span class="icon-emoji">🎡</span>
+                    <div class="eye-normal left"></div>
+                    <div class="eye-normal right"></div>
+                </div>
+                <div>Колесо</div>
+            </div>
+
+            <div class="bottom-item" data-page="boost">
+                <div class="bottom-item-icon holo-boost">
+                    <span class="icon-emoji">🚀</span>
+                    <div class="eye-normal left"></div>
+                    <div class="eye-normal right"></div>
+                </div>
+                <div>Буст</div>
+            </div>
+
+            <div class="bottom-item active" data-page="wallet">
+                <div class="bottom-item-icon holo-wallet">
+                    <span class="icon-emoji">💎</span>
+                    <div class="eye-normal left"></div>
+                    <div class="eye-normal right"></div>
+                </div>
+                <div>Кошелёк</div>
+            </div>
+        </div>
+    </div>
+ 
+    <script>
+        // =========== КОНФИГУРАЦИЯ ===========
+        const CONFIG = {
+            TEST_MODE: true,
+            API_URL: 'https://ваш-сервер.ру/api', // ЗАМЕНИТЕ на ваш реальный сервер
+            TELEGRAM_BOT: '@ваш_бот', // ЗАМЕНИТЕ на username вашего бота
+            MIN_DEPOSIT: 10,
+            MAX_DEPOSIT: 50000,
+            CONVERSION_RATES: {
+                diamonds: 0.1,   // 1 diamond = 0.1 RUB
+                gold: 0.01,     // 1 gold = 0.01 RUB
+                gems: 1.5        // 1 gem = 1.5 RUB
+            }
+        };
+
+        // =========== СОСТОЯНИЕ КОШЕЛЬКА ===========
+        let walletState = {
+            balance: 1245.75,
+            diamonds: 1250,
+            gold: 25400,
+            gems: 320,
+            userId: null,
+            transactions: [],
+            telegramConnected: false,
+            connectedWallets: {
+                telegram: false,
+                tonkeeper: false,
+                metamask: false
+            }
+        };
+
+        // =========== ПЕРЕВОДЫ ===========
+        const translations = {
+            ru: {
+                subtitle: "Игровые деньги • Крипто • TON",
+                balanceLabel: "Общий баланс",
+                balanceChange: "+125.50 ₽ за неделю",
+                btnDeposit: "Пополнить",
+                btnDepositDesc: "Добавить деньги",
+                btnWithdraw: "Вывести",
+                btnWithdrawDesc: "На карту или кошелек",
+                btnHistory: "История",
+                btnHistoryDesc: "Все транзакции",
+                btnConvert: "Обменять",
+                btnConvertDesc: "Валюты и крипту",
+                gameCoinsTitle: "Игровые монеты",
+                walletsTitle: "Подключенные кошельки",
+                transactionsTitle: "Последние транзакции",
+                privacy: "Политика конфиденциальности",
+                support: "Поддержка",
+                walletStatusConnected: "Подключен",
+                walletStatusNotConnected: "Не подключен",
+                connectBtn: "Подключить",
+                disconnectBtn: "Отключить"
+            },
+            en: {
+                subtitle: "Game money • Crypto • TON",
+                balanceLabel: "Total balance",
+                balanceChange: "+125.50 ₽ per week",
+                btnDeposit: "Deposit",
+                btnDepositDesc: "Add money",
+                btnWithdraw: "Withdraw",
+                btnWithdrawDesc: "To card or wallet",
+                btnHistory: "History",
+                btnHistoryDesc: "All transactions",
+                btnConvert: "Exchange",
+                btnConvertDesc: "Currencies & crypto",
+                gameCoinsTitle: "Game coins",
+                walletsTitle: "Connected wallets",
+                transactionsTitle: "Recent transactions",
+                privacy: "Privacy Policy",
+                support: "Support",
+                walletStatusConnected: "Connected",
+                walletStatusNotConnected: "Not connected",
+                connectBtn: "Connect",
+                disconnectBtn: "Disconnect"
+            },
+            tt: {
+                subtitle: "Уен акчасы • Крипто • TON",
+                balanceLabel: "Гомуми баланс",
+                balanceChange: "+125.50 ₽ бер атнада",
+                btnDeposit: "Тутыру",
+                btnDepositDesc: "Акча өстәү",
+                btnWithdraw: "Чыгару",
+                btnWithdrawDesc: "Картага яки капчыкка",
+                btnHistory: "Тарих",
+                btnHistoryDesc: "Барлык операцияләр",
+                btnConvert: "Алыштыру",
+                btnConvertDesc: "Валюта һәм крипто",
+                gameCoinsTitle: "Уен тәнкәләре",
+                walletsTitle: "Тоташтырылган капчыклар",
+                transactionsTitle: "Соңгы операцияләр",
+                privacy: "Хосусыйлык сәясәте",
+                support: "Ярдәм",
+                walletStatusConnected: "Тоташтырылган",
+                walletStatusNotConnected: "Тоташтырылмаган",
+                connectBtn: "Тоташтыру",
+                disconnectBtn: "Аеру"
+            }
+        };
+
+        let currentLang = 'ru';
+
+        // =========== ИНИЦИАЛИЗАЦИЯ ===========
+        document.addEventListener('DOMContentLoaded', function() {
+            loadWalletFromStorage();
+            initTelegram();
+            updateUI();
+            renderTransactions();
+            simulateWebSocket();
+            
+            // Инициализация навигационной панели
+            initNavigation();
+            
+            // Загрузка сохраненного языка
+            const savedLang = localStorage.getItem('gamewallet_lang') || 'ru';
+            document.getElementById('langSelect').value = savedLang;
+            changeLanguage(savedLang);
+        });
+
+        function loadWalletFromStorage() {
+            const saved = localStorage.getItem('gameWalletDemo');
+            if (saved) {
+                try {
+                    const data = JSON.parse(saved);
+                    walletState.balance = data.balance || walletState.balance;
+                    walletState.diamonds = data.diamonds || walletState.diamonds;
+                    walletState.gold = data.gold || walletState.gold;
+                    walletState.gems = data.gems || walletState.gems;
+                    walletState.transactions = data.transactions || walletState.transactions;
+                    walletState.connectedWallets = data.connectedWallets || walletState.connectedWallets;
+                } catch(e) {
+                    console.error('Ошибка загрузки:', e);
+                }
+            }
+        }
+
+        function saveWalletToStorage() {
+            localStorage.setItem('gameWalletDemo', JSON.stringify({
+                balance: walletState.balance,
+                diamonds: walletState.diamonds,
+                gold: walletState.gold,
+                gems: walletState.gems,
+                transactions: walletState.transactions,
+                connectedWallets: walletState.connectedWallets
+            }));
+        }
+
+        function initTelegram() {
+            if (typeof Telegram !== 'undefined' && Telegram.WebApp) {
+                Telegram.WebApp.ready();
+                Telegram.WebApp.expand();
+                walletState.userId = Telegram.WebApp.initDataUnsafe?.user?.id || Date.now();
+                walletState.telegramConnected = true;
+            }
+        }
+
+        function initNavigation() {
+            document.addEventListener('click', function(e) {
+                const item = e.target.closest('.bottom-item');
+                if (!item) return;
+                
+                const pageId = item.getAttribute('data-page');
+                const icon = item.querySelector('.bottom-item-icon');
+                const eyes = icon.querySelectorAll('.eye-normal');
+                
+                eyes.forEach(eye => eye.classList.add('eye-reacting'));
+                setTimeout(() => eyes.forEach(eye => eye.classList.remove('eye-reacting')), 1200);
+                
+                document.querySelectorAll('.bottom-item').forEach(btn => btn.classList.remove('active'));
+                item.classList.add('active');
+                
+                let message = '';
+                switch(pageId) {
+                    case 'friends': message = '👥 Раздел "Друзья" в разработке'; break;
+                    case 'wheel': message = '🎡 Раздел "Колесо удачи" в разработке'; break;
+                    case 'boost': message = '🚀 Раздел "Буст" в разработке'; break;
+                    case 'wallet': message = '💎 Вы в разделе "Кошелёк"'; break;
+                }
+                
+                showNotification(message);
+            });
+        }
+
+        // =========== ОСНОВНЫЕ ФУНКЦИИ ===========
+        function changeLanguage(lang) {
+            currentLang = lang;
+            const t = translations[lang] || translations.ru;
+            
+            const elements = {
+                'subtitle': 'subtitle',
+                'balanceLabel': 'balanceLabel',
+                'balanceChange': 'balanceChange',
+                'btnDeposit': 'btnDeposit',
+                'btnDepositDesc': 'btnDepositDesc',
+                'btnWithdraw': 'btnWithdraw',
+                'btnWithdrawDesc': 'btnWithdrawDesc',
+                'btnHistory': 'btnHistory',
+                'btnHistoryDesc': 'btnHistoryDesc',
+                'btnConvert': 'btnConvert',
+                'btnConvertDesc': 'btnConvertDesc',
+                'gameCoinsTitle': 'gameCoinsTitle',
+                'walletsTitle': 'walletsTitle',
+                'transactionsTitle': 'transactionsTitle',
+                'privacyLink': 'privacy',
+                'supportLink': 'support'
+            };
+            
+            Object.keys(elements).forEach(id => {
+                const el = document.getElementById(id);
+                if (el) el.textContent = t[elements[id]] || el.textContent;
+            });
+            
+            updateWalletStatusText();
+            localStorage.setItem('gamewallet_lang', lang);
+        }
+
+        function updateWalletStatusText() {
+            const t = translations[currentLang] || translations.ru;
+            
+            document.getElementById('telegramStatus').textContent = 
+                walletState.connectedWallets.telegram ? t.walletStatusConnected : t.walletStatusNotConnected;
+            document.getElementById('tonkeeperStatus').textContent = 
+                walletState.connectedWallets.tonkeeper ? t.walletStatusConnected : t.walletStatusNotConnected;
+            document.getElementById('metamaskStatus').textContent = 
+                walletState.connectedWallets.metamask ? t.walletStatusConnected : t.walletStatusNotConnected;
+            
+            document.getElementById('telegramConnectBtn').textContent = 
+                walletState.connectedWallets.telegram ? t.disconnectBtn : t.connectBtn;
+            document.getElementById('tonkeeperConnectBtn').textContent = 
+                walletState.connectedWallets.tonkeeper ? t.disconnectBtn : t.connectBtn;
+            document.getElementById('metamaskConnectBtn').textContent = 
+                walletState.connectedWallets.metamask ? t.disconnectBtn : t.connectBtn;
+            
+            document.getElementById('telegramWalletCard').classList.toggle('active', walletState.connectedWallets.telegram);
+            document.getElementById('tonkeeperWalletCard').classList.toggle('active', walletState.connectedWallets.tonkeeper);
+            document.getElementById('metamaskWalletCard').classList.toggle('active', walletState.connectedWallets.metamask);
+            
+            document.getElementById('telegramConnectBtn').classList.toggle('connected', walletState.connectedWallets.telegram);
+            document.getElementById('tonkeeperConnectBtn').classList.toggle('connected', walletState.connectedWallets.tonkeeper);
+            document.getElementById('metamaskConnectBtn').classList.toggle('connected', walletState.connectedWallets.metamask);
+        }
+
+        function connectWallet(walletType) {
+            const t = translations[currentLang] || translations.ru;
+            
+            if (walletState.connectedWallets[walletType]) {
+                if (confirm(`Отключить ${getWalletName(walletType)}?`)) {
+                    walletState.connectedWallets[walletType] = false;
+                    showNotification(`${getWalletName(walletType)} отключен`);
+                }
+            } else {
+                walletState.connectedWallets[walletType] = true;
+                showNotification(`${getWalletName(walletType)} успешно подключен!`);
+                
+                // Бонус за первое подключение
+                const connectedCount = Object.values(walletState.connectedWallets).filter(v => v).length;
+                if (connectedCount === 1) {
+                    setTimeout(() => {
+                        walletState.balance += 50;
+                        walletState.transactions.unshift({
+                            id: walletState.transactions.length + 1,
+                            type: 'deposit',
+                            title: 'Бонус за подключение кошелька',
+                            date: new Date().toISOString(),
+                            amount: 50,
+                            currency: '₽',
+                            status: 'completed'
+                        });
+                        updateUI();
+                        renderTransactions();
+                        saveWalletToStorage();
+                        showNotification('Получен бонус 50 ₽ за подключение первого кошелька!');
+                    }, 500);
+                }
+            }
+            
+            updateWalletStatusText();
+            saveWalletToStorage();
+        }
+
+        function getWalletName(walletType) {
+            const names = {
+                telegram: 'Telegram Wallet',
+                tonkeeper: 'Tonkeeper',
+                metamask: 'MetaMask'
+            };
+            return names[walletType] || walletType;
+        }
+
+        function depositFunds() {
+            const amount = prompt("Введите сумму для пополнения (₽):", "500");
+            if (amount && !isNaN(parseFloat(amount)) && parseFloat(amount) > 0) {
+                const depositAmount = parseFloat(amount);
+                
+                if (depositAmount < CONFIG.MIN_DEPOSIT || depositAmount > CONFIG.MAX_DEPOSIT) {
+                    showNotification('Ошибка', `Сумма должна быть от ${CONFIG.MIN_DEPOSIT} до ${CONFIG.MAX_DEPOSIT} RUB`, true);
+                    return;
+                }
+                
+                // Режим тестирования
+                if (CONFIG.TEST_MODE) {
+                    setTimeout(() => {
+                        completeDeposit(depositAmount);
+                    }, 1500);
+                    showNotification('Демо-платеж', `Имитация платежа на ${depositAmount} RUB...`);
+                } else {
+                    // Реальный запрос к API
+                    showNotification('Создание счета', `Запрос отправлен на сервер...`);
+                    // Здесь должен быть fetch к вашему API
+                }
+            }
+        }
+
+        function completeDeposit(amount) {
+            walletState.balance += amount;
+            
+            // Начисление игровых валют
+            walletState.diamonds += Math.floor(amount / CONFIG.CONVERSION_RATES.diamonds * 10);
+            walletState.gold += Math.floor(amount / CONFIG.CONVERSION_RATES.gold * 10);
+            walletState.gems += Math.floor(amount / CONFIG.CONVERSION_RATES.gems * 2);
+            
+            walletState.transactions.unshift({
+                id: walletState.transactions.length + 1,
+                type: 'deposit',
+                title: 'Пополнение баланса',
+                date: new Date().toISOString(),
+                amount: amount,
+                currency: '₽',
+                status: 'completed'
+            });
+            
+            updateUI();
+            renderTransactions();
+            saveWalletToStorage();
+            
+            showNotification('✅ Баланс пополнен!', `+${amount} RUB зачислено. Получены бонусные монеты!`);
+        }
+
+        function withdrawFunds() {
+            const amount = prompt("Введите сумму для вывода (₽):", "100");
+            if (amount && !isNaN(parseFloat(amount)) && parseFloat(amount) > 0) {
+                const withdrawAmount = parseFloat(amount);
+                
+                if (withdrawAmount > walletState.balance) {
+                    showNotification('Недостаточно средств', `Ваш баланс: ${walletState.balance.toFixed(2)} RUB`, true);
+                    return;
+                }
+                
+                if (withdrawAmount < 10) {
+                    showNotification('Ошибка', 'Минимальная сумма вывода: 10 RUB', true);
+                    return;
+                }
+                
+                walletState.balance -= withdrawAmount;
+                
+                walletState.transactions.unshift({
+                    id: walletState.transactions.length + 1,
+                    type: 'withdraw',
+                    title: 'Вывод средств',
+                    date: new Date().toISOString(),
+                    amount: -withdrawAmount,
+                    currency: '₽',
+                    status: 'processing'
+                });
+                
+                updateUI();
+                renderTransactions();
+                saveWalletToStorage();
+                
+                showNotification('✅ Заявка принята!', `Вывод ${withdrawAmount} RUB будет обработан в течение 24 часов.`);
+            }
+        }
+
+        function showHistory() {
+            if (walletState.transactions.length === 0) {
+                showNotification('История пуста', 'Вы еще не совершали операций');
+                return;
+            }
+            
+            const transactionList = document.getElementById('transactionsList');
+            transactionList.scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function convertFunds() {
+            showNotification('Обмен валют', 'Функция будет доступна в полной версии');
+        }
+
+        function showCoinDetails(coinType) {
+            const names = { diamonds: 'Diamonds', gold: 'Gold', gems: 'Gems' };
+            const values = { diamonds: walletState.diamonds, gold: walletState.gold, gems: walletState.gems };
+            const rates = CONFIG.CONVERSION_RATES;
+            
+            const valueInRub = values[coinType] * rates[coinType];
+            showNotification(`${names[coinType]}`, `У вас: ${values[coinType].toLocaleString()} монет\nСтоимость: ~${valueInRub.toFixed(2)} RUB`);
+        }
+
+        function showPrivacy() {
+            showNotification("Политика конфиденциальности", "Мы не передаем ваши данные третьим лицам.");
+        }
+
+        function contactSupport() {
+            showNotification("Поддержка", "Telegram: @gamewallet_support");
+        }
+
+        // =========== ОБНОВЛЕНИЕ ИНТЕРФЕЙСА ===========
+        function updateUI() {
+            document.getElementById('balanceAmount').textContent = walletState.balance.toLocaleString('ru-RU', {
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2
+            }) + ' ₽';
+            
+            document.getElementById('diamondsAmount').textContent = walletState.diamonds.toLocaleString();
+            document.getElementById('goldAmount').textContent = walletState.gold.toLocaleString();
+            document.getElementById('gemsAmount').textContent = walletState.gems.toLocaleString();
+            
+            // Обновляем изменение баланса
+            const changeElement = document.getElementById('balanceChange');
+            const weeklyChange = walletState.transactions
+                .filter(tx => tx.type === 'deposit' && tx.status === 'completed')
+                .reduce((sum, tx) => sum + tx.amount, 0) * 0.1; // 10% от депозитов за неделю
+                
+            if (weeklyChange > 0) {
+                changeElement.textContent = `+${weeklyChange.toFixed(2)} ₽ за неделю`;
+                changeElement.style.color = '#10b981';
+            } else if (weeklyChange < 0) {
+                changeElement.textContent = `${weeklyChange.toFixed(2)} ₽ за неделю`;
+                changeElement.style.color = '#ef4444';
+            } else {
+                changeElement.textContent = '0.00 ₽ за неделю';
+                changeElement.style.color = '#9ca3af';
+            }
+        }
+
+        function renderTransactions() {
+            const container = document.getElementById('transactionsList');
+            container.innerHTML = '';
+            
+            const recentTransactions = walletState.transactions.slice(0, 5);
+            
+            if (recentTransactions.length === 0) {
+                container.innerHTML = '<div style="text-align: center; color: #9ca3af; font-size: 13px; padding: 20px;">Нет транзакций</div>';
+                return;
+            }
+            
+            recentTransactions.forEach(transaction => {
+                const item = document.createElement('div');
+                item.className = 'transaction-item';
+                
+                const iconClass = transaction.type === 'deposit' ? 'deposit' : 
+                                 transaction.type === 'withdraw' ? 'withdraw' : 'game';
+                const iconSymbol = transaction.type === 'deposit' ? '↓' : 
+                                  transaction.type === 'withdraw' ? '↑' : '🎮';
+                
+                const date = new Date(transaction.date);
+                const formattedDate = date.toLocaleDateString('ru-RU', {
+                    day: 'numeric',
+                    month: 'short',
+                    hour: '2-digit',
+                    minute: '2-digit'
+                });
+                
+                item.innerHTML = `
+                    <div class="transaction-icon ${iconClass}">${iconSymbol}</div>
+                    <div class="transaction-details">
+                        <div class="transaction-title">${transaction.title}</div>
+                        <div class="transaction-date">${formattedDate}</div>
+                    </div>
+                    <div class="transaction-amount ${transaction.amount > 0 ? 'positive' : 'negative'}">
+                        ${transaction.amount > 0 ? '+' : ''}${transaction.amount} ${transaction.currency}
+                    </div>
+                `;
+                
+                container.appendChild(item);
+            });
+        }
+
+        function showNotification(title, message, isError = false) {
+            // Создаем временное уведомление
+            const notification = document.createElement('div');
+            notification.style.cssText = `
+                position: fixed; top: 20px; right: 20px; 
+                background: rgba(15, 23, 42, 0.98); 
+                border-left: 5px solid ${isError ? '#ef4444' : '#22c55e'}; 
+                border-radius: 12px; padding: 15px; 
+                box-shadow: 0 15px 35px rgba(0, 0, 0, 0.5); 
+                z-index: 1001; max-width: 300px;
+                animation: slideIn 0.3s ease;
+            `;
+            
+            notification.innerHTML = `
+                <div style="font-weight: 600; margin-bottom: 5px; color: #e0f2fe;">${title}</div>
+                <div style="font-size: 13px; color: #cbd5e1;">${message}</div>
+            `;
+            
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                notification.style.animation = 'slideOut 0.3s ease';
+                setTimeout(() => {
+                    document.body.removeChild(notification);
+                }, 300);
+            }, 4000);
+            
+            // Добавляем CSS анимации
+            if (!document.getElementById('notificationStyles')) {
+                const style = document.createElement('style');
+                style.id = 'notificationStyles';
+                style.textContent = `
+                    @keyframes slideIn {
+                        from { transform: translateX(100%); opacity: 0; }
+                        to { transform: translateX(0); opacity: 1; }
+                    }
+                    @keyframes slideOut {
+                        from { transform: translateX(0); opacity: 1; }
+                        to { transform: translateX(100%); opacity: 0; }
+                    }
+                `;
+                document.head.appendChild(style);
+            }
+        }
+
+        function simulateWebSocket() {
+            // Имитация получения обновлений с сервера
+            setInterval(() => {
+                if (Math.random() > 0.7 && walletState.balance > 0) {
+                    const bonus = Math.floor(Math.random() * 10) + 1;
+                    walletState.balance += bonus;
+                    
+                    walletState.transactions.unshift({
+                        id: walletState.transactions.length + 1,
+                        type: 'deposit',
+                        title: 'Бонус за активность',
+                        date: new Date().toISOString(),
+                        amount: bonus,
+                        currency: '₽',
+                        status: 'completed'
+                    });
+                    
+                    updateUI();
+                    renderTransactions();
+                    saveWalletToStorage();
+                    
+                    if (bonus > 5) {
+                        showNotification('Бонус!', `Вам начислено ${bonus} RUB за активность`);
+                    }
+                }
+            }, 60000); // Каждую минуту
+        }
+
+        // =========== ЭКСПОРТ ДЛЯ ТЕСТИРОВАНИЯ ===========
+        window.walletDemo = {
+            getState: () => ({ ...walletState }),
+            addFunds: (amount) => {
+                walletState.balance += amount;
+                updateUI();
+                saveWalletToStorage();
+                showNotification('Демо: средства добавлены', `+${amount} RUB`);
+            },
+            reset: () => {
+                walletState = {
+                    balance: 0,
+                    diamonds: 0,
+                    gold: 0,
+                    gems: 0,
+                    userId: walletState.userId,
+                    transactions: [],
+                    telegramConnected: walletState.telegramConnected,
+                    connectedWallets: walletState.connectedWallets
+                };
+                updateUI();
+                renderTransactions();
+                localStorage.removeItem('gameWalletDemo');
+                showNotification('Кошелек сброшен', 'Все данные очищены');
+            }
+        };
+    </script>
+</body>
+</html>
