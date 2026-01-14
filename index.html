@@ -81,11 +81,16 @@
         
         .bottom-row { margin-top: 8px; display: flex; align-items: center; justify-content: space-between; gap: 8px; flex-wrap: wrap; }
         .hint { font-size: 11px; color: #9ca3af; flex: 1 1 60%; }
-        .send-btn { padding: 8px 12px; border-radius: 999px; border: 0; font-size: 13px; font-weight: 500; cursor: pointer; background: linear-gradient(135deg, #22c55e, #16a34a); color: #022c22; display: flex; align-items: center; gap: 4px; box-shadow: 0 10px 22px rgba(34, 197, 94, 0.5); flex-shrink: 0; }
+        .send-btn { padding: 8px 12px; border-radius: 999px; border: 0; font-size: 13px; font-weight: 500; cursor: pointer; background: linear-gradient(135deg, #22c55e, #16a34a); color: #022c22; display: flex; align-items: center; gap: 4px; box-shadow: 0 10px 22px rgba(34, 197, 94, 0.5); flex-shrink: 0; transition: transform 0.12s ease, box-shadow 0.12s ease; }
+        .send-btn:hover { transform: translateY(-1px); box-shadow: 0 12px 26px rgba(34, 197, 94, 0.6); }
         .send-btn:active { transform: translateY(1px); box-shadow: none; }
         
+        .add-group { 
+            margin-top: 16px; /* Увеличен отступ сверху */
+        }
+        
         .add-group-btn { width: 100%; padding: 10px 14px; border-radius: 999px; border: 0; cursor: pointer; font-size: 14px; font-weight: 600; background: linear-gradient(135deg, #f97316, #ec4899); color: #fefce8; display: flex; align-items: center; justify-content: center; gap: 6px; box-shadow: 0 10px 25px rgba(248, 113, 113, 0.5); text-decoration: none; transition: all 0.2s ease; }
-        .add-group-btn:hover { filter: brightness(1.05); transform: translateY(-1px); }
+        .add-group-btn:hover { filter: brightness(1.05); transform: translateY(-1px); box-shadow: 0 12px 28px rgba(248, 113, 113, 0.6); }
         .add-group-btn:active { transform: translateY(1px); box-shadow: none; }
         
         .section-divider { height: 1px; background: linear-gradient(90deg, transparent, rgba(59, 130, 246, 0.6), transparent); margin: 20px 0; }
@@ -313,6 +318,7 @@
         .holo-wheel { background: linear-gradient(45deg, #00f2fe, #ff0080, #00f2fe); background-size: 300% 300%; animation: holoShift 5s ease infinite reverse; }
         .holo-boost { background: linear-gradient(45deg, #ff6b00, #00f2fe, #ff6b00); background-size: 400% 400%; animation: holoShift 3s ease infinite; }
         .holo-wallet { background: linear-gradient(45deg, #00f2fe, #39ff14, #00f2fe); background-size: 350% 350%; animation: holoShift 4.5s ease infinite reverse; }
+        .holo-home { background: linear-gradient(45deg, #3b82f6, #8b5cf6, #3b82f6); background-size: 300% 300%; animation: holoShift 4s ease infinite; }
 
         .eye-normal {
             position: absolute; top: 3px; width: 6px; height: 6px; border-radius: 50%;
@@ -335,8 +341,43 @@
         .holo-wallet .eye-reacting.left { width: 6px; height: 6px; border-radius: 50%; background: #00ff88; top: 2px; left: 8px; box-shadow: 0 0 6px #00ff88; border: 1px solid #fff; }
         .holo-wallet .eye-reacting.right { width: 6px; height: 6px; border-radius: 50%; background: #00ff88; top: 2px; right: 8px; box-shadow: 0 0 6px #00ff88; border: 1px solid #fff; }
 
+        /* НОВЫЙ СТИЛЬ ГЛАЗ ДЛЯ ГЛАВНОЙ КНОПКИ - ГЕКСАГОНАЛЬНЫЕ/АЛМАЗНЫЕ */
+        .holo-home .eye-normal.left {
+            width: 7px; height: 7px; border-radius: 2px;
+            background: rgba(0,0,0,0.85);
+            clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%);
+            transform: rotate(45deg);
+            left: 7px; top: 4px;
+        }
+        
+        .holo-home .eye-normal.right {
+            width: 7px; height: 7px; border-radius: 2px;
+            background: rgba(0,0,0,0.85);
+            clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%);
+            transform: rotate(45deg);
+            right: 7px; top: 4px;
+        }
+        
+        .holo-home .eye-reacting.left {
+            width: 9px; height: 9px; border-radius: 2px;
+            background: linear-gradient(45deg, #3b82f6, #8b5cf6);
+            clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%);
+            transform: rotate(45deg) scale(1.1);
+            box-shadow: 0 0 8px rgba(59, 130, 246, 0.8);
+            left: 6px; top: 3px;
+        }
+        
+        .holo-home .eye-reacting.right {
+            width: 9px; height: 9px; border-radius: 2px;
+            background: linear-gradient(45deg, #8b5cf6, #3b82f6);
+            clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%);
+            transform: rotate(45deg) scale(1.1);
+            box-shadow: 0 0 8px rgba(139, 92, 246, 0.8);
+            right: 6px; top: 3px;
+        }
+
         @keyframes holoShift { 0%, 100% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } }
-        @keyframes blinkFast { 0%, 80%, 100% { transform: scaleY(1); } 85% { transform: scaleY(0.1); } 90% { transform: scaleY(1); } }
+        @keyframes blinkFast { 0%, 80%, 100% { transform: scaleY(1) rotate(45deg); } 85% { transform: scaleY(0.1) rotate(45deg); } 90% { transform: scaleY(1) rotate(45deg); } }
     </style>
 </head>
 <body>
@@ -492,7 +533,7 @@
     <!-- НАВИГАЦИОННАЯ ПАНЕЛЬ -->
     <div class="bottom-nav-wrapper">
         <div class="bottom-nav">
-            <div class="bottom-item active" data-page="friends">
+            <div class="bottom-item" data-page="friends">
                 <div class="bottom-item-icon holo-friends">
                     <span class="icon-emoji">👥</span>
                     <div class="eye-normal left"></div>
@@ -508,6 +549,16 @@
                     <div class="eye-normal right"></div>
                 </div>
                 <div>Колесо</div>
+            </div>
+
+            <!-- Новая кнопка Главная -->
+            <div class="bottom-item active" data-page="home">
+                <div class="bottom-item-icon holo-home">
+                    <span class="icon-emoji">🏠</span>
+                    <div class="eye-normal left"></div>
+                    <div class="eye-normal right"></div>
+                </div>
+                <div>Главная</div>
             </div>
 
             <div class="bottom-item" data-page="boost">
@@ -530,7 +581,7 @@
         </div>
     </div>
  
-    <!-- JAVASCRIPT КОД (ТОТ ЖЕ САМЫЙ) -->
+    <!-- JAVASCRIPT КОД -->
     <script>
         let currentMode = 'question';
         let currentLang = 'ru';
@@ -1394,13 +1445,11 @@
             setTimeout(() => btn.style.transform = '', 150);
             
             const botUsername = 'genuis_neo_bot';
-            const groupLink = `https://t.me/${botUsername}?startgroup=`;
+            const groupLink = `https://t.me/${botUsername}?startgroup=true`;
             
             try {
                 if (tg.openLink) {
                     tg.openLink(groupLink);
-                } else if (tg.openTelegramLink) {
-                    tg.openTelegramLink(groupLink);
                 } else if (tg.openTelegramLink) {
                     tg.openTelegramLink(groupLink);
                 } else {
@@ -1414,7 +1463,10 @@
 
         function sendToBot() {
             const text = document.getElementById('prompt').value.trim();
-            if (!text) return;
+            if (!text) {
+                alert('Введите текст для отправки');
+                return;
+            }
             
             const t = translations[currentLang] || translations.ru;
             const modes = { 
@@ -1424,15 +1476,19 @@
                 ideas: t.btn4_label || 'Сгенерировать идеи' 
             };
             
+            const messageToSend = `${modes[currentMode]}: ${text}`;
+            
+            console.log('Отправка сообщения боту:', messageToSend);
+            
             if (tg.sendData) {
                 tg.sendData(JSON.stringify({ 
-                    message: `${modes[currentMode]}: ${text}` 
+                    message: messageToSend 
                 }));
             } else {
                 console.log('Данные для отправки:', { 
-                    message: `${modes[currentMode]}: ${text}` 
+                    message: messageToSend 
                 });
-                alert('Сообщение отправлено в консоль (режим отладки)');
+                alert('Сообщение отправлено в консоль (режим отладки):\n' + messageToSend);
             }
             
             document.getElementById('prompt').value = '';
@@ -1503,18 +1559,36 @@
             document.querySelectorAll('.bottom-item').forEach(btn => btn.classList.remove('active'));
             item.classList.add('active');
             
-            let message = '';
+            // Обработка нажатий на кнопки навигации
             switch(pageId) {
-                case 'friends': message = '👥 Раздел "Друзья" в разработке'; break;
-                case 'wheel': message = '🎡 Раздел "Колесо удачи" в разработке'; break;
-                case 'boost': message = '🚀 Раздел "Буст" в разработке'; break;
-                case 'wallet': message = '💎 Раздел "Кошелёк" в разработке'; break;
+                case 'home':
+                    // Прокручиваем к началу страницы
+                    document.querySelector('.card').scrollTo({ top: 0, behavior: 'smooth' });
+                    break;
+                    
+                case 'wheel':
+                    window.location.href = 'https://oppennnbox.github.io/neurocore-miniapp/Coleso.html';
+                    break;
+                    
+                case 'wallet':
+                    window.location.href = 'https://oppennnbox.github.io/neurocore-miniapp/Wallet.html';
+                    break;
+                    
+                case 'friends':
+                    showAlert('👥 Раздел "Друзья" в разработке');
+                    break;
+                    
+                case 'boost':
+                    showAlert('🚀 Раздел "Буст" в разработке');
+                    break;
             }
             
-            if (tg.showAlert) {
-                tg.showAlert(message);
-            } else {
-                alert(message);
+            function showAlert(message) {
+                if (tg.showAlert) {
+                    tg.showAlert(message);
+                } else {
+                    alert(message);
+                }
             }
         });
     </script>
