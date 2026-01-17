@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Premium Pipe Jumper Pro</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/phaser/3.60.0/phaser.min.js"></script>
+    <style>
+        body { margin: 0; padding: 0; overflow: hidden; background-color: #f8f9fa; touch-action: none; }
+        canvas { display: block; margin: 0 auto; }
+    </style>
+</head>
+<body>
+
+<script>
+// Улучшенный синтезатор звуков
+const playSynthSound = (scene, startFreq, endFreq, type, duration, volume) => {
+    const audioCtx = scene.sound.context;
+    if (!audioCtx || audioCtx.state === 'suspended') scene.sound.resume();
+    
+    const osc = audioCtx.createOscillator();
+    const gain = audioCtx.createGain();
+    
+    osc.type = type;
+    osc.frequency.setValueAtTime(startFreq, audioCtx.currentTime);
+    if (endFreq !== startFreq) {
+        osc.frequency.exponentialRampToValueAtTime(endFreq, audioCtx.currentTime + duration);
+    }
+    
+    gain.gain.setValueAtTime(volume, audioCtx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + duration);
+    
+    osc.connect(gain);
+    gain.connect(audioCtx.destination);
+    
+    osc.start();
+    osc.stop(audioCtx.currentTime + duration);
+};
+
+// --- ОБНОВЛЕННЫЕ ЗВУКОВЫЕ ПРЕСЕТЫ ---
+const playJumpSound = (scene) => {
+    // 1. Основной удар (низкий "тумп")
+    playSynthSound(scene, 150, 40, 'triangle', 0.12, 0.6); 
+    // 2. Высокочастотный щелчок соприкосновения
+    playSynthSound(scene, 800, 200, 'sine', 0.03, 0.2);
+    
+    // Визуальный отклик - небольшая встряска при ударе
+    scene.cameras.main.shake(100, 0.003);
+};
+
+const playScoreSound = (scene) => {
+    playSynthSound(scene, 1200, 800, 'triangle', 0.08, 0.05);
+};
+
+const playGameOverSound = (scene) => {
+    playSynthSound(scene, 300, 40, 'sawtooth', 0.4, 0.1);
+};
+
+const playClickSound = (scene) => {
+    playSynthSound(scene, 600, 200, 'sine', 0.05, 0.08);
+};
+
+class MenuScene extends Phaser.Scene {
+    constructor() { super('MenuScene'); }
+    create() {
+        const { width, height } = this.scale;
+        const highScore = localStorage.getItem('pipeJumperHighScore') || 0;
+        this.add.rectangle(width/2, height/2, width, height, 0xf8f9fa);
+        this.add.text(width/2, height/3, 'PIPE\nJUMPER', {
+            fontSize: '64px', fontWeight: '900', fill: '#2d3436', align: 'center', fontFamily: 'Arial Black'
+        }).setOrigin(0.5);
+        this.add.text(width/2, height/2 - 30, `BEST: ${highScore}`, {
+            fontSize: '24px', fontWeight: 'bold', fill: '#636e72', fontFamily: 'Arial'
+        }).setOrigin(0.5);
+        const btnGfx = this.make.graphics({x: 0, y: 0, add: false});
+        btnGfx.fillStyle(0x0984e3, 1);
+        btnGfx.fillRoundedRect(0, 0, 200, 60, 30);
+        btnGfx.generateTexture('startBtn', 200, 60);
+        const startBtn = this.add.image(width/2, height/2 + 60, 'startBtn').setInteractive();
+        this.add.text(width/2, height/2 + 60, 'START', {
+            fontSize: '24px', fontWeight: 'bold', fill: '#ffffff', fontFamily: 'Arial'
+        }).setOrigin(0.5);
+        
+        startBtn.on('pointerdown', () => {
+            playClickSound(this);
+            this.scene.start('GameScene');
+        });
+    }
+}
+
+class GameScene extends Phaser.Scene {
+    constructor() { super('GameScene'); }
+
+    create() {
+        const { width, height } = this.scale;
+        this.score = 0;
+        this.isGameOver = false;
+        this.isPaused = false;
+        this.highScore = localStorage.getItem('pipeJumperHighScore') || 0;
+        
+        this.minGap = 140; 
+        this.maxGap = 210; 
+        this.lastPipeY = height - 60;
+
+        this.createTextures();
+        this.add.rectangle(width/2, height/2, width, height, 0xe8ecef).setDepth(-2);
+        this.platforms = this.physics.add.group();
+        this.spawnInitialPlatforms();
+
+        this.player = this.physics.add.sprite(width / 2, height - 150, 'player').setScale(0.5);
+        this.player.setDepth(1);
+        
+        this.physics.add.collider(this.player, this.platforms, null, (p, pipe) => {
+            return p.body.velocity.y > 0 && (p.y + 10) < pipe.y;
+        }, this);
+
+        this.scoreText = this.add.text(width / 2, 80, '0', { 
+            fontSize: '80px', fontWeight: '900', fill: '#d1d8e0', fontFamily: 'Arial Black'
+        }).setOrigin(0.5).setDepth(-1);
+
+        this.pauseBtn = this.add.circle(width - 40, 40, 25, 0xffffff).setInteractive().setDepth(10);
+        this.pauseIcon = this.add.text(width - 40, 40, '||', { fontSize: '20px', fill: '#2d3436', fontWeight: 'bold' }).setOrigin(0.5).setDepth(11);
+        this.pauseBtn.on('pointerdown', () => {
+            playClickSound(this);
+            this.togglePause();
+        });
+
+        this.targetX = width / 2;
+        this.input.on('pointermove', (pointer) => {
+            if (pointer.isDown && !this.isGameOver && !this.isPaused) this.targetX = pointer.x;
+        });
+        this.input.on('pointerdown', (pointer) => {
+            if (pointer.y > 100) this.targetX = pointer.x;
+        });
+    }
+
+    togglePause() {
+        this.isPaused = !this.isPaused;
+        if (this.isPaused) { this.physics.pause(); this.pauseIcon.setText('▶'); }
+        else { this.physics.resume(); this.pauseIcon.setText('||'); }
+    }
+
+    createTextures() {
+        const pGfx = this.make.graphics({ x: 0, y: 0, add: false });
+        pGfx.fillStyle(0x000000, 0.1); pGfx.fillRoundedRect(8, 12, 192, 40, 20);
+        pGfx.lineStyle(4, 0x2d3436, 1); pGfx.fillStyle(0x74b9ff, 1); 
+        pGfx.fillRoundedRect(4, 4, 192, 40, 20); pGfx.strokeRoundedRect(4, 4, 192, 40, 20);
+        pGfx.fillStyle(0xffffff, 0.4); pGfx.fillRoundedRect(20, 12, 160, 6, 3);
+        pGfx.generateTexture('pipe', 205, 55);
+
+        const plGfx = this.make.graphics({ x: 0, y: 0, add: false });
+        plGfx.lineStyle(4, 0x2d3436, 1); plGfx.fillStyle(0xff7675, 1);
+        plGfx.fillCircle(32, 32, 28); plGfx.strokeCircle(32, 32, 28);
+        plGfx.fillStyle(0xffffff, 0.5); plGfx.fillCircle(20, 20, 10);
+        plGfx.generateTexture('player', 64, 64);
+    }
+
+    spawnInitialPlatforms() {
+        const { width, height } = this.scale;
+        this.addPipe(width / 2, height - 60);
+        for (let i = 0; i < 6; i++) {
+            this.generateNextPipe();
+        }
+    }
+
+    generateNextPipe() {
+        const { width } = this.scale;
+        let difficultyFactor = Math.min(this.score / 200, 1);
+        let currentMaxGap = this.minGap + (this.maxGap - this.minGap) * difficultyFactor;
+        let gapY = Phaser.Math.Between(this.minGap, currentMaxGap);
+        let nextY = this.lastPipeY - gapY;
+        let nextX = Phaser.Math.Between(60, width - 60);
+        this.addPipe(nextX, nextY);
+        this.lastPipeY = nextY;
+    }
+
+    addPipe(x, y) {
+        let p = this.platforms.create(x, y, 'pipe').setScale(0.5);
+        p.body.setImmovable(true).setAllowGravity(false).checkCollision.down = false;
+        let scaleW = Math.max(0.5 - (this.score / 1000), 0.35);
+        p.setScale(scaleW, 0.5);
+    }
+
+    update() {
+        const { width, height } = this.scale;
+        if (this.isGameOver || this.isPaused) return;
+
+        this.player.x = Phaser.Math.Linear(this.player.x, this.targetX, 0.15);
+
+        if (this.player.body.touching.down) {
+            let speedBoost = Math.min(this.score / 500, 0.2);
+            this.player.setVelocityY(-900 * (1 + speedBoost / 2));
+            this.physics.world.gravity.y = 1500 * (1 + speedBoost);
+            
+            playJumpSound(this);
+            this.tweens.add({ targets: this.player, scaleX: 0.65, scaleY: 0.35, duration: 80, yoyo: true });
+        }
+
+        if (this.player.body.velocity.y < 0) {
+            this.player.scaleY = Phaser.Math.Linear(this.player.scaleY, 0.58, 0.1);
+            this.player.scaleX = Phaser.Math.Linear(this.player.scaleX, 0.42, 0.1);
+        } else {
+            this.player.scaleY = Phaser.Math.Linear(this.player.scaleY, 0.5, 0.1);
+            this.player.scaleX = Phaser.Math.Linear(this.player.scaleX, 0.5, 0.1);
+        }
+
+        if (this.player.x < -20) { this.player.x = width + 20; this.targetX = width + 20; }
+        if (this.player.x > width + 20) { this.player.x = -20; this.targetX = -20; }
+
+        if (this.player.y < height / 2) {
+            let diff = (height / 2) - this.player.y;
+            this.player.y = height / 2;
+            this.lastPipeY += diff;
+            this.platforms.children.iterate(child => {
+                child.y += diff;
+                if (child.y > height) {
+                    child.destroy();
+                    this.score += 1;
+                    this.scoreText.setText(this.score);
+                    playScoreSound(this);
+                    this.generateNextPipe();
+                    if (this.score > this.highScore) {
+                        this.highScore = this.score;
+                        localStorage.setItem('pipeJumperHighScore', this.highScore);
+                    }
+                }
+            });
+        }
+
+        if (this.player.y > height + 100) {
+            this.isGameOver = true;
+            playGameOverSound(this);
+            this.scene.start('MenuScene');
+        }
+    }
+}
+
+const config = {
+    type: Phaser.AUTO,
+    width: Math.min(window.innerWidth, 480),
+    height: window.innerHeight,
+    backgroundColor: '#f8f9fa',
+    physics: { default: 'arcade', arcade: { gravity: { y: 1500 } } },
+    scene: [MenuScene, GameScene]
+};
+const game = new Phaser.Game(config);
+</script>
+
+</body>
+</html>
