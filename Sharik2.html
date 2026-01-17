@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>Maze Flow Premium Hardcore</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/matter-js/0.19.0/matter.min.js"></script>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <style>
+        :root {
+            --bg: #0f0f11;
+            --card: #1c1c1e;
+            --accent: #ff3e3e;
+            --success: #32d74b;
+            --text: #ffffff;
+        }
+
+        * {
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+            -webkit-touch-callout: none;
+            user-select: none;
+            outline: none;
+        }
+
+        body {
+            margin: 0; padding: 0; overflow: hidden;
+            background-color: var(--bg);
+            font-family: -apple-system, system-ui, sans-serif;
+            color: var(--text);
+        }
+
+        .screen {
+            position: fixed; inset: 0;
+            display: flex; align-items: center; justify-content: center;
+            z-index: 100; background: rgba(0, 0, 0, 0.92);
+            backdrop-filter: blur(15px);
+            transition: all 0.4s cubic-bezier(0.19, 1, 0.22, 1);
+        }
+
+        .hidden { opacity: 0; pointer-events: none; transform: scale(1.05); }
+
+        .glass-card {
+            background: var(--card); border: 1px solid #333;
+            border-radius: 40px; padding: 40px 30px;
+            text-align: center; width: 88%; max-width: 380px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.8);
+        }
+
+        h1 { font-size: 2.2rem; font-weight: 900; letter-spacing: -1px; margin: 0; }
+        .accent-text { color: var(--accent); }
+
+        .btn-premium {
+            background: var(--accent); color: white; border: none;
+            padding: 18px; border-radius: 22px; font-size: 1.1rem;
+            font-weight: 800; cursor: pointer; width: 100%;
+            text-transform: uppercase; letter-spacing: 1px;
+            box-shadow: 0 10px 25px rgba(255, 62, 62, 0.25);
+        }
+
+        .lvl-grid {
+            display: grid; grid-template-columns: repeat(4, 1fr);
+            gap: 12px; margin: 30px 0;
+        }
+
+        .lvl-btn {
+            aspect-ratio: 1; border-radius: 14px;
+            background: #2c2c2e; color: #636366;
+            font-weight: 800; display: flex;
+            align-items: center; justify-content: center;
+            font-size: 1.1rem; transition: 0.2s;
+        }
+
+        .lvl-btn.active { background: #fff; color: #000; box-shadow: 0 4px 15px rgba(255,255,255,0.1); }
+
+        #game-ui {
+            position: fixed; top: 45px; width: 100%;
+            display: flex; justify-content: center; z-index: 10;
+        }
+
+        .level-tag {
+            background: rgba(255, 255, 255, 0.08);
+            padding: 8px 22px; border-radius: 25px;
+            font-size: 0.9rem; font-weight: 800;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+    </style>
+</head>
+<body>
+
+    <div id="sc-main" class="screen">
+        <div class="glass-card">
+            <h1>MAZE<span class="accent-text">FLOW</span></h1>
+            <p style="color: #636366; margin: 10px 0 35px; font-weight: 500;">PREMIUM HARDCORE</p>
+            <button class="btn-premium" onclick="showLevels()">Играть</button>
+        </div>
+    </div>
+
+    <div id="sc-levels" class="screen hidden">
+        <div class="glass-card">
+            <h2 style="margin-top: 0;">УРОВНИ</h2>
+            <div id="lvl-container" class="lvl-grid"></div>
+            <button onclick="goBack()" style="background:none; border:none; color:#636366; font-weight:700; cursor:pointer;">НАЗАД</button>
+        </div>
+    </div>
+
+    <div id="sc-win" class="screen hidden">
+        <div class="glass-card">
+            <h1 style="color: var(--success); margin-bottom: 5px;">УСПЕХ</h1>
+            <p style="color: #636366; margin-bottom: 30px; font-weight: 500;">Уровень пройден чисто</p>
+            <button class="btn-premium" id="next-btn">ДАЛЕЕ</button>
+            <button onclick="showLevels()" style="background:none; border:none; color:#636366; font-weight:700; margin-top: 20px; cursor:pointer;">В МЕНЮ</button>
+        </div>
+    </div>
+
+    <div id="game-ui" class="hidden">
+        <div class="level-tag">LEVEL <span id="current-lvl-num">1</span></div>
+    </div>
+
+<script>
+    const tg = window.Telegram.WebApp;
+    tg.expand();
+
+    const { Engine, Render, Runner, Bodies, Composite, Events, World } = Matter;
+    const engine = Engine.create();
+    const w = window.innerWidth, h = window.innerHeight;
+
+    const render = Render.create({
+        element: document.body, engine: engine,
+        options: {
+            width: w, height: h, wireframes: false,
+            background: '#0f0f11', pixelRatio: window.devicePixelRatio
+        }
+    });
+
+    let ball, finish, isGame = false, currentLvl = 1;
+    let unlocked = parseInt(localStorage.getItem('maze_hc_final')) || 1;
+
+    // Улучшенная функция отрисовки труб с закруглением
+    const pipe = (x, y, width, height, color = '#ffffff') => {
+        return Bodies.rectangle(x, y, width, height, {
+            isStatic: true,
+            chamfer: { radius: Math.min(width, height) / 2.05 },
+            render: { fillStyle: color }
+        });
+    };
+
+    function loadLevel(n) {
+        World.clear(engine.world);
+        const wallIn = { isStatic: true, render: { visible: false } };
+        Composite.add(engine.world, [
+            Bodies.rectangle(w/2, -10, w, 20, wallIn), Bodies.rectangle(w/2, h+10, w, 20, wallIn),
+            Bodies.rectangle(-10, h/2, 20, h, wallIn), Bodies.rectangle(w+10, h/2, 20, h, wallIn)
+        ]);
+
+        const layouts = {
+            1: () => [pipe(w*0.2, h*0.5, w*0.5, 30), pipe(w*0.85, h*0.5, w*0.4, 30)],
+            2: () => [pipe(w*0.4, h*0.3, w*0.7, 30), pipe(w*0.6, h*0.6, w*0.7, 30)],
+            3: () => [pipe(w/2, h*0.25, 30, h*0.4), pipe(w/2, h*0.75, 30, h*0.4), pipe(w*0.2, h/2, w*0.3, 30), pipe(w*0.8, h/2, w*0.3, 30)],
+            4: () => [pipe(w*0.3, h*0.2, 30, h*0.3), pipe(w*0.7, h*0.4, 30, h*0.3), pipe(w*0.3, h*0.6, 30, h*0.3), pipe(w*0.7, h*0.8, 30, h*0.3)],
+            5: () => [pipe(w/2, h*0.3, w*0.8, 30), pipe(w/2, h*0.7, w*0.8, 30), pipe(w*0.1, h/2, 30, 150), pipe(w*0.9, h/2, 30, 150)],
+            6: () => [pipe(w*0.25, h*0.2, 30, h*0.3), pipe(w*0.5, h*0.5, 30, h*0.3), pipe(w*0.75, h*0.8, 30, h*0.3)],
+            7: () => [pipe(w*0.4, h*0.2, 30, h*0.4), pipe(w*0.6, h*0.8, 30, h*0.4), pipe(w/2, h/2, w*0.5, 30)],
+            8: () => [pipe(w*0.3, h*0.3, 110, 110), pipe(w*0.7, h*0.7, 110, 110)],
+            9: () => [pipe(w*0.35, h*0.5, 30, h*0.7), pipe(w*0.65, h*0.5, 30, h*0.7), pipe(w/2, h*0.15, w*0.3, 30)],
+            10: () => [
+                pipe(w*0.5, h*0.15, w*0.8, 25), 
+                pipe(w*0.25, h*0.45, 30, h*0.4), 
+                pipe(w*0.75, h*0.55, 30, h*0.4),
+                pipe(w*0.4, h*0.85, w*0.6, 25)
+            ],
+            11: () => [pipe(w*0.2, h*0.4, w*0.4, 30), pipe(w*0.8, h*0.6, w*0.4, 30), pipe(w/2, h/2, 30, 100)],
+            12: () => [pipe(w/2, h/2, w*0.85, 28), pipe(w/2, h*0.2, 28, h*0.25), pipe(w/2, h*0.8, 28, h*0.25)]
+        };
+
+        const elements = layouts[n] ? layouts[n]() : layouts[1]();
+        Composite.add(engine.world, elements);
+
+        ball = Bodies.circle(50, 70, 14, {
+            restitution: 0.15, frictionAir: 0.035, density: 0.01,
+            render: { fillStyle: '#ff3e3e', strokeStyle: '#000', lineWidth: 4 }
+        });
+
+        finish = Bodies.circle(w - 55, h - 85, 28, {
+            isStatic: true, isSensor: true,
+            render: { fillStyle: 'rgba(50, 215, 75, 0.12)', strokeStyle: '#32d74b', lineWidth: 3 }
+        });
+
+        Composite.add(engine.world, [ball, finish]);
+    }
+
+    function renderLevels() {
+        const container = document.getElementById('lvl-container');
+        container.innerHTML = '';
+        for (let i = 1; i <= 12; i++) {
+            const b = document.createElement('div');
+            b.className = `lvl-btn ${i <= unlocked ? 'active' : ''}`;
+            b.innerText = i <= unlocked ? i : '🔒';
+            if (i <= unlocked) b.onclick = () => start(i);
+            container.appendChild(b);
+        }
+    }
+
+    function start(n) {
+        currentLvl = n;
+        document.getElementById('current-lvl-num').innerText = n;
+        document.querySelectorAll('.screen').forEach(s => s.classList.add('hidden'));
+        document.getElementById('game-ui').classList.remove('hidden');
+        loadLevel(n);
+        isGame = true;
+    }
+
+    function showWin() {
+        isGame = false;
+        tg.HapticFeedback.notificationOccurred('success');
+        document.getElementById('sc-win').classList.remove('hidden');
+        document.getElementById('next-btn').onclick = () => {
+            if (currentLvl < 12) start(currentLvl + 1);
+            else showLevels();
+        };
+    }
+
+    function showLevels() {
+        document.querySelectorAll('.screen').forEach(s => s.classList.add('hidden'));
+        document.getElementById('game-ui').classList.add('hidden');
+        document.getElementById('sc-levels').classList.remove('hidden');
+        renderLevels();
+    }
+
+    function goBack() {
+        document.getElementById('sc-levels').classList.add('hidden');
+        document.getElementById('sc-main').classList.remove('hidden');
+    }
+
+    window.addEventListener('deviceorientation', (e) => {
+        if (!isGame) return;
+        // Оптимальная чувствительность для маневров
+        engine.gravity.x = e.gamma * 0.065;
+        engine.gravity.y = e.beta * 0.065;
+    });
+
+    Events.on(engine, 'collisionStart', (event) => {
+        event.pairs.forEach(pair => {
+            if (pair.bodyA === finish || pair.bodyB === finish) {
+                if (currentLvl === unlocked && unlocked < 12) {
+                    unlocked++;
+                    localStorage.setItem('maze_hc_final', unlocked);
+                }
+                showWin();
+            }
+        });
+    });
+
+    Render.run(render);
+    Runner.run(Runner.create(), engine);
+    renderLevels();
+</script>
+</body>
+</html>
