@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>ZONA DIGITAL</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root { --bg: #0b0c11; --card: #1c1e26; --accent: #ff4700; --radius: 22px; }
+        * { margin: 0; padding: 0; box-sizing: border-box; outline: none; }
+        body { font-family: sans-serif; background: var(--bg); color: white; -webkit-tap-highlight-color: transparent; }
+
+        header { padding: 25px 15px 10px; background: var(--bg); position: sticky; top: 0; z-index: 100; }
+        .brand { font-size: 24px; font-weight: 900; color: var(--accent); display: flex; align-items: center; gap: 10px; margin-bottom: 15px; }
+        
+        .search-box { background: var(--card); border-radius: 16px; padding: 12px 18px; display: flex; align-items: center; border: 1px solid #2d303d; }
+        .search-box input { background: transparent; border: none; color: white; font-size: 16px; width: 100%; margin-left: 10px; }
+
+        /* Плеер-труба */
+        #player-wrap { display: none; padding: 10px 15px; }
+        .player-tube { 
+            width: 100%; aspect-ratio: 16/9; background: #000; 
+            border-radius: var(--radius); overflow: hidden; 
+            border: 2px solid var(--accent); box-shadow: 0 0 20px rgba(255, 71, 0, 0.3);
+        }
+        iframe { width: 100%; height: 100%; border: none; }
+
+        .content { padding: 15px; padding-bottom: 100px; }
+        .title { font-size: 14px; font-weight: 800; color: #6e7185; text-transform: uppercase; margin-bottom: 15px; letter-spacing: 1px; }
+        
+        /* Сетка как на твоих скринах */
+        .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+        .card { background: var(--card); border-radius: 18px; overflow: hidden; position: relative; transition: 0.2s; border: 1px solid #252833; }
+        .card:active { transform: scale(0.95); }
+        .card img { width: 100%; aspect-ratio: 2/3; object-fit: cover; display: block; background: #252833; }
+        
+        .card-info { padding: 8px; }
+        .card-title { font-size: 11px; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .card-year { font-size: 10px; color: #6e7185; margin-top: 2px; }
+        
+        .rate { position: absolute; top: 8px; left: 8px; background: var(--accent); padding: 2px 6px; border-radius: 6px; font-size: 10px; font-weight: 800; z-index: 2; }
+
+        nav { position: fixed; bottom: 0; width: 100%; background: #0b0c11; display: flex; justify-content: space-around; padding: 15px 0; border-top: 1px solid #222; z-index: 1000; }
+        .nav-link { text-align: center; color: #5d5f6e; font-size: 10px; text-decoration: none; }
+        .nav-link.active { color: var(--accent); }
+        .nav-link i { font-size: 20px; display: block; margin-bottom: 4px; }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="brand"><i class="fas fa-play-circle"></i> ZONA <span>DIGITAL</span></div>
+        <div class="search-box">
+            <i class="fas fa-search" style="color: #6e7185;"></i>
+            <input type="text" id="search-input" placeholder="Введите название...">
+        </div>
+    </header>
+
+    <div id="player-wrap">
+        <div class="player-tube"><iframe id="player-frame" allowfullscreen></iframe></div>
+    </div>
+
+    <main class="content">
+        <h2 class="title" id="h-title">Популярные фильмы</h2>
+        <div class="grid" id="movie-grid"></div>
+    </main>
+
+    <nav>
+        <a href="#" class="nav-link active"><i class="fas fa-home"></i> Главная</a>
+        <a href="#" class="nav-link"><i class="fas fa-film"></i> Фильмы</a>
+        <a href="#" class="nav-link"><i class="fas fa-tv"></i> Сериалы</a>
+        <a href="#" class="nav-link"><i class="fas fa-arrow-down"></i> Зона</a>
+    </nav>
+
+    <script>
+        // База, которая точно загрузится
+        const backupData = [
+            { t: "Веном 3", r: "7.2", y: "2024", p: "https://st.kp.yandex.net/images/film_big/4636341.jpg" },
+            { t: "Дэдпул и Росомаха", r: "8.1", y: "2024", p: "https://st.kp.yandex.net/images/film_big/1115064.jpg" },
+            { t: "Головоломка 2", r: "7.9", y: "2024", p: "https://st.kp.yandex.net/images/film_big/5070660.jpg" },
+            { t: "Гадкий я 4", r: "7.1", y: "2024", p: "https://st.kp.yandex.net/images/film_big/4730623.jpg" },
+            { t: "Тихое место 1", r: "6.8", y: "2024", p: "https://st.kp.yandex.net/images/film_big/4375056.jpg" },
+            { t: "Планета обезьян", r: "7.0", y: "2024", p: "https://st.kp.yandex.net/images/film_big/1294123.jpg" }
+        ];
+
+        const grid = document.getElementById('movie-grid');
+        const frame = document.getElementById('player-frame');
+        const wrap = document.getElementById('player-wrap');
+
+        function render(items) {
+            grid.innerHTML = '';
+            items.forEach(m => {
+                const card = document.createElement('div');
+                card.className = 'card';
+                card.innerHTML = `
+                    <div class="rate">${m.r}</div>
+                    <img src="${m.p}" onerror="this.src='https://via.placeholder.com/300x450/1c1e26/ffffff?text=ZONA'">
+                    <div class="card-info">
+                        <div class="card-title">${m.t}</div>
+                        <div class="card-year">${m.y}</div>
+                    </div>
+                `;
+                card.onclick = () => play(m.t);
+                grid.appendChild(card);
+            });
+        }
+
+        function play(name) {
+            wrap.style.display = 'block';
+            frame.src = `https://kinobox.tv/embed/search?query=${encodeURIComponent(name)}`;
+            window.scrollTo({ top: 120, behavior: 'smooth' });
+        }
+
+        document.getElementById('search-input').addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                const q = e.target.value;
+                if(q) play(q);
+                e.target.blur();
+            }
+        });
+
+        // Запуск
+        render(backupData);
+    </script>
+</body>
+</html>
