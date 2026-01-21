@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Snake LED Edition</title>
+    <style>
+        body {
+            margin: 0; padding: 0;
+            background-color: #f0f0f0; /* Светлый фон ретушь */
+            color: #2c3e50;
+            font-family: sans-serif;
+            display: flex; flex-direction: column;
+            align-items: center; justify-content: center;
+            height: 100vh; overflow: hidden; touch-action: none;
+            position: relative;
+        }
+
+        /* Анимация гирлянды на фоне */
+        .led-strip {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        .dot {
+            position: absolute;
+            width: 8px; height: 8px;
+            background: #2ecc71;
+            border-radius: 50%;
+            filter: blur(2px);
+            box-shadow: 0 0 10px #2ecc71;
+            opacity: 0;
+            animation: led-flow 4s infinite linear;
+        }
+
+        @keyframes led-flow {
+            0% { opacity: 0; transform: scale(0.5); }
+            50% { opacity: 1; transform: scale(1.2); }
+            100% { opacity: 0; transform: scale(0.5); }
+        }
+
+        #game-ui {
+            display: flex; width: 90vw; max-width: 400px;
+            justify-content: space-between; align-items: center;
+            margin-bottom: 15px; z-index: 10;
+        }
+
+        #score-display { font-size: 24px; font-weight: bold; color: #2c3e50; }
+
+        #pause-btn {
+            background: #34495e; color: white; border: none;
+            padding: 10px 20px; border-radius: 8px; font-weight: bold;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        /* Квадратное поле */
+        canvas {
+            background-color: #000;
+            border: 5px solid #333;
+            display: block;
+            max-width: 90vw; max-height: 90vw;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+
+        #pause-overlay {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(255, 255, 255, 0.85);
+            display: none; flex-direction: column;
+            align-items: center; justify-content: center; z-index: 100;
+        }
+
+        .btn-menu {
+            background: #2ecc71; color: white; border: none;
+            padding: 15px 40px; font-size: 18px; font-weight: bold;
+            border-radius: 12px; margin: 10px; width: 220px;
+            box-shadow: 0 4px 0 #27ae60;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="led-strip" id="led-strip"></div>
+
+    <div id="game-ui">
+        <div id="score-display">СЧЕТ: 0</div>
+        <button id="pause-btn" onclick="togglePause()">ПАУЗА</button>
+    </div>
+
+    <canvas id="gameCanvas" width="400" height="400"></canvas>
+
+    <div id="pause-overlay">
+        <h2 style="font-size: 32px;">ПАУЗА</h2>
+        <button class="btn-menu" onclick="togglePause()">ПРОДОЛЖИТЬ</button>
+        <button class="btn-menu" style="background:#34495e; box-shadow: 0 4px 0 #2c3e50;" onclick="resetGame()">ЗАНОВО</button>
+    </div>
+
+    <script>
+        const canvas = document.getElementById("gameCanvas");
+        const ctx = canvas.getContext("2d");
+        const scoreVal = document.getElementById("score-display");
+        const pauseOverlay = document.getElementById("pause-overlay");
+
+        // Создаем "гирлянду"
+        const strip = document.getElementById('led-strip');
+        const colors = ['#2ecc71', '#e74c3c', '#3498db', '#f1c40f'];
+        for (let i = 0; i < 40; i++) {
+            const dot = document.createElement('div');
+            dot.className = 'dot';
+            dot.style.left = Math.random() * 100 + 'vw';
+            dot.style.top = Math.random() * 100 + 'vh';
+            dot.style.backgroundColor = colors[i % colors.length];
+            dot.style.boxShadow = `0 0 10px ${colors[i % colors.length]}`;
+            dot.style.animationDelay = (Math.random() * 4) + 's';
+            strip.appendChild(dot);
+        }
+
+        const grid = 20;
+        let count = 0;
+        let score = 0;
+        let isPaused = false;
+        
+        let snake = { x: 160, y: 160, dx: grid, dy: 0, cells: [], maxCells: 4 };
+        let apple = { x: 320, y: 320 };
+        let nextDx = grid, nextDy = 0;
+
+        // Переменные свайпа
+        let touchStartX = null;
+        let touchStartY = null;
+
+        function spawnApple() {
+            apple.x = Math.floor(Math.random() * 20) * grid;
+            apple.y = Math.floor(Math.random() * 20) * grid;
+        }
+
+        function resetGame() {
+            score = 0; scoreVal.innerText = "СЧЕТ: 0";
+            snake.x = 160; snake.y = 160; snake.cells = []; snake.maxCells = 4;
+            snake.dx = grid; snake.dy = 0; nextDx = grid; nextDy = 0;
+            spawnApple(); isPaused = false; pauseOverlay.style.display = 'none';
+        }
+
+        function togglePause() {
+            isPaused = !isPaused;
+            pauseOverlay.style.display = isPaused ? 'flex' : 'none';
+        }
+
+        function loop() {
+            requestAnimationFrame(loop);
+            if (isPaused) return;
+            if (++count < 10) return;
+            count = 0;
+
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            snake.dx = nextDx; snake.dy = nextDy;
+            snake.x += snake.dx; snake.y += snake.dy;
+
+            if (snake.x < 0 || snake.x >= canvas.width || snake.y < 0 || snake.y >= canvas.height) resetGame();
+
+            snake.cells.unshift({ x: snake.x, y: snake.y });
+            if (snake.cells.length > snake.maxCells) snake.cells.pop();
+
+            // Яблоко
+            ctx.fillStyle = '#e74c3c';
+            ctx.fillRect(apple.x, apple.y, grid - 1, grid - 1);
+
+            // Змейка
+            ctx.fillStyle = '#2ecc71';
+            snake.cells.forEach((cell, index) => {
+                ctx.fillRect(cell.x, cell.y, grid - 1, grid - 1);
+                if (cell.x === apple.x && cell.y === apple.y) {
+                    snake.maxCells++; score++;
+                    scoreVal.innerText = "СЧЕТ: " + score; spawnApple();
+                }
+                for (let i = index + 1; i < snake.cells.length; i++) {
+                    if (cell.x === snake.cells[i].x && cell.y === snake.cells[i].y) resetGame();
+                }
+            });
+        }
+
+        // --- ВОЗВРАЩЕННЫЙ МГНОВЕННЫЙ ОТКЛИК ---
+        document.addEventListener('touchstart', (e) => {
+            touchStartX = e.touches[0].clientX;
+            touchStartY = e.touches[0].clientY;
+        }, {passive: false});
+
+        document.addEventListener('touchmove', (e) => {
+            if (!touchStartX || !touchStartY || isPaused) return;
+            e.preventDefault(); 
+
+            let dx = e.touches[0].clientX - touchStartX;
+            let dy = e.touches[0].clientY - touchStartY;
+            const threshold = 15; 
+
+            if (Math.abs(dx) > Math.abs(dy)) {
+                if (Math.abs(dx) > threshold) {
+                    if (dx > 0 && snake.dx === 0) { nextDx = grid; nextDy = 0; }
+                    else if (dx < 0 && snake.dx === 0) { nextDx = -grid; nextDy = 0; }
+                    touchStartX = e.touches[0].clientX; touchStartY = e.touches[0].clientY;
+                }
+            } else {
+                if (Math.abs(dy) > threshold) {
+                    if (dy > 0 && snake.dy === 0) { nextDy = grid; nextDx = 0; }
+                    else if (dy < 0 && snake.dy === 0) { nextDy = -grid; nextDx = 0; }
+                    touchStartX = e.touches[0].clientX; touchStartY = e.touches[0].clientY;
+                }
+            }
+        }, {passive: false});
+
+        document.addEventListener('touchend', () => {
+            touchStartX = null; touchStartY = null;
+        }, false);
+
+        resetGame();
+        loop();
+    </script>
+</body>
+</html>
