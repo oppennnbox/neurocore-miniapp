@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Jelly Drift Pro + Sound</title>
+    <style>
+        :root {
+            --bg: #030712;
+            --accent: #22d3ee;
+            --danger: #f43f5e;
+            --radius: 24px;
+        }
+
+        body, html {
+            margin: 0; padding: 0; width: 100%; height: 100%;
+            overflow: hidden; background: var(--bg);
+            font-family: 'Inter', system-ui, sans-serif;
+            touch-action: none; color: white;
+        }
+
+        #stage {
+            position: relative; width: 100%; height: 100%;
+            background: radial-gradient(circle at 50% 100%, #1e1b4b 0%, var(--bg) 80%);
+            display: flex; justify-content: center;
+        }
+
+        .lane-mark {
+            position: absolute; top: 0; bottom: 0;
+            width: 1px; background: rgba(255,255,255,0.03);
+        }
+
+        #player-container {
+            position: absolute; bottom: 100px;
+            width: 56px; height: 76px;
+            transition: left 0.25s cubic-bezier(0.18, 0.89, 0.32, 1.15);
+            z-index: 10;
+            left: calc(50% - 28px);
+        }
+
+        #player {
+            width: 100%; height: 100%;
+            background: var(--accent);
+            border-radius: var(--radius);
+            box-shadow: 0 0 30px rgba(34, 211, 238, 0.5), inset 0 -5px 12px rgba(0,0,0,0.2);
+            transform-origin: bottom center;
+            will-change: transform;
+        }
+
+        @keyframes jelly-hit {
+            0% { transform: scale(1, 1) rotate(0deg); }
+            20% { transform: scale(0.6, 1.4) rotate(var(--tilt)); }
+            50% { transform: scale(1.1, 0.8) rotate(var(--tilt)); }
+            100% { transform: scale(1, 1) rotate(0deg); }
+        }
+        .jelly-anim { animation: jelly-hit 0.5s ease-out; }
+
+        .enemy {
+            position: absolute; width: 60px; height: 60px;
+            background: var(--danger); border-radius: 18px;
+            box-shadow: 0 8px 20px rgba(244, 63, 94, 0.4);
+        }
+
+        #hud {
+            position: absolute; top: 40px; text-align: center; z-index: 20;
+            pointer-events: none; width: 100%;
+        }
+
+        #score { font-size: 3.5rem; font-weight: 900; line-height: 1; margin: 0; }
+        #best { font-size: 0.9rem; opacity: 0.5; letter-spacing: 2px; }
+
+        /* Подсказка перед стартом */
+        #tap-hint {
+            position: absolute; top: 60%; font-size: 1rem;
+            text-transform: uppercase; letter-spacing: 4px;
+            opacity: 0.8; animation: pulse 1.5s infinite;
+            display: none; pointer-events: none; z-index: 15;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 0.3; transform: scale(0.95); }
+            50% { opacity: 1; transform: scale(1); }
+        }
+
+        .modal {
+            position: absolute; inset: 0; background: rgba(0,0,0,0.8);
+            backdrop-filter: blur(12px); display: flex;
+            align-items: center; justify-content: center; z-index: 100;
+        }
+
+        .card {
+            background: rgba(255,255,255,0.05); padding: 40px;
+            border-radius: 40px; border: 1px solid rgba(255,255,255,0.1);
+            text-align: center; animation: card-in 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        @keyframes card-in { from { transform: scale(0.8); opacity: 0; } }
+
+        .btn {
+            background: white; color: black; border: none;
+            padding: 16px 40px; border-radius: 20px;
+            font-size: 1.1rem; font-weight: 800; margin-top: 24px;
+            cursor: pointer; text-transform: uppercase;
+        }
+    </style>
+</head>
+<body>
+
+<div id="stage">
+    <div class="lane-mark" style="left: 35%"></div>
+    <div class="lane-mark" style="left: 65%"></div>
+    <div id="hud">
+        <p id="best">BEST: 0</p>
+        <p id="score">0</p>
+    </div>
+    <div id="tap-hint">Нажми, чтобы начать</div>
+    <div id="player-container"><div id="player"></div></div>
+    <div id="menu" class="modal">
+        <div class="card">
+            <h1 id="title">JELLY DRIFT</h1>
+            <p id="sub-title" style="opacity: 0.6">Мягкие свайпы — залог успеха</p>
+            <button class="btn" onclick="core.prepare()">СТАРТ</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    const sfx = {
+        ctx: null,
+        init() { if(!this.ctx) this.ctx = new (window.AudioContext || window.webkitAudioContext)(); },
+        play(freq, type, duration, vol) {
+            this.init();
+            const osc = this.ctx.createOscillator();
+            const gain = this.ctx.createGain();
+            osc.type = type;
+            osc.frequency.setValueAtTime(freq, this.ctx.currentTime);
+            osc.frequency.exponentialRampToValueAtTime(10, this.ctx.currentTime + duration);
+            gain.gain.setValueAtTime(vol, this.ctx.currentTime);
+            gain.gain.linearRampToValueAtTime(0, this.ctx.currentTime + duration);
+            osc.connect(gain); gain.connect(this.ctx.destination);
+            osc.start(); osc.stop(this.ctx.currentTime + duration);
+        },
+        drift() { this.play(400, 'triangle', 0.2, 0.2); },
+        point() { this.play(800, 'sine', 0.1, 0.1); },
+        boom() { this.play(100, 'sawtooth', 0.4, 0.3); }
+    };
+
+    const pContainer = document.getElementById('player-container');
+    const playerBody = document.getElementById('player');
+    const scoreText = document.getElementById('score');
+    const bestText = document.getElementById('best');
+    const menu = document.getElementById('menu');
+    const tapHint = document.getElementById('tap-hint');
+
+    const core = {
+        active: false,
+        waiting: false,
+        score: 0,
+        best: localStorage.getItem('jelly_high') || 0,
+        speed: 3.5,
+        lanes: [20, 50, 80],
+        currentLane: 1,
+        enemies: [],
+        spawnTimer: 0,
+        lastTime: 0,
+
+        init() {
+            bestText.innerText = `BEST: ${this.best}`;
+            this.setupControls();
+            this.syncPosition();
+        },
+
+        setupControls() {
+            let startX = 0;
+            let threshold = 40;
+            let canSwipe = true;
+
+            document.addEventListener('touchstart', e => {
+                if (this.waiting) { this.start(); return; }
+                startX = e.touches[0].clientX;
+                canSwipe = true;
+                sfx.init();
+            });
+
+            document.addEventListener('touchmove', e => {
+                if (!this.active || !canSwipe) return;
+                let diff = startX - e.touches[0].clientX;
+                if (Math.abs(diff) > threshold) {
+                    if (diff > 0 && this.currentLane > 0) { this.currentLane--; this.triggerMove('left'); canSwipe = false; }
+                    else if (diff < 0 && this.currentLane < 2) { this.currentLane++; this.triggerMove('right'); canSwipe = false; }
+                }
+            });
+
+            document.addEventListener('keydown', e => {
+                if (this.waiting) { this.start(); return; }
+                if (!this.active) return;
+                if (e.key === 'ArrowLeft' && this.currentLane > 0) { this.currentLane--; this.triggerMove('left'); }
+                if (e.key === 'ArrowRight' && this.currentLane < 2) { this.currentLane++; this.triggerMove('right'); }
+            });
+        },
+
+        triggerMove(dir) {
+            sfx.drift();
+            this.syncPosition();
+            let tilt = dir === 'left' ? '-12deg' : '12deg';
+            playerBody.style.setProperty('--tilt', tilt);
+            playerBody.classList.remove('jelly-anim');
+            void playerBody.offsetWidth;
+            playerBody.classList.add('jelly-anim');
+        },
+
+        syncPosition() {
+            pContainer.style.left = `calc(${this.lanes[this.currentLane]}% - 28px)`;
+        },
+
+        prepare() {
+            sfx.init();
+            this.score = 0;
+            this.enemies.forEach(en => en.el.remove());
+            this.enemies = [];
+            menu.style.display = 'none';
+            tapHint.style.display = 'block';
+            this.currentLane = 1;
+            this.syncPosition();
+            scoreText.innerText = '0';
+            this.waiting = true;
+        },
+
+        start() {
+            this.waiting = false;
+            this.active = true;
+            tapHint.style.display = 'none';
+            this.speed = 3.5;
+            this.spawnTimer = 800; // Небольшая задержка перед первым врагом
+            this.lastTime = performance.now();
+            requestAnimationFrame(t => this.loop(t));
+        },
+
+        gameOver() {
+            sfx.boom();
+            this.active = false;
+            this.waiting = false;
+            if (this.score > this.best) {
+                this.best = this.score;
+                localStorage.setItem('jelly_high', this.best);
+                bestText.innerText = `BEST: ${this.best}`;
+            }
+            playerBody.style.transform = 'scale(1.8, 0.1)';
+            setTimeout(() => {
+                menu.style.display = 'flex';
+                document.getElementById('title').innerText = 'БА-БАХ!';
+                document.getElementById('sub-title').innerText = `Твой счет: ${this.score}`;
+                playerBody.style.transform = 'scale(1)';
+            }, 300);
+        },
+
+        loop(now) {
+            if (!this.active) return;
+            let dt = now - (this.lastTime || now);
+            this.lastTime = now;
+            
+            this.speed += 0.0002 * dt; 
+            this.spawnTimer -= dt;
+
+            if (this.spawnTimer <= 0) {
+                this.createEnemy();
+                this.spawnTimer = Math.max(450, 1600 - (this.speed * 100));
+            }
+
+            for (let i = this.enemies.length - 1; i >= 0; i--) {
+                let en = this.enemies[i];
+                en.y += this.speed;
+                en.el.style.top = en.y + 'px';
+                
+                let pR = pContainer.getBoundingClientRect();
+                let eR = en.el.getBoundingClientRect();
+
+                if (pR.left < eR.right - 6 && pR.right > eR.left + 6 &&
+                    pR.top < eR.bottom - 6 && pR.bottom > eR.top + 6) {
+                    this.gameOver();
+                }
+
+                if (en.y > window.innerHeight) {
+                    sfx.point();
+                    en.el.remove();
+                    this.enemies.splice(i, 1);
+                    this.score++;
+                    scoreText.innerText = this.score;
+                }
+            }
+            requestAnimationFrame(t => this.loop(t));
+        },
+
+        createEnemy() {
+            let el = document.createElement('div');
+            el.className = 'enemy';
+            let lane = this.lanes[Math.floor(Math.random() * 3)];
+            el.style.left = `calc(${lane}% - 30px)`;
+            el.style.top = '-80px';
+            document.getElementById('stage').appendChild(el);
+            this.enemies.push({ el, y: -80 });
+        }
+    };
+    core.init();
+</script>
+</body>
+</html>
