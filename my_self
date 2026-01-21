@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>ABOUT ME // VLADISLAV</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@600;800&family=Rajdhani:wght@500;700&family=JetBrains+Mono&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --neon-blue: #00f2ff;
+            --neon-purple: #9d00ff;
+            --neon-pink: #ff0055;
+            --bg-black: #050507;
+            --glass: rgba(15, 15, 25, 0.85);
+            --round-lg: 28px;
+            --round-sm: 12px;
+        }
+
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+        body {
+            margin: 0;
+            background: var(--bg-black);
+            color: #fff;
+            font-family: 'Rajdhani', sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            overflow-y: auto;
+            padding: 20px 0;
+            background-image: 
+                linear-gradient(rgba(0, 242, 255, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0, 242, 255, 0.03) 1px, transparent 1px);
+            background-size: 30px 30px;
+        }
+
+        .terminal-card {
+            width: 92%;
+            max-width: 440px;
+            background: var(--glass);
+            border: 2px solid var(--neon-blue);
+            border-radius: var(--round-lg);
+            padding: 30px;
+            position: relative;
+            backdrop-filter: blur(12px);
+            box-shadow: 0 0 30px rgba(0, 242, 255, 0.15);
+            z-index: 5;
+        }
+
+        .header-section {
+            text-align: center;
+            margin-bottom: 25px;
+        }
+
+        .label-top {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 10px;
+            color: var(--neon-purple);
+            letter-spacing: 4px;
+            text-transform: uppercase;
+            margin-bottom: 8px;
+            display: block;
+        }
+
+        h1 {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.8rem;
+            margin: 0;
+            background: linear-gradient(90deg, #fff, var(--neon-blue));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .lang-bar {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 8px;
+            margin-bottom: 25px;
+        }
+
+        .l-btn {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(0, 242, 255, 0.2);
+            color: #aaa;
+            padding: 10px 0;
+            border-radius: var(--round-sm);
+            font-family: 'Orbitron', sans-serif;
+            font-size: 0.7rem;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        .l-btn.active {
+            color: var(--neon-blue);
+            border-color: var(--neon-blue);
+            background: rgba(0, 242, 255, 0.1);
+            box-shadow: 0 0 12px var(--neon-blue);
+        }
+
+        .main-bio {
+            background: rgba(0, 0, 0, 0.5);
+            border-radius: var(--round-sm);
+            padding: 20px;
+            border-left: 3px solid var(--neon-purple);
+            min-height: 250px;
+            margin-bottom: 25px;
+        }
+
+        #typing-area {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.95rem;
+            line-height: 1.6;
+            color: #dcdcdc;
+        }
+
+        .stack-grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            justify-content: center;
+            margin-bottom: 30px;
+        }
+
+        .tag {
+            font-size: 0.75rem;
+            padding: 6px 14px;
+            border: 1px solid var(--neon-purple);
+            border-radius: 20px;
+            color: var(--neon-purple);
+            text-transform: uppercase;
+            font-weight: bold;
+        }
+
+        /* Кнопка Instagram */
+        .instagram-link {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-decoration: none;
+            background: linear-gradient(45deg, var(--neon-pink), var(--neon-purple));
+            color: white;
+            padding: 14px;
+            border-radius: var(--round-sm);
+            font-family: 'Orbitron', sans-serif;
+            font-size: 0.9rem;
+            letter-spacing: 2px;
+            transition: 0.4s;
+            box-shadow: 0 0 15px rgba(255, 0, 85, 0.3);
+        }
+
+        .instagram-link:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 0 25px rgba(255, 0, 85, 0.6);
+            filter: brightness(1.2);
+        }
+
+        .cursor {
+            display: inline-block;
+            width: 8px; height: 16px;
+            background: var(--neon-blue);
+            animation: blink 0.8s infinite;
+            vertical-align: middle;
+        }
+
+        @keyframes blink { 50% { opacity: 0; } }
+    </style>
+</head>
+<body>
+
+<div class="terminal-card">
+    <div class="header-section">
+        <span class="label-top">Identification // Active</span>
+        <h1>ABOUT ME</h1>
+    </div>
+
+    <div class="lang-bar">
+        <button class="l-btn active" onclick="switchL('en', this)">EN</button>
+        <button class="l-btn" onclick="switchL('br', this)">UK</button>
+        <button class="l-btn" onclick="switchL('ru', this)">RU</button>
+        <button class="l-btn" onclick="switchL('fr', this)">FR</button>
+    </div>
+
+    <div class="main-bio">
+        <div id="typing-area"></div><span class="cursor"></span>
+    </div>
+
+    <div class="stack-grid">
+        <div class="tag">Python</div>
+        <div class="tag">Unity / C#</div>
+        <div class="tag">Java</div>
+        <div class="tag">C-Lang</div>
+    </div>
+
+    <a href="https://www.instagram.com/the.trump_ace.official?igsh=MXhkeGRua2xjOHhmeg==" target="_blank" class="instagram-link">
+        INSTAGRAM_LINK
+    </a>
+</div>
+
+<script>
+    const database = {
+        en: "Hi, I'm Vladislav. I'm a university student and a developer who genuinely loves the process of creating things. At this stage, I am focused on learning and professional growth. I enjoy diving into technical details and figuring out how everything works \"under the hood.\" My toolkit includes Python, Unity (C#), Java, and C. Besides programming, I enjoy running, which helps me stay in shape, and I'm a bit of a polyglot, as I can communicate in several international languages. I'm not into politics; I prefer to spend my energy on interesting discussions, technological ideas, and sharing my vision with like-minded people.",
+        br: "Hello, I'm Vladislav. I'm a university student and a developer with a true passion for the craft of building. Currently, I'm focused on my education and professional advancement. I fancy exploring technical details and understanding how things function at their core. My repertoire includes Python, Unity, Java, and C. Aside from coding, I fancy a good run to keep fit, and I'm quite the linguist, being able to chat in several international tongues. I don't care for politics; I'd much rather spend my time on tech innovation and sharing insights with proper peers.",
+        ru: "Привет, я Владислав. Я студент университета и разработчик, который искренне любит процесс создания вещей. На данном этапе я сосредоточен на обучении и профессиональном росте. Мне нравится погружаться в технические детали и разбираться, как всё устроено «под капотом». Мой инструментарий включает Python, Unity (C#), Java и C. Помимо программирования, я занимаюсь бегом, что помогает держать себя в форме, и являюсь своего рода полиглотом, так как могу общаться на нескольких иностранных языках. Я не увлекаюсь политикой; я предпочитаю тратить свою энергию на интересные дискуссии, технологические идеи и обмен своим видением с единомышленниками.",
+        fr: "Salut, je suis Vladislav. Je suis un étudiant universitaire et un développeur qui aime sincèrement le processus de création. Actuellement, je me concentre sur mon apprentissage et ma croissance professionnelle. J'aime plonger dans les détails techniques pour comprendre comment tout fonctionne « sous le capot ». Mon stack comprend Python, Unity (C#), Java et C. En plus de la programmation, je pratique la course à pied pour rester en forme et je suis un polyglotte, capable de communiquer en plusieurs langues internationales. La politique ne m'intéresse pas ; je préfère consacrer mon énergie aux idées technologiques et aux échanges avec des passionnés."
+    };
+
+    let typing = false;
+
+    function typeEffect(text) {
+        if (typing) return;
+        typing = true;
+        let i = 0;
+        const box = document.getElementById('typing-area');
+        box.innerHTML = '';
+        
+        function draw() {
+            if (i < text.length) {
+                box.innerHTML += text.charAt(i);
+                i++;
+                setTimeout(draw, 15);
+            } else {
+                typing = false;
+            }
+        }
+        draw();
+    }
+
+    function switchL(lang, btn) {
+        if (typing) return;
+        document.querySelectorAll('.l-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        typeEffect(database[lang]);
+    }
+
+    window.onload = () => typeEffect(database.en);
+</script>
+
+</body>
+</html>
