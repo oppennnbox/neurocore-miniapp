@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Крестики-Нолики • Техно</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, system-ui, sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: #e0e6ed;
+        }
+        .game { text-align: center; width: min(90vw, 500px); }
+        h1 {
+            font-size: clamp(1.8rem, 6vw, 3.5rem);
+            font-weight: 800;
+            background: linear-gradient(90deg, #e0e6ed 0%, #b4c6dd 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 1.5rem;
+            letter-spacing: -0.02em;
+        }
+        .stats {
+            display: flex;
+            justify-content: space-around;
+            margin-bottom: 2rem;
+            font-size: 1.1rem;
+            font-weight: 500;
+        }
+        .stat { background: rgba(255,255,255,0.05); padding: 0.8rem 1.5rem; border-radius: 12px; }
+        .status {
+            font-size: clamp(1.1rem, 4vw, 1.4rem);
+            margin-bottom: 2rem;
+            font-weight: 600;
+            color: #c7d2e0;
+        }
+        .board {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 8px;
+            width: 100%;
+            aspect-ratio: 1;
+            background: rgba(255,255,255,0.03);
+            border: 2px solid rgba(255,255,255,0.1);
+            border-radius: 16px;
+            padding: 12px;
+            backdrop-filter: blur(15px);
+        }
+        .cell {
+            background: rgba(255,255,255,0.08);
+            border: 1px solid rgba(255,255,255,0.12);
+            border-radius: 10px;
+            font-size: clamp(2.2rem, 18vw, 4.5rem);
+            font-weight: 900;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            position: relative;
+            color: #f8fafc;
+        }
+        .cell:hover { 
+            background: rgba(255,255,255,0.15);
+            transform: translateY(-2px);
+            border-color: rgba(255,255,255,0.25);
+        }
+        .cell.x { color: #f87171; }
+        .cell.o { color: #60a5fa; }
+        .cell.win { 
+            background: linear-gradient(45deg, #10b981, #059669);
+            box-shadow: 0 0 0 2px rgba(16,185,129,0.5);
+            animation: winPulse 0.8s ease-in-out infinite;
+        }
+        @keyframes winPulse {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.9; transform: scale(1.03); }
+        }
+        .btn {
+            margin-top: 2rem;
+            padding: 1rem 2.5rem;
+            font-size: 1.1rem;
+            font-weight: 600;
+            background: rgba(255,255,255,0.1);
+            border: 2px solid rgba(255,255,255,0.2);
+            border-radius: 12px;
+            color: #e0e6ed;
+            cursor: pointer;
+            transition: all 0.25s ease;
+            backdrop-filter: blur(10px);
+        }
+        .btn:hover { 
+            background: rgba(255,255,255,0.2);
+            border-color: rgba(255,255,255,0.4);
+            transform: translateY(-2px);
+        }
+        @media (max-width: 480px) { 
+            .board { gap: 6px; padding: 10px; }
+            .stats { font-size: 1rem; flex-direction: column; gap: 0.5rem; }
+        }
+    </style>
+</head>
+<body>
+    <div class="game">
+        <h1>Крестики-Нолики</h1>
+        <div class="stats">
+            <div class="stat">Ты: <span id="playerWins">0</span></div>
+            <div class="stat">AI: <span id="aiWins">0</span></div>
+            <div class="stat">Ничьи: <span id="draws">0</span></div>
+        </div>
+        <div class="status" id="status">Твой ход (X)</div>
+        <div class="board" id="board"></div>
+        <button class="btn" onclick="resetGame()">Новая игра</button>
+    </div>
+
+    <script>
+        let gameState = ['', '', '', '', '', '', '', '', ''];
+        let currentPlayer = 'X';
+        let gameActive = true;
+        let cells = [];
+        const board = document.getElementById('board');
+        const status = document.getElementById('status');
+
+        // Загрузка статистики
+        function loadStats() {
+            const stats = JSON.parse(localStorage.getItem('tictactoeStats') || '{"player":0,"ai":0,"draws":0}');
+            document.getElementById('playerWins').textContent = stats.player;
+            document.getElementById('aiWins').textContent = stats.ai;
+            document.getElementById('draws').textContent = stats.draws;
+        }
+
+        function saveStats(type) {
+            const stats = JSON.parse(localStorage.getItem('tictactoeStats') || '{"player":0,"ai":0,"draws":0}');
+            stats[type]++;
+            localStorage.setItem('tictactoeStats', JSON.stringify(stats));
+            loadStats();
+        }
+
+        // ИИ с предвидением на 3 хода
+        function getBestMove() {
+            let bestScore = -Infinity;
+            let bestMove;
+            
+            for (let i = 0; i < 9; i++) {
+                if (gameState[i] === '') {
+                    gameState[i] = 'O';
+                    let score = minimax(gameState, 0, false);
+                    gameState[i] = '';
+                    
+                    if (score > bestScore) {
+                        bestScore = score;
+                        bestMove = i;
+                    }
+                }
+            }
+            return bestMove;
+        }
+
+        function minimax(newBoard, depth, isMaximizing) {
+            let winner = checkWinner(newBoard);
+            if (winner === 'O') return 10 - depth;
+            if (winner === 'X') return depth - 10;
+            if (newBoard.every(cell => cell !== '')) return 0;
+
+            if (isMaximizing) {
+                let best = -Infinity;
+                for (let i = 0; i < 9; i++) {
+                    if (newBoard[i] === '') {
+                        newBoard[i] = 'O';
+                        best = Math.max(best, minimax(newBoard, depth + 1, false));
+                        newBoard[i] = '';
+                    }
+                }
+                return best;
+            } else {
+                let best = Infinity;
+                for (let i = 0; i < 9; i++) {
+                    if (newBoard[i] === '') {
+                        newBoard[i] = 'X';
+                        best = Math.min(best, minimax(newBoard, depth + 1, true));
+                        newBoard[i] = '';
+                    }
+                }
+                return best;
+            }
+        }
+
+        function initBoard() {
+            board.innerHTML = '';
+            cells = [];
+            gameState = ['', '', '', '', '', '', '', '', ''];
+            gameActive = true;
+            currentPlayer = 'X';
+            status.textContent = 'Твой ход (X)';
+            
+            for (let i = 0; i < 9; i++) {
+                const cell = document.createElement('button');
+                cell.className = 'cell';
+                cell.dataset.index = i;
+                cell.addEventListener('click', handleCellClick);
+                board.appendChild(cell);
+                cells.push(cell);
+            }
+        }
+
+        function handleCellClick(e) {
+            const index = parseInt(e.target.dataset.index);
+            if (gameState[index] !== '' || !gameActive || currentPlayer !== 'X') return;
+
+            makeMove(index, 'X');
+        }
+
+        function makeMove(index, player) {
+            gameState[index] = player;
+            cells[index].textContent = player;
+            cells[index].classList.add(player.toLowerCase());
+
+            let winner = checkWinner(gameState);
+            if (winner) {
+                status.textContent = `Победа ${player === 'X' ? 'твоя' : 'AI'}! 🎯`;
+                gameActive = false;
+                highlightWin(winner);
+                saveStats(player === 'X' ? 'player' : 'ai');
+                return;
+            }
+            
+            if (gameState.every(cell => cell !== '')) {
+                status.textContent = 'Ничья!';
+                gameActive = false;
+                saveStats('draws');
+                return;
+            }
+
+            if (player === 'X') {
+                currentPlayer = 'O';
+                status.textContent = 'Ход AI...';
+                setTimeout(() => {
+                    const move = getBestMove();
+                    makeMove(move, 'O');
+                }, 300);
+            } else {
+                currentPlayer = 'X';
+                status.textContent = 'Твой ход (X)';
+            }
+        }
+
+        function checkWinner(board) {
+            const wins = [[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]];
+            for (let win of wins) {
+                if (board[win[0]] && board[win[0]] === board[win[1]] && board[win[0]] === board[win[2]]) {
+                    return board[win[0]];
+                }
+            }
+            return null;
+        }
+
+        function highlightWin(winner) {
+            const wins = [[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]];
+            const winCombo = wins.find(win => 
+                gameState[win[0]] === winner && gameState[win[1]] === winner && gameState[win[2]] === winner
+            );
+            if (winCombo) winCombo.forEach(i => cells[i].classList.add('win'));
+        }
+
+        function resetGame() {
+            initBoard();
+        }
+
+        loadStats();
+        initBoard();
+    </script>
+</body>
+</html>
