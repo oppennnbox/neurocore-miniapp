@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>NEON ZEN FLOW</title>
+    <style>
+        body { margin: 0; overflow: hidden; background: #010103; font-family: 'Inter', sans-serif; touch-action: none; }
+        canvas { display: block; }
+        #ui {
+            position: absolute; top: 8%; left: 0; width: 100%;
+            text-align: center; pointer-events: none;
+            color: #fff; letter-spacing: 12px; font-weight: 200;
+            filter: drop-shadow(0 0 10px rgba(255,255,255,0.5));
+        }
+        #score { font-size: 72px; margin: 0; opacity: 0.8; }
+    </style>
+</head>
+<body>
+    <div id="ui"><p id="score">0</p></div>
+    <canvas id="game"></canvas>
+
+<script>
+const canvas = document.getElementById('game');
+const ctx = canvas.getContext('2d');
+const scoreLabel = document.getElementById('score');
+
+let width, height, speed, score, gameActive, frame;
+let points = [], particles = [], hue = 220;
+// Увеличен коэфициент скорости отклика (speed: 0.3 вместо 0.08)
+let player = { currentX: 0, targetX: 0, speed: 0.3, radius: 18 };
+
+// --- ГЕНЕРАТОР МЕДИТАТИВНОГО ЗВУКА ---
+const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+let filter, gainNode;
+
+function initAudio() {
+    if (filter) return;
+    filter = audioCtx.createBiquadFilter();
+    gainNode = audioCtx.createGain();
+    filter.type = 'lowpass';
+    filter.frequency.value = 500;
+    gainNode.gain.value = 0.15;
+    
+    filter.connect(gainNode);
+    gainNode.connect(audioCtx.destination);
+
+    const oscs = [40, 80, 120];
+    oscs.forEach(f => {
+        const osc = audioCtx.createOscillator();
+        osc.type = 'sine';
+        osc.frequency.value = f;
+        osc.connect(filter);
+        osc.start();
+    });
+}
+
+function updateAudio() {
+    if (!filter) return;
+    const freq = 400 + (Math.abs(player.currentX - width/2) / width) * 600;
+    filter.frequency.setTargetAtTime(freq, audioCtx.currentTime, 0.1);
+}
+
+// --- ЛОГИКА ИГРЫ ---
+function init() {
+    width = canvas.width = window.innerWidth;
+    height = canvas.height = window.innerHeight;
+    speed = 3.5;
+    score = 0;
+    gameActive = true;
+    player.currentX = player.targetX = width / 2;
+    points = [];
+    for(let i = 0; i < 12; i++) {
+        points.push({ x: width / 2, y: height + 200 - (i * 180) });
+    }
+}
+
+function update() {
+    if (!gameActive) return;
+    
+    hue += 0.15;
+    score += 0.2;
+    scoreLabel.innerText = Math.floor(score);
+    
+    if (points[0].y > height + 200) {
+        points.shift();
+        const last = points[points.length - 1];
+        const newX = Math.max(100, Math.min(width - 100, last.x + (Math.random() - 0.5) * 400));
+        points.push({ x: newX, y: last.y - 180 });
+    }
+    
+    points.forEach(p => p.y += speed);
+    speed = 3.5 + (score / 1500);
+
+    // Мгновенный и четкий отклик
+    player.currentX += (player.targetX - player.currentX) * player.speed;
+    updateAudio();
+
+    const pipeX = getPipeXAt(height - 250);
+    // Допуск столкновения адаптирован под новый размер шарика
+    if (Math.abs(player.currentX - pipeX) > 60) gameOver();
+}
+
+function getPipeXAt(y) {
+    for (let i = 0; i < points.length - 1; i++) {
+        if (y <= points[i].y && y >= points[i+1].y) {
+            const t = (y - points[i].y) / (points[i+1].y - points[i].y);
+            return points[i].x + t * (points[i+1].x - points[i].x);
+        }
+    }
+    return points[0].x;
+}
+
+function draw() {
+    ctx.clearRect(0, 0, width, height);
+    ctx.lineCap = 'round';
+    ctx.lineJoin = 'round';
+    
+    const neonColor = `hsla(${hue}, 90%, 65%,`;
+
+    // 1. Глубокое фоновое свечение трубы
+    ctx.shadowBlur = 60;
+    ctx.shadowColor = `${neonColor} 0.6)`;
+    ctx.strokeStyle = `${neonColor} 0.2)`;
+    ctx.lineWidth = 130;
+    renderCurve();
+
+    // 2. Тело трубы (очень темное)
+    ctx.shadowBlur = 0;
+    ctx.strokeStyle = '#010103';
+    ctx.lineWidth = 110;
+    renderCurve();
+
+    // 3. Четкий неоновый контур
+    ctx.strokeStyle = `${neonColor} 0.8)`;
+    ctx.lineWidth = 3;
+    ctx.shadowBlur = 10;
+    ctx.shadowColor = `${neonColor} 1)`;
+    renderCurve();
+
+    // 4. ИГРОК (Увеличенный шарик с ядром)
+    const pY = height - 250;
+    // Внешнее сияние
+    ctx.shadowBlur = 40;
+    ctx.shadowColor = '#fff';
+    ctx.fillStyle = 'rgba(255,255,255,0.2)';
+    ctx.beginPath();
+    ctx.arc(player.currentX, pY, player.radius + 5, 0, Math.PI * 2);
+    ctx.fill();
+    // Ядро
+    ctx.shadowBlur = 15;
+    ctx.fillStyle = '#fff';
+    ctx.beginPath();
+    ctx.arc(player.currentX, pY, player.radius, 0, Math.PI * 2);
+    ctx.fill();
+
+    // Эффектные частицы
+    if (frame % 2 === 0) {
+        particles.push({
+            x: player.currentX, y: pY, 
+            s: Math.random() * 4, a: 1,
+            vX: (Math.random() - 0.5) * 3,
+            vY: speed * 0.5
+        });
+    }
+
+    particles.forEach((p, i) => {
+        p.y += p.vY;
+        p.x += p.vX;
+        p.a -= 0.015;
+        ctx.fillStyle = `rgba(255, 255, 255, ${p.a})`;
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.s, 0, Math.PI * 2);
+        ctx.fill();
+        if(p.a <= 0) particles.splice(i, 1);
+    });
+
+    frame = requestAnimationFrame(() => { update(); draw(); });
+}
+
+function renderCurve() {
+    ctx.beginPath();
+    ctx.moveTo(points[0].x, points[0].y);
+    for (let i = 1; i < points.length - 2; i++) {
+        const xc = (points[i].x + points[i+1].x) / 2;
+        const yc = (points[i].y + points[i+1].y) / 2;
+        ctx.quadraticCurveTo(points[i].x, points[i].y, xc, yc);
+    }
+    ctx.stroke();
+}
+
+function gameOver() {
+    gameActive = false;
+    cancelAnimationFrame(frame);
+    setTimeout(() => {
+        init();
+        frame = requestAnimationFrame(draw);
+    }, 1200);
+}
+
+// Управление
+const handleMove = e => {
+    const x = e.touches ? e.touches[0].clientX : e.clientX;
+    player.targetX = x;
+};
+
+window.addEventListener('pointermove', handleMove);
+window.addEventListener('pointerdown', e => {
+    handleMove(e);
+    if (audioCtx.state === 'suspended') audioCtx.resume();
+    initAudio();
+});
+window.addEventListener('resize', init);
+
+init();
+draw();
+</script>
+</body>
+</html>
