@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>Fluid Ultra Premium</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.4.0/p5.js"></script>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            background-color: #000;
+            width: 100vw;
+            height: 100vh;
+        }
+
+        #canvas-container {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            /* Закругляем углы согласно инструкции, делаем их чуть мягче */
+            border-radius: 38px; 
+            overflow: hidden;
+            background: #000;
+        }
+
+        canvas {
+            display: block;
+        }
+    </style>
+</head>
+<body>
+
+<div id="canvas-container"></div>
+
+<script>
+let particles = [];
+let hueValue = 0;
+let smoothTouches = [];
+
+function setup() {
+    let container = document.getElementById('canvas-container');
+    let cnv = createCanvas(windowWidth, windowHeight);
+    cnv.parent('canvas-container');
+    
+    colorMode(HSB, 360, 100, 100, 1);
+    background(0);
+    // Оптимальный баланс четкости и скорости
+    pixelDensity(Math.min(displayDensity(), 2)); 
+}
+
+function draw() {
+    // Еще более мягкий и глубокий шлейф
+    background(0, 0, 0, 0.14);
+
+    hueValue = (hueValue + 1.8) % 360;
+
+    if (touches.length > 0) {
+        for (let i = 0; i < touches.length; i++) {
+            if (!smoothTouches[i]) smoothTouches[i] = {x: touches[i].x, y: touches[i].y};
+            
+            // Считаем скорость движения пальца для динамики частиц
+            let vx = touches[i].x - smoothTouches[i].x;
+            let vy = touches[i].y - smoothTouches[i].y;
+            let speed = sqrt(vx*vx + vy*vy);
+
+            smoothTouches[i].x = lerp(smoothTouches[i].x, touches[i].x, 0.45);
+            smoothTouches[i].y = lerp(smoothTouches[i].y, touches[i].y, 0.45);
+            
+            createBurst(smoothTouches[i].x, smoothTouches[i].y, (hueValue + i * 45) % 360, speed);
+        }
+    } else if (mouseIsPressed) {
+        let speed = sqrt(pow(mouseX - pmouseX, 2) + pow(mouseY - pmouseY, 2));
+        createBurst(mouseX, mouseY, hueValue, speed);
+    } else {
+        smoothTouches = [];
+    }
+
+    // Рендерим с наложением SCREEN для эффекта свечения при пересечении
+    blendMode(SCREEN);
+    for (let i = particles.length - 1; i >= 0; i--) {
+        particles[i].update();
+        particles[i].show();
+        if (particles[i].finished()) {
+            particles.splice(i, 1);
+        }
+    }
+    blendMode(BLEND);
+}
+
+function createBurst(x, y, h, speed) {
+    // Количество частиц зависит от скорости движения пальца
+    let count = map(speed, 0, 50, 2, 5);
+    for (let i = 0; i < count; i++) {
+        particles.push(new Particle(x, y, h, speed));
+    }
+}
+
+class Particle {
+    constructor(x, y, h, speed) {
+        this.x = x;
+        this.y = y;
+        
+        let angle = random(TWO_PI);
+        // Физика: начальный импульс усилен скоростью пальца
+        let force = random(2, 6) + (speed * 0.1); 
+        this.vx = cos(angle) * force;
+        this.vy = sin(angle) * force;
+        
+        this.alpha = 1;
+        this.hue = h;
+        // Размер также зависит от скорости: быстрые движения — мелкие брызги
+        this.radius = random(10, 30) + map(speed, 0, 100, 10, -5);
+        this.fadeSpeed = random(0.015, 0.03); 
+    }
+
+    finished() {
+        return this.alpha < 0.01;
+    }
+
+    update() {
+        this.x += this.vx;
+        this.y += this.vy;
+        
+        this.alpha -= this.fadeSpeed;
+        this.radius *= 0.97; 
+        
+        // Оставляем физику исходника
+        this.vx *= 0.985;
+        this.vy *= 0.985;
+    }
+
+    show() {
+        noStroke();
+        
+        // 1. Широкий ореол (Atmospheric Glow)
+        fill(this.hue, 70, 100, this.alpha * 0.08);
+        ellipse(this.x, this.y, this.radius * 3.5);
+        
+        // 2. Вторичное свечение
+        fill(this.hue, 85, 100, this.alpha * 0.2);
+        ellipse(this.x, this.y, this.radius * 1.8);
+        
+        // 3. Основное ядро (Solid Liquid)
+        fill(this.hue, 95, 100, this.alpha);
+        ellipse(this.x, this.y, this.radius);
+        
+        // 4. Акцентный блик (Glossy Effect)
+        fill(0, 0, 100, this.alpha * 0.6);
+        let offset = this.radius * 0.25;
+        ellipse(this.x - offset, this.y - offset, this.radius * 0.4);
+    }
+}
+
+function windowResized() {
+    resizeCanvas(windowWidth, windowHeight);
+    background(0);
+}
+
+document.addEventListener('touchstart', (e) => { if(e.touches.length > 1) e.preventDefault(); }, {passive: false});
+document.addEventListener('touchmove', (e) => e.preventDefault(), {passive: false});
+</script>
+
+</body>
+</html>
