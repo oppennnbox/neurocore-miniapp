@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Neon Pong Pro</title>
+    <style>
+        :root { --neon: #00f2ff; --pink: #ff007f; }
+        body {
+            margin: 0; background: #0a0a0a; color: white;
+            font-family: 'Segoe UI', Roboto, sans-serif;
+            overflow: hidden; touch-action: none;
+            display: flex; justify-content: center; align-items: center; height: 100vh;
+        }
+        #ui-layer {
+            position: absolute; width: 100%; height: 100%;
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            z-index: 10; pointer-events: none;
+        }
+        .menu-card {
+            background: rgba(0, 0, 0, 0.8); padding: 30px; border-radius: 20px;
+            border: 2px solid var(--neon); text-align: center;
+            pointer-events: auto; backdrop-filter: blur(10px);
+            box-shadow: 0 0 20px var(--neon); transform: scale(1); transition: 0.3s;
+        }
+        h1 { margin: 0 0 20px; font-size: 3rem; text-shadow: 0 0 10px var(--neon); }
+        button {
+            background: transparent; border: 2px solid var(--pink); color: white;
+            padding: 15px 40px; font-size: 1.2rem; border-radius: 50px; cursor: pointer;
+            transition: 0.3s; text-transform: uppercase; letter-spacing: 2px;
+        }
+        button:active { transform: scale(0.9); background: var(--pink); }
+        #score-board {
+            position: absolute; top: 20px; display: flex; gap: 50px;
+            font-size: 2.5rem; font-weight: bold; pointer-events: none;
+        }
+        .hidden { display: none !important; }
+        #pause-btn {
+            position: absolute; top: 20px; right: 20px; padding: 10px 20px;
+            z-index: 11; pointer-events: auto; border-color: #555; font-size: 0.8rem;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="score-board" class="hidden">
+        <span id="u-score" style="color: var(--neon)">0</span>
+        <span id="c-score" style="color: var(--pink)">0</span>
+    </div>
+
+    <button id="pause-btn" class="hidden">Пауза</button>
+
+    <div id="ui-layer">
+        <div id="start-screen" class="menu-card">
+            <h1>NEON PONG</h1>
+            <button onclick="startGame()">Играть</button>
+        </div>
+        
+        <div id="pause-screen" class="menu-card hidden">
+            <h1>ПАУЗА</h1>
+            <button onclick="resumeGame()">Продолжить</button>
+        </div>
+
+        <div id="end-screen" class="menu-card hidden">
+            <h1 id="win-text">ПОБЕДА!</h1>
+            <button onclick="startGame()">Снова</button>
+        </div>
+    </div>
+
+    <canvas id="gameCanvas"></canvas>
+
+<script>
+    const canvas = document.getElementById("gameCanvas");
+    const ctx = canvas.getContext("2d");
+    const ui = {
+        start: document.getElementById('start-screen'),
+        pause: document.getElementById('pause-screen'),
+        end: document.getElementById('end-screen'),
+        score: document.getElementById('score-board'),
+        pauseBtn: document.getElementById('pause-btn'),
+        uScore: document.getElementById('u-score'),
+        cScore: document.getElementById('c-score')
+    };
+
+    let gameState = 'MENU'; // MENU, PLAYING, PAUSED, END
+    let particles = [];
+    let shake = 0;
+
+    // Настройки
+    const config = {
+        paddleWidth: 12,
+        paddleHeight: 90,
+        radius: 8,
+        ballSpeed: 6,
+        winScore: 5,
+        rounded: 10 // Скругление труб
+    };
+
+    const ball = { x: 0, y: 0, dx: 0, dy: 0 };
+    const user = { y: 0, score: 0 };
+    const comp = { y: 0, score: 0 };
+
+    function init() {
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+        user.y = canvas.height / 2 - config.paddleHeight / 2;
+        comp.y = canvas.height / 2 - config.paddleHeight / 2;
+        resetBall();
+    }
+
+    // Звуковой движок (Web Audio API)
+    const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    function playSound(freq, type, duration) {
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.type = type;
+        osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+        gain.gain.setValueAtTime(0.1, audioCtx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + duration);
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+        osc.start();
+        osc.stop(audioCtx.currentTime + duration);
+    }
+
+    function vibrate(ms) {
+        if (navigator.vibrate) navigator.vibrate(ms);
+    }
+
+    // Частицы
+    function createParticles(x, y, color) {
+        for (let i = 0; i < 10; i++) {
+            particles.push({
+                x, y,
+                dx: (Math.random() - 0.5) * 10,
+                dy: (Math.random() - 0.5) * 10,
+                life: 1,
+                color
+            });
+        }
+    }
+
+    function drawRoundedRect(x, y, w, h, r, color, glow) {
+        ctx.shadowBlur = glow ? 20 : 0;
+        ctx.shadowColor = color;
+        ctx.fillStyle = color;
+        ctx.beginPath();
+        ctx.roundRect(x, y, w, h, r);
+        ctx.fill();
+        ctx.shadowBlur = 0;
+    }
+
+    function resetBall() {
+        ball.x = canvas.width / 2;
+        ball.y = canvas.height / 2;
+        ball.dx = (Math.random() > 0.5 ? 1 : -1) * config.ballSpeed;
+        ball.dy = (Math.random() - 0.5) * 8;
+    }
+
+    function startGame() {
+        user.score = 0; comp.score = 0;
+        ui.uScore.innerText = 0; ui.cScore.innerText = 0;
+        gameState = 'PLAYING';
+        ui.start.classList.add('hidden');
+        ui.end.classList.add('hidden');
+        ui.score.classList.remove('hidden');
+        ui.pauseBtn.classList.remove('hidden');
+        resetBall();
+    }
+
+    function resumeGame() {
+        gameState = 'PLAYING';
+        ui.pause.classList.add('hidden');
+    }
+
+    ui.pauseBtn.onclick = () => {
+        if (gameState === 'PLAYING') {
+            gameState = 'PAUSED';
+            ui.pause.classList.remove('hidden');
+        }
+    };
+
+    // Управление
+    window.addEventListener('touchmove', e => {
+        if (gameState !== 'PLAYING') return;
+        let touchY = e.touches[0].clientY;
+        user.y = touchY - config.paddleHeight / 2;
+        e.preventDefault();
+    }, { passive: false });
+
+    function update() {
+        if (gameState !== 'PLAYING') return;
+
+        ball.x += ball.dx;
+        ball.y += ball.dy;
+
+        // ИИ
+        let targetY = ball.y - config.paddleHeight / 2;
+        comp.y += (targetY - comp.y) * 0.12;
+
+        // Стены
+        if (ball.y < 0 || ball.y > canvas.height) {
+            ball.dy *= -1;
+            playSound(400, 'sine', 0.1);
+        }
+
+        // Ракетки
+        let player = ball.x < canvas.width / 2 ? { ...user, x: 20 } : { ...comp, x: canvas.width - 20 - config.paddleWidth };
+        
+        if (ball.x + config.radius > player.x && ball.x - config.radius < player.x + config.paddleWidth &&
+            ball.y + config.radius > player.y && ball.y - config.radius < player.y + config.paddleHeight) {
+            
+            ball.dx = -ball.dx * 1.05;
+            createParticles(ball.x, ball.y, ball.x < canvas.width / 2 ? '#00f2ff' : '#ff007f');
+            playSound(150, 'square', 0.1);
+            vibrate(30);
+            shake = 10;
+        }
+
+        // Гол
+        if (ball.x < 0 || ball.x > canvas.width) {
+            if (ball.x < 0) comp.score++; else user.score++;
+            ui.uScore.innerText = user.score;
+            ui.cScore.innerText = comp.score;
+            vibrate([50, 50, 50]);
+            
+            if (user.score >= config.winScore || comp.score >= config.winScore) {
+                gameState = 'END';
+                document.getElementById('win-text').innerText = user.score >= config.winScore ? "ТЫ ВЫИГРАЛ!" : "БОТ ВЫИГРАЛ";
+                ui.end.classList.remove('hidden');
+            } else {
+                resetBall();
+            }
+        }
+
+        // Эффекты
+        particles.forEach((p, i) => {
+            p.x += p.dx; p.y += p.dy; p.life -= 0.02;
+            if (p.life <= 0) particles.splice(i, 1);
+        });
+        if (shake > 0) shake *= 0.9;
+    }
+
+    function render() {
+        ctx.fillStyle = '#0a0a0a';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+        ctx.save();
+        if (shake > 1) ctx.translate(Math.random() * shake, Math.random() * shake);
+
+        // Сетка
+        ctx.strokeStyle = 'rgba(255,255,255,0.05)';
+        ctx.setLineDash([10, 10]);
+        ctx.beginPath(); ctx.moveTo(canvas.width / 2, 0); ctx.lineTo(canvas.width / 2, canvas.height); ctx.stroke();
+
+        // Ракетки
+        drawRoundedRect(20, user.y, config.paddleWidth, config.paddleHeight, config.rounded, '#00f2ff', true);
+        drawRoundedRect(canvas.width - 20 - config.paddleWidth, comp.y, config.paddleWidth, config.paddleHeight, config.rounded, '#ff007f', true);
+
+        // Мяч
+        ctx.shadowBlur = 15; ctx.shadowColor = '#fff';
+        ctx.fillStyle = '#fff';
+        ctx.beginPath(); ctx.arc(ball.x, ball.y, config.radius, 0, Math.PI * 2); ctx.fill();
+        ctx.shadowBlur = 0;
+
+        // Частицы
+        particles.forEach(p => {
+            ctx.globalAlpha = p.life;
+            ctx.fillStyle = p.color;
+            ctx.fillRect(p.x, p.y, 4, 4);
+        });
+        ctx.globalAlpha = 1;
+
+        ctx.restore();
+        update();
+        requestAnimationFrame(render);
+    }
+
+    window.onresize = init;
+    init();
+    render();
+</script>
+</body>
+</html>
