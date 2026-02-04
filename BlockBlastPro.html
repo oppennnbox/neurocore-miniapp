@@ -1,0 +1,472 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>Block Blast: Pro</title>
+    <style>
+        :root {
+            --bg: #0f172a;
+            --board: #1e293b;
+            --cell: #334155;
+            --radius: 12px;
+            --accent: #38bdf8;
+            --danger: #ef4444;
+        }
+
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; outline: none; user-select: none; }
+
+        body {
+            margin: 0; padding: 0; background: var(--bg); color: #fff;
+            font-family: system-ui, -apple-system, sans-serif;
+            height: 100vh; display: flex; flex-direction: column; align-items: center;
+            overflow: hidden; touch-action: none;
+        }
+
+        .screen {
+            position: fixed; inset: 0; z-index: 1000;
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            background: rgba(15, 23, 42, 0.98);
+            transition: opacity 0.25s ease;
+        }
+        .hidden { opacity: 0; pointer-events: none; }
+        .title { font-size: 52px; font-weight: 900; margin-bottom: 30px; color: var(--accent); letter-spacing: -2px; }
+        
+        .btn {
+            background: var(--accent); border: none; padding: 18px 50px;
+            border-radius: 20px; color: white; font-size: 22px; font-weight: bold;
+            margin: 10px; cursor: pointer; transition: transform 0.1s;
+            width: 240px; display: flex; align-items: center; justify-content: center; gap: 10px;
+        }
+        .btn:active { transform: scale(0.95); }
+        .btn-secondary { background: #475569; }
+
+        .sound-toggle {
+            background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 50%; width: 50px; height: 50px;
+            display: flex; align-items: center; justify-content: center;
+            cursor: pointer; margin-top: 20px; transition: 0.2s;
+        }
+        .sound-toggle svg { width: 24px; height: 24px; fill: #fff; }
+
+        #header {
+            width: 100%; max-width: 400px; padding: 15px 25px;
+            display: flex; justify-content: space-between; align-items: center;
+        }
+        .score-val { font-size: 36px; font-weight: 800; color: var(--accent); }
+        .high-score { font-size: 14px; opacity: 0.5; display: block; }
+        .pause-btn { font-size: 28px; background: none; border: none; color: white; cursor: pointer; }
+
+        #game-board {
+            display: grid; grid-template-columns: repeat(8, 1fr); gap: 4px;
+            background: var(--board); padding: 8px; border-radius: 16px;
+            width: 94vw; max-width: 380px; aspect-ratio: 1/1;
+            position: relative; box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+        }
+        .cell { background: var(--cell); border-radius: 6px; }
+        .cell.active-preview { background: rgba(56, 189, 248, 0.45); }
+
+        /* Красивая многослойность блоков */
+        .block-unit {
+            position: absolute; border-radius: var(--radius);
+            pointer-events: none; z-index: 5;
+            box-shadow: 
+                0 4px 6px rgba(0,0,0,0.3),
+                inset 0 -4px 6px rgba(0,0,0,0.4),
+                inset 0 4px 6px rgba(255,255,255,0.3);
+            overflow: hidden;
+        }
+        
+        /* Глянцевый блик */
+        .block-unit::before {
+            content: ''; position: absolute; top: 8%; left: 8%; width: 84%; height: 30%;
+            background: linear-gradient(180deg, rgba(255,255,255,0.35) 0%, rgba(255,255,255,0) 100%);
+            border-radius: 8px;
+        }
+
+        .destroying {
+            transition: transform 0.3s ease-in, opacity 0.3s !important;
+            transform: scale(0) rotate(20deg) !important;
+            opacity: 0 !important;
+        }
+
+        #dock {
+            margin-top: auto; margin-bottom: 35px;
+            width: 100%; max-width: 420px; height: 120px;
+            display: flex; justify-content: space-around; align-items: center;
+        }
+        .dock-slot { flex: 1; height: 110px; display: flex; align-items: center; justify-content: center; position: relative; }
+        .dock-slot::after { content: ''; position: absolute; inset: 0; z-index: 10; }
+
+        #drag-container { position: fixed; pointer-events: none; z-index: 10000; display: none; will-change: transform; }
+    </style>
+</head>
+<body>
+
+    <div id="start-screen" class="screen">
+        <div class="title">BLOCKS</div>
+        <button class="btn" onclick="startGame()">ИГРАТЬ</button>
+        <div id="menu-high-score" style="margin-top: 15px; opacity: 0.6;">Рекорд: 0</div>
+        <div class="sound-toggle" onclick="toggleMute()">
+            <div id="sound-icon-menu"></div>
+        </div>
+    </div>
+
+    <div id="pause-screen" class="screen hidden">
+        <div class="title">ПАУЗА</div>
+        <button class="btn" onclick="resumeGame()">ПРОДОЛЖИТЬ</button>
+        <button class="btn btn-secondary" onclick="startGame()">ЗАНОВО</button>
+        <div class="sound-toggle" onclick="toggleMute()">
+            <div id="sound-icon-pause"></div>
+        </div>
+    </div>
+
+    <div id="game-over-screen" class="screen hidden">
+        <div class="title" style="color: var(--danger)">КОНЕЦ</div>
+        <div id="final-score" style="font-size: 28px; margin-bottom: 30px;">Счет: 0</div>
+        <button class="btn" onclick="startGame()">ПОВТОРИТЬ</button>
+    </div>
+
+    <div id="header">
+        <div class="score-box">
+            <span class="high-score">BEST: <span id="top-score-val">0</span></span>
+            <span class="score-val" id="score">0</span>
+        </div>
+        <button class="pause-btn" onclick="pauseGame()">⏸</button>
+    </div>
+
+    <div id="game-board"></div>
+    <div id="dock"></div>
+    <div id="drag-container"></div>
+
+    <script>
+        const BOARD_SIZE = 8;
+        const OFFSET_Y = 120; 
+        const SHAPES = [
+            [[0,0], [1,0], [2,0]], [[0,0], [0,1], [0,2]], 
+            [[0,0], [1,0], [0,1], [1,1]], [[0,0], [1,0]], 
+            [[0,0], [0,1], [1,1]], [[0,0]], 
+            [[0,0], [1,0], [2,0], [1,1]], [[0,0], [1,0], [2,0], [3,0]],
+            [[0,0], [0,1], [0,2], [0,3]], [[0,0], [0,1], [1,1], [2,1]]
+        ];
+        const COLORS = ['#38bdf8', '#818cf8', '#c084fc', '#fb7185', '#fbbf24', '#4ade80'];
+
+        let state = {
+            score: 0,
+            highScore: localStorage.getItem('bb_hi_score') || 0,
+            board: [],
+            dragData: null,
+            isPaused: false,
+            active: false,
+            isMuted: localStorage.getItem('bb_muted') === 'true'
+        };
+
+        // --- Тот самый старый звук с плавным нарастанием ---
+        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        function playSfx(type) {
+            if (state.isMuted) return;
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            osc.connect(gain);
+            gain.connect(audioCtx.destination);
+
+            const now = audioCtx.currentTime;
+            
+            if (type === 'pop') {
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(400, now);
+                osc.frequency.exponentialRampToValueAtTime(10, now + 0.1);
+                // Плавная атака и затухание
+                gain.gain.setValueAtTime(0, now);
+                gain.gain.linearRampToValueAtTime(0.2, now + 0.02);
+                gain.gain.linearRampToValueAtTime(0, now + 0.1);
+                osc.start(); osc.stop(now + 0.1);
+                if (navigator.vibrate) navigator.vibrate(8);
+            } else if (type === 'place') {
+                osc.type = 'triangle';
+                osc.frequency.setValueAtTime(150, now);
+                gain.gain.setValueAtTime(0, now);
+                gain.gain.linearRampToValueAtTime(0.3, now + 0.02);
+                gain.gain.linearRampToValueAtTime(0, now + 0.15);
+                osc.start(); osc.stop(now + 0.15);
+                if (navigator.vibrate) navigator.vibrate(12);
+            } else if (type === 'clear') {
+                osc.type = 'square';
+                osc.frequency.setValueAtTime(200, now);
+                osc.frequency.linearRampToValueAtTime(800, now + 0.2);
+                gain.gain.setValueAtTime(0, now);
+                gain.gain.linearRampToValueAtTime(0.1, now + 0.03);
+                gain.gain.linearRampToValueAtTime(0, now + 0.2);
+                osc.start(); osc.stop(now + 0.2);
+                if (navigator.vibrate) navigator.vibrate([40, 30, 40]);
+            }
+        }
+
+        function toggleMute() {
+            state.isMuted = !state.isMuted;
+            localStorage.setItem('bb_muted', state.isMuted);
+            updateSoundIcons();
+            if (!state.isMuted && audioCtx.state === 'suspended') audioCtx.resume();
+        }
+
+        function updateSoundIcons() {
+            const icon = state.isMuted ? 
+                `<svg viewBox="0 0 24 24"><path d="M16.5 12c0-1.77-1.02-3.29-2.5-4.03v2.21l2.45 2.45c.03-.2.05-.41.05-.63zm2.5 0c0 .94-.2 1.82-.54 2.64l1.51 1.51C20.63 14.91 21 13.5 21 12c0-4.28-2.99-7.86-7-8.77v2.06c2.89.86 5 3.54 5 6.71zM4.27 3L3 4.27 7.73 9H3v6h4l5 5v-6.73l4.25 4.25c-.67.52-1.42.93-2.25 1.18v2.06c1.38-.31 2.63-.95 3.69-1.81L19.73 21 21 19.73l-9-9L4.27 3zM12 4L9.91 6.09 12 8.18V4z"/></svg>` :
+                `<svg viewBox="0 0 24 24"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z"/></svg>`;
+            document.getElementById('sound-icon-menu').innerHTML = icon;
+            document.getElementById('sound-icon-pause').innerHTML = icon;
+        }
+
+        function startGame() {
+            if (audioCtx.state === 'suspended') audioCtx.resume();
+            hideAll();
+            state.score = 0;
+            state.active = true;
+            state.isPaused = false;
+            state.board = Array(BOARD_SIZE).fill(0).map(() => Array(BOARD_SIZE).fill(0));
+            initBoard();
+            spawnDock();
+            updateUI();
+        }
+
+        function showMenu() { hideAll(); document.getElementById('start-screen').classList.remove('hidden'); updateSoundIcons(); }
+        function hideAll() { document.querySelectorAll('.screen').forEach(s => s.classList.add('hidden')); }
+        function pauseGame() { if (!state.active) return; state.isPaused = true; document.getElementById('pause-screen').classList.remove('hidden'); updateSoundIcons(); }
+        function resumeGame() { state.isPaused = false; document.getElementById('pause-screen').classList.add('hidden'); }
+
+        function initBoard() {
+            const boardEl = document.getElementById('game-board');
+            boardEl.innerHTML = '';
+            for (let i = 0; i < BOARD_SIZE * BOARD_SIZE; i++) {
+                const cell = document.createElement('div');
+                cell.className = 'cell';
+                boardEl.appendChild(cell);
+            }
+        }
+
+        function spawnDock() {
+            const dock = document.getElementById('dock');
+            dock.innerHTML = '';
+            for (let i = 0; i < 3; i++) {
+                const slot = document.createElement('div');
+                slot.className = 'dock-slot';
+                const shape = SHAPES[Math.floor(Math.random() * SHAPES.length)];
+                const color = COLORS[Math.floor(Math.random() * COLORS.length)];
+                slot.dataset.shape = JSON.stringify(shape);
+                renderPiece(slot, shape, color, false);
+                slot.addEventListener('touchstart', (e) => {
+                    if (state.isPaused || !state.active) return;
+                    startDrag(e, shape, color, slot);
+                }, {passive: false});
+                dock.appendChild(slot);
+            }
+            realCheckLose();
+        }
+
+        function renderPiece(container, shape, color, isDragging) {
+            container.innerHTML = '';
+            const board = document.getElementById('game-board');
+            const cellSize = (board.offsetWidth - 16 - (BOARD_SIZE - 1) * 4) / BOARD_SIZE;
+            const size = isDragging ? cellSize : cellSize * 0.75;
+            
+            let minX = 0, maxX = 0, minY = 0, maxY = 0;
+            shape.forEach(([x, y]) => {
+                minX = Math.min(minX, x); maxX = Math.max(maxX, x);
+                minY = Math.min(minY, y); maxY = Math.max(maxY, y);
+            });
+
+            const pWidth = (maxX - minX + 1) * (size + 2);
+            const pHeight = (maxY - minY + 1) * (size + 2);
+            const offsetX = isDragging ? 0 : -pWidth / 2 + size/2;
+            const offsetY = isDragging ? 0 : -pHeight / 2 + size/2;
+
+            shape.forEach(([x, y]) => {
+                const b = document.createElement('div');
+                b.className = 'block-unit';
+                b.style.width = (size - 1) + 'px';
+                b.style.height = (size - 1) + 'px';
+                if (isDragging) {
+                    b.style.left = (x * (size + 2)) + 'px';
+                    b.style.top = (y * (size + 2)) + 'px';
+                } else {
+                    b.style.left = `calc(50% + ${x * (size + 2) + offsetX}px)`;
+                    b.style.top = `calc(50% + ${y * (size + 2) + offsetY}px)`;
+                }
+                b.style.backgroundColor = color;
+                container.appendChild(b);
+            });
+        }
+
+        function startDrag(e, shape, color, slot) {
+            const touch = e.touches[0];
+            const board = document.getElementById('game-board');
+            const cellSize = (board.offsetWidth - 16 - (BOARD_SIZE - 1) * 4) / BOARD_SIZE;
+            
+            let maxX = 0; shape.forEach(([x]) => maxX = Math.max(maxX, x));
+            const centerShift = (maxX * (cellSize + 2)) / 2;
+
+            state.dragData = { shape, color, slot, centerShift };
+            const dragCont = document.getElementById('drag-container');
+            dragCont.style.display = 'block';
+            renderPiece(dragCont, shape, color, true);
+            
+            slot.style.visibility = 'hidden';
+            playSfx('pop');
+            moveAt(touch.clientX, touch.clientY);
+        }
+
+        function moveAt(x, y) {
+            if (!state.dragData) return;
+            const dragCont = document.getElementById('drag-container');
+            dragCont.style.left = (x - state.dragData.centerShift) + 'px';
+            dragCont.style.top = (y - OFFSET_Y) + 'px';
+
+            const gridPos = getGridPos(x, y - OFFSET_Y);
+            document.querySelectorAll('.cell').forEach(c => c.classList.remove('active-preview'));
+            
+            if (gridPos && canPlace(gridPos.x, gridPos.y, state.dragData.shape)) {
+                drawPreview(gridPos.x, gridPos.y, state.dragData.shape);
+            }
+        }
+
+        function getGridPos(mouseX, mouseY) {
+            const board = document.getElementById('game-board');
+            const rect = board.getBoundingClientRect();
+            const cellSize = rect.width / BOARD_SIZE;
+            const x = Math.round((mouseX - rect.left - state.dragData.centerShift) / cellSize);
+            const y = Math.round((mouseY - rect.top) / cellSize);
+            return (x >= 0 && x < BOARD_SIZE && y >= 0 && y < BOARD_SIZE) ? {x, y} : null;
+        }
+
+        function canPlace(startX, startY, shape) {
+            return shape.every(([dx, dy]) => {
+                const x = startX + dx, y = startY + dy;
+                return x >= 0 && x < BOARD_SIZE && y >= 0 && y < BOARD_SIZE && state.board[y][x] === 0;
+            });
+        }
+
+        function drawPreview(startX, startY, shape) {
+            const boardEl = document.getElementById('game-board');
+            shape.forEach(([dx, dy]) => {
+                const idx = (startY + dy) * BOARD_SIZE + (startX + dx);
+                if (boardEl.children[idx]) boardEl.children[idx].classList.add('active-preview');
+            });
+        }
+
+        function handleEnd(e) {
+            if (!state.dragData) return;
+            const touch = e.changedTouches[0];
+            const gridPos = getGridPos(touch.clientX, touch.clientY - OFFSET_Y);
+
+            if (gridPos && canPlace(gridPos.x, gridPos.y, state.dragData.shape)) {
+                placePiece(gridPos.x, gridPos.y);
+                state.dragData.slot.innerHTML = '';
+                playSfx('place');
+            } else {
+                state.dragData.slot.style.visibility = 'visible';
+            }
+
+            document.getElementById('drag-container').style.display = 'none';
+            state.dragData = null;
+            document.querySelectorAll('.cell').forEach(c => c.classList.remove('active-preview'));
+
+            if (Array.from(document.querySelectorAll('.dock-slot')).every(s => s.innerHTML === '')) {
+                spawnDock();
+            } else {
+                realCheckLose();
+            }
+        }
+
+        function placePiece(startX, startY) {
+            const { shape, color } = state.dragData;
+            const boardEl = document.getElementById('game-board');
+            const cellSize = boardEl.offsetWidth / BOARD_SIZE;
+
+            shape.forEach(([dx, dy]) => {
+                const x = startX + dx, y = startY + dy;
+                state.board[y][x] = color;
+                const block = document.createElement('div');
+                block.className = 'block-unit';
+                block.id = `block-${x}-${y}`;
+                block.style.width = (cellSize - 4) + 'px';
+                block.style.height = (cellSize - 4) + 'px';
+                block.style.left = (x * cellSize + 2) + 'px';
+                block.style.top = (y * cellSize + 2) + 'px';
+                block.style.backgroundColor = color;
+                boardEl.appendChild(block);
+            });
+
+            state.score += shape.length * 10;
+            checkLines();
+        }
+
+        function checkLines() {
+            let rows = [], cols = [];
+            for (let i = 0; i < BOARD_SIZE; i++) {
+                if (state.board[i].every(c => c !== 0)) rows.push(i);
+                let colFull = true;
+                for (let j = 0; j < BOARD_SIZE; j++) if (state.board[j][i] === 0) colFull = false;
+                if (colFull) cols.push(i);
+            }
+
+            if (rows.length > 0 || cols.length > 0) {
+                playSfx('clear');
+                rows.forEach(y => {
+                    for(let x=0; x<BOARD_SIZE; x++) destroyCell(x, y);
+                    state.board[y].fill(0);
+                });
+                cols.forEach(x => {
+                    for(let y=0; y<BOARD_SIZE; y++) destroyCell(x, y);
+                    for(let y=0; y<BOARD_SIZE; y++) state.board[y][x] = 0;
+                });
+                state.score += (rows.length + cols.length) * 100;
+            }
+            updateUI();
+        }
+
+        function destroyCell(x, y) {
+            const el = document.getElementById(`block-${x}-${y}`);
+            if (el) { el.classList.add('destroying'); setTimeout(() => el.remove(), 300); }
+        }
+
+        function realCheckLose() {
+            const slots = Array.from(document.querySelectorAll('.dock-slot')).filter(s => s.innerHTML !== '');
+            let hasMove = false;
+            slots.forEach(slot => {
+                const shape = JSON.parse(slot.dataset.shape);
+                for (let y = 0; y < BOARD_SIZE; y++) {
+                    for (let x = 0; x < BOARD_SIZE; x++) {
+                        if (canPlace(x, y, shape)) hasMove = true;
+                    }
+                }
+            });
+            if (!hasMove && slots.length > 0) gameOver();
+        }
+
+        function gameOver() {
+            state.active = false;
+            if (state.score > state.highScore) {
+                state.highScore = state.score;
+                localStorage.setItem('bb_hi_score', state.highScore);
+            }
+            document.getElementById('final-score').innerText = `Счет: ${state.score}`;
+            document.getElementById('game-over-screen').classList.remove('hidden');
+        }
+
+        function updateUI() {
+            document.getElementById('score').innerText = state.score;
+            document.getElementById('top-score-val').innerText = state.highScore;
+        }
+
+        window.addEventListener('touchmove', (e) => {
+            if (state.dragData) {
+                e.preventDefault();
+                requestAnimationFrame(() => moveAt(e.touches[0].clientX, e.touches[0].clientY));
+            }
+        }, {passive: false});
+
+        window.addEventListener('touchend', handleEnd);
+        showMenu();
+    </script>
+</body>
+</html>
