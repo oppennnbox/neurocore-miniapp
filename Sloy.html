@@ -1,0 +1,2328 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="utf-8">
+    <title>СЛОЙ — Социальная сеть</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --pipe-radius: 16px;
+            --accent: #4361ee;
+            --bg-body: #f8fafc;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-body);
+            color: #1a1a1a;
+            overflow-x: hidden;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        .pipe-block {
+            border-radius: var(--pipe-radius);
+            background: #ffffff;
+            border: 1px solid rgba(0,0,0,0.08);
+            box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+            transition: all 0.2s ease;
+        }
+
+        .pipe-block:hover {
+            border-color: rgba(67, 97, 238, 0.3);
+            box-shadow: 0 4px 12px rgba(67, 97, 238, 0.08);
+        }
+
+        #topProgress {
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 3px;
+            background: linear-gradient(90deg, #4361ee, #7209b7);
+            z-index: 9999;
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+
+        .verified-badge {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 18px;
+            height: 18px;
+            background: linear-gradient(135deg, #4361ee, #3a0ca3);
+            border-radius: 50%;
+            margin-left: 4px;
+            color: white;
+            font-size: 10px;
+        }
+
+        .section-transition {
+            animation: slideFade 0.3s ease forwards;
+        }
+
+        @keyframes slideFade {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .profile-banner {
+            height: 280px;
+            background: linear-gradient(135deg, #4361ee 0%, #3a0ca3 100%);
+            border-radius: 0 0 var(--pipe-radius) var(--pipe-radius);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .profile-avatar {
+            width: 120px;
+            height: 120px;
+            border: 4px solid white;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+        }
+
+        .tab-indicator {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            height: 3px;
+            background: var(--accent);
+            transition: all 0.3s ease;
+            border-radius: 3px 3px 0 0;
+        }
+
+        .notification-dot {
+            position: absolute;
+            top: -2px;
+            right: -2px;
+            width: 8px;
+            height: 8px;
+            background: #ef4444;
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.2); opacity: 0.7; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+
+        .online-dot {
+            position: absolute;
+            bottom: 4px;
+            right: 4px;
+            width: 14px;
+            height: 14px;
+            background: #10b981;
+            border: 2px solid white;
+            border-radius: 50%;
+        }
+
+        .offline-dot {
+            position: absolute;
+            bottom: 4px;
+            right: 4px;
+            width: 14px;
+            height: 14px;
+            background: #9ca3af;
+            border: 2px solid white;
+            border-radius: 50%;
+        }
+
+        .story-ring {
+            background: linear-gradient(45deg, #f72585, #7209b7);
+            padding: 2px;
+            border-radius: 50%;
+        }
+
+        .story-ring-viewed {
+            background: #e5e7eb;
+            padding: 2px;
+            border-radius: 50%;
+        }
+
+        .music-wave {
+            display: flex;
+            align-items: flex-end;
+            height: 20px;
+            gap: 2px;
+        }
+
+        .music-wave span {
+            width: 3px;
+            background: #4361ee;
+            border-radius: 3px;
+            animation: wave 1.2s ease-in-out infinite;
+        }
+
+        .music-wave span:nth-child(2) { animation-delay: 0.1s; }
+        .music-wave span:nth-child(3) { animation-delay: 0.2s; }
+        .music-wave span:nth-child(4) { animation-delay: 0.3s; }
+        .music-wave span:nth-child(5) { animation-delay: 0.4s; }
+
+        @keyframes wave {
+            0%, 100% { height: 6px; }
+            50% { height: 16px; }
+        }
+
+        .video-thumbnail {
+            position: relative;
+            overflow: hidden;
+            border-radius: 12px;
+        }
+
+        .video-thumbnail::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 40px;
+            height: 40px;
+            background: rgba(255,255,255,0.9);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            color: #4361ee;
+        }
+
+        .group-card {
+            transition: all 0.2s ease;
+        }
+
+        .group-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(0,0,0,0.1);
+        }
+
+        .event-date {
+            position: absolute;
+            top: 12px;
+            left: 12px;
+            background: rgba(255,255,255,0.95);
+            padding: 6px 10px;
+            border-radius: 10px;
+            text-align: center;
+            font-weight: bold;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .event-date .day {
+            font-size: 16px;
+            color: #4361ee;
+            line-height: 1;
+        }
+
+        .event-date .month {
+            font-size: 10px;
+            color: #6b7280;
+            text-transform: uppercase;
+        }
+
+        .dark-overlay {
+            background: linear-gradient(to top, rgba(0,0,0,0.7), transparent);
+        }
+
+        .like-active {
+            color: #ef4444 !important;
+        }
+
+        .like-active span:first-child {
+            filter: drop-shadow(0 0 4px rgba(239,68,68,0.3));
+        }
+
+        .share-popup {
+            position: fixed;
+            bottom: 100px;
+            right: 20px;
+            z-index: 1001;
+            display: none;
+            animation: popIn 0.2s ease;
+        }
+
+        @keyframes popIn {
+            from {
+                opacity: 0;
+                transform: scale(0.95) translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1) translateY(0);
+            }
+        }
+
+        .typing-indicator {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            padding: 6px 10px;
+            background: #f3f4f6;
+            border-radius: 18px;
+            width: fit-content;
+        }
+
+        .typing-dot {
+            width: 6px;
+            height: 6px;
+            background: #9ca3af;
+            border-radius: 50%;
+            animation: typing 1.4s infinite;
+        }
+
+        .typing-dot:nth-child(2) { animation-delay: 0.2s; }
+        .typing-dot:nth-child(3) { animation-delay: 0.4s; }
+
+        @keyframes typing {
+            0%, 60%, 100% { transform: translateY(0); }
+            30% { transform: translateY(-4px); }
+        }
+
+        .story-viewer {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #000;
+            z-index: 9999;
+            display: none;
+        }
+
+        .story-progress {
+            height: 2px;
+            background: rgba(255,255,255,0.3);
+            border-radius: 2px;
+            overflow: hidden;
+        }
+
+        .story-progress-bar {
+            height: 100%;
+            background: white;
+            width: 0%;
+            transition: width 0.1s linear;
+        }
+
+        /* Мобильное меню */
+        .mobile-menu {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: white;
+            border-top: 1px solid #e5e7eb;
+            z-index: 100;
+            display: none;
+            padding: 8px 0;
+        }
+
+        .mobile-menu-item {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 8px 0;
+            color: #6b7280;
+            text-decoration: none;
+            font-size: 10px;
+        }
+
+        .mobile-menu-item.active {
+            color: #4361ee;
+        }
+
+        .mobile-menu-item i {
+            font-size: 20px;
+            margin-bottom: 2px;
+        }
+
+        /* Бургер-меню */
+        .burger-menu {
+            position: fixed;
+            top: 0;
+            left: -280px;
+            width: 280px;
+            height: 100%;
+            background: white;
+            z-index: 9998;
+            transition: left 0.3s ease;
+            box-shadow: 2px 0 10px rgba(0,0,0,0.1);
+        }
+
+        .burger-menu.active {
+            left: 0;
+        }
+
+        .burger-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.5);
+            z-index: 9997;
+            display: none;
+        }
+
+        /* Секции */
+        .section-hidden {
+            display: none !important;
+        }
+
+        .section-visible {
+            display: block;
+            animation: slideFade 0.3s ease forwards;
+        }
+
+        /* Адаптивность */
+        @media (max-width: 768px) {
+            .profile-banner {
+                height: 200px;
+            }
+            .profile-avatar {
+                width: 100px;
+                height: 100px;
+                margin-top: -50px;
+            }
+            .mobile-menu {
+                display: flex;
+            }
+            .desktop-only {
+                display: none !important;
+            }
+        }
+
+        @media (min-width: 769px) {
+            .mobile-only {
+                display: none !important;
+            }
+        }
+
+        /* Улучшенные стили для верхней панели */
+        .header-search {
+            background: #f1f5f9;
+            border: 1px solid transparent;
+            transition: all 0.2s ease;
+        }
+
+        .header-search:focus {
+            background: white;
+            border-color: #4361ee;
+            width: 280px !important;
+        }
+
+        .header-tab {
+            position: relative;
+            padding: 0 16px;
+            height: 60px;
+            display: flex;
+            align-items: center;
+            font-weight: 600;
+            color: #64748b;
+            transition: color 0.2s ease;
+        }
+
+        .header-tab.active {
+            color: #4361ee;
+        }
+
+        .header-tab.active::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 16px;
+            right: 16px;
+            height: 3px;
+            background: #4361ee;
+            border-radius: 3px 3px 0 0;
+        }
+
+        /* Загрузка */
+        .skeleton {
+            background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+            background-size: 200% 100%;
+            animation: loading 1.5s infinite;
+        }
+
+        @keyframes loading {
+            0% { background-position: 200% 0; }
+            100% { background-position: -200% 0; }
+        }
+
+        /* Скроллбар */
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: #f1f5f9;
+            border-radius: 3px;
+        }
+
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 3px;
+        }
+
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="topProgress"></div>
+
+    <!-- Бургер-меню -->
+    <div class="burger-menu">
+        <div class="p-6 border-b border-gray-100">
+            <div class="flex items-center space-x-3 mb-6">
+                <div class="w-12 h-12 bg-gradient-to-tr from-blue-500 to-purple-600 rounded-full flex items-center justify-center text-white text-xl font-bold">
+                    С
+                </div>
+                <div>
+                    <div class="font-bold">СЛОЙ</div>
+                    <div class="text-sm text-gray-500">Социальная сеть</div>
+                </div>
+            </div>
+            
+            <div class="space-y-1">
+                <button class="w-full flex items-center space-x-3 p-3 rounded-xl hover:bg-gray-50" onclick="switchSection('feed')">
+                    <i class="fas fa-home text-gray-500 w-6"></i>
+                    <span>Лента</span>
+                </button>
+                <button class="w-full flex items-center space-x-3 p-3 rounded-xl hover:bg-gray-50" onclick="switchSection('profile')">
+                    <i class="fas fa-user text-gray-500 w-6"></i>
+                    <span>Мой профиль</span>
+                </button>
+                <button class="w-full flex items-center space-x-3 p-3 rounded-xl hover:bg-gray-50" onclick="switchSection('friends')">
+                    <i class="fas fa-users text-gray-500 w-6"></i>
+                    <span>Друзья</span>
+                </button>
+                <button class="w-full flex items-center space-x-3 p-3 rounded-xl hover:bg-gray-50" onclick="switchSection('groups')">
+                    <i class="fas fa-users text-gray-500 w-6"></i>
+                    <span>Сообщества</span>
+                </button>
+                <button class="w-full flex items-center space-x-3 p-3 rounded-xl hover:bg-gray-50" onclick="switchSection('events')">
+                    <i class="fas fa-calendar text-gray-500 w-6"></i>
+                    <span>События</span>
+                </button>
+                <button class="w-full flex items-center space-x-3 p-3 rounded-xl hover:bg-gray-50" onclick="switchSection('music')">
+                    <i class="fas fa-music text-gray-500 w-6"></i>
+                    <span>Музыка</span>
+                </button>
+                <button class="w-full flex items-center space-x-3 p-3 rounded-xl hover:bg-gray-50" onclick="switchSection('video')">
+                    <i class="fas fa-video text-gray-500 w-6"></i>
+                    <span>Видео</span>
+                </button>
+                <button class="w-full flex items-center space-x-3 p-3 rounded-xl hover:bg-gray-50" onclick="switchSection('settings')">
+                    <i class="fas fa-cog text-gray-500 w-6"></i>
+                    <span>Настройки</span>
+                </button>
+            </div>
+        </div>
+        
+        <div class="p-6">
+            <div class="text-sm text-gray-500 mb-4">© 2026 СЛОЙ</div>
+            <div class="flex flex-wrap gap-2">
+                <button class="text-xs text-gray-500 hover:text-gray-700">О проекте</button>
+                <span class="text-gray-300">•</span>
+                <button class="text-xs text-gray-500 hover:text-gray-700">Правила</button>
+                <span class="text-gray-300">•</span>
+                <button class="text-xs text-gray-500 hover:text-gray-700">Помощь</button>
+                <span class="text-gray-300">•</span>
+                <button class="text-xs text-gray-500 hover:text-gray-700">Реклама</button>
+            </div>
+        </div>
+    </div>
+    
+    <div class="burger-overlay" onclick="toggleBurgerMenu()"></div>
+
+    <!-- Загрузочный экран -->
+    <div id="loadingScreen" class="fixed inset-0 bg-white z-[9999] flex items-center justify-center">
+        <div class="text-center">
+            <div class="w-16 h-16 mx-auto mb-4 relative">
+                <div class="absolute inset-0 border-4 border-blue-100 rounded-full"></div>
+                <div class="absolute inset-0 border-4 border-blue-500 rounded-full border-t-transparent animate-spin"></div>
+                <div class="absolute inset-4 bg-blue-500 rounded-full flex items-center justify-center">
+                    <span class="text-white text-xl font-bold">С</span>
+                </div>
+            </div>
+            <div class="text-lg font-semibold text-gray-800">СЛОЙ</div>
+            <div class="text-sm text-gray-500 mt-1">Загрузка...</div>
+        </div>
+    </div>
+
+    <!-- Основной интерфейс -->
+    <div id="mainInterface" class="hidden">
+
+        <!-- Шапка для десктопа -->
+        <header class="sticky top-0 z-50 bg-white border-b border-gray-100 shadow-sm desktop-only">
+            <div class="max-w-7xl mx-auto flex justify-between items-center h-16 px-4 sm:px-6">
+                <div class="flex items-center space-x-8">
+                    <div class="text-2xl font-bold text-[#4361ee] cursor-pointer" onclick="switchSection('feed')">
+                        СЛОЙ
+                    </div>
+                    
+                    <nav class="hidden md:flex space-x-1 relative">
+                        <button data-section="feed" class="header-tab">
+                            <i class="fas fa-home mr-2"></i>
+                            Лента
+                        </button>
+                        <button data-section="profile" class="header-tab">
+                            <i class="fas fa-user mr-2"></i>
+                            Профиль
+                        </button>
+                        <button data-section="friends" class="header-tab">
+                            <i class="fas fa-users mr-2"></i>
+                            Друзья
+                        </button>
+                        <button data-section="groups" class="header-tab">
+                            <i class="fas fa-users mr-2"></i>
+                            Сообщества
+                        </button>
+                        <button data-section="events" class="header-tab">
+                            <i class="fas fa-calendar mr-2"></i>
+                            События
+                        </button>
+                        <button data-section="music" class="header-tab">
+                            <i class="fas fa-music mr-2"></i>
+                            Музыка
+                        </button>
+                        <button data-section="video" class="header-tab">
+                            <i class="fas fa-video mr-2"></i>
+                            Видео
+                        </button>
+                    </nav>
+                </div>
+
+                <div class="flex items-center space-x-4">
+                    <div class="relative hidden sm:block">
+                        <input
+                            id="globalSearch"
+                            type="text"
+                            placeholder="Поиск..."
+                            class="header-search py-2 pl-10 pr-4 rounded-xl text-sm w-48 outline-none"
+                        >
+                        <i class="fas fa-search absolute left-3.5 top-2.5 text-gray-400 text-sm"></i>
+                    </div>
+                    
+                    <div class="flex items-center space-x-3">
+                        <button id="btnNotifications" class="relative w-9 h-9 bg-gray-100 text-gray-600 rounded-full flex items-center justify-center hover:bg-gray-200 transition">
+                            <i class="fas fa-bell"></i>
+                            <span class="notification-dot"></span>
+                        </button>
+                        <button id="btnToggleChat" class="w-9 h-9 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center hover:bg-blue-200 transition">
+                            <i class="fas fa-comment"></i>
+                        </button>
+                        <div class="relative cursor-pointer" onclick="switchSection('profile')">
+                            <div class="w-9 h-9 bg-gradient-to-tr from-blue-500 to-purple-600 rounded-full flex items-center justify-center text-white font-bold">
+                                А
+                            </div>
+                            <span class="absolute -bottom-1 -right-1 w-4 h-4 bg-blue-500 text-white text-[8px] rounded-full flex items-center justify-center">beta</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- Шапка для мобильных -->
+        <header class="sticky top-0 z-50 bg-white border-b border-gray-100 shadow-sm mobile-only">
+            <div class="flex justify-between items-center h-14 px-4">
+                <button class="w-10 h-10 flex items-center justify-center text-xl" onclick="toggleBurgerMenu()">
+                    <i class="fas fa-bars"></i>
+                </button>
+                
+                <div class="text-xl font-bold text-[#4361ee]" onclick="switchSection('feed')">
+                    СЛОЙ
+                </div>
+                
+                <div class="flex items-center space-x-2">
+                    <button id="btnMobileSearch" class="w-10 h-10 flex items-center justify-center">
+                        <i class="fas fa-search"></i>
+                    </button>
+                    <button id="btnMobileNotifications" class="relative w-10 h-10 flex items-center justify-center">
+                        <i class="fas fa-bell"></i>
+                        <span class="notification-dot"></span>
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Мобильный поиск -->
+            <div id="mobileSearch" class="px-4 pb-3 hidden">
+                <input
+                    type="text"
+                    placeholder="Поиск в Слое..."
+                    class="w-full py-2 px-4 bg-gray-100 rounded-xl outline-none text-sm"
+                >
+            </div>
+        </header>
+
+        <!-- Основной контент -->
+        <div class="max-w-7xl mx-auto py-4 px-3 sm:px-6" id="mainContent">
+            <div class="flex gap-4 sm:gap-8">
+                <!-- Левый сайдбар (десктоп) -->
+                <aside class="w-64 hidden lg:block sticky top-20 h-fit space-y-4">
+                    <!-- Профиль -->
+                    <div class="pipe-block p-4">
+                        <div class="flex items-center space-x-3 mb-4">
+                            <div class="relative">
+                                <div class="w-12 h-12 bg-gradient-to-tr from-blue-500 to-purple-600 rounded-full flex items-center justify-center text-white font-bold">
+                                    А
+                                </div>
+                                <span class="online-dot"></span>
+                            </div>
+                            <div>
+                                <div class="font-semibold text-sm">Администратор</div>
+                                <div class="text-xs text-gray-500">@admin</div>
+                            </div>
+                        </div>
+                        <button class="w-full py-2 bg-blue-50 text-blue-600 text-sm font-semibold rounded-xl hover:bg-blue-100 transition" onclick="switchSection('profile')">
+                            Мой профиль
+                        </button>
+                    </div>
+
+                    <!-- Навигация -->
+                    <div class="pipe-block p-4">
+                        <div class="space-y-1">
+                            <button class="flex items-center justify-between p-3 rounded-xl hover:bg-gray-50 w-full text-left" onclick="switchSection('feed')">
+                                <div class="flex items-center space-x-3">
+                                    <i class="fas fa-home text-gray-500"></i>
+                                    <span>Лента</span>
+                                </div>
+                                <span class="text-xs bg-blue-100 text-blue-600 px-2 py-1 rounded-full">новое</span>
+                            </button>
+                            <button class="flex items-center space-x-3 p-3 rounded-xl hover:bg-gray-50 w-full text-left" onclick="switchSection('friends')">
+                                <i class="fas fa-users text-gray-500"></i>
+                                <span>Друзья</span>
+                            </button>
+                            <button class="flex items-center space-x-3 p-3 rounded-xl hover:bg-gray-50 w-full text-left" onclick="switchSection('groups')">
+                                <i class="fas fa-users text-gray-500"></i>
+                                <span>Сообщества</span>
+                            </button>
+                            <button class="flex items-center space-x-3 p-3 rounded-xl hover:bg-gray-50 w-full text-left" onclick="switchSection('events')">
+                                <i class="fas fa-calendar text-gray-500"></i>
+                                <span>События</span>
+                            </button>
+                            <button class="flex items-center space-x-3 p-3 rounded-xl hover:bg-gray-50 w-full text-left" onclick="toggleChat()">
+                                <i class="fas fa-comment text-gray-500"></i>
+                                <span>Мессенджер</span>
+                            </button>
+                            <button class="flex items-center space-x-3 p-3 rounded-xl hover:bg-gray-50 w-full text-left" onclick="switchSection('settings')">
+                                <i class="fas fa-cog text-gray-500"></i>
+                                <span>Настройки</span>
+                            </button>
+                        </div>
+                    </div>
+                </aside>
+
+                <!-- Центральная часть -->
+                <main class="flex-1 max-w-4xl mx-auto">
+                    <!-- РАЗДЕЛ: ЛЕНТА -->
+                    <section id="section-feed" class="section-visible space-y-4">
+                        <!-- Создание поста -->
+                        <div class="pipe-block p-4">
+                            <div class="flex items-start space-x-3">
+                                <div class="w-10 h-10 bg-gradient-to-tr from-blue-500 to-purple-600 rounded-full flex items-center justify-center text-white font-bold">
+                                    А
+                                </div>
+                                <div class="flex-1">
+                                    <textarea
+                                        id="postText"
+                                        rows="2"
+                                        class="w-full text-gray-700 border-none focus:ring-0 outline-none resize-none placeholder-gray-400 bg-transparent text-sm"
+                                        placeholder="Что у вас нового?"
+                                    ></textarea>
+                                    
+                                    <div class="flex items-center justify-between mt-3 pt-3 border-t border-gray-100">
+                                        <div class="flex space-x-2">
+                                            <button class="w-8 h-8 rounded-full hover:bg-gray-100 flex items-center justify-center text-gray-500">
+                                                <i class="fas fa-image"></i>
+                                            </button>
+                                            <button class="w-8 h-8 rounded-full hover:bg-gray-100 flex items-center justify-center text-gray-500">
+                                                <i class="fas fa-video"></i>
+                                            </button>
+                                            <button class="w-8 h-8 rounded-full hover:bg-gray-100 flex items-center justify-center text-gray-500">
+                                                <i class="fas fa-smile"></i>
+                                            </button>
+                                        </div>
+                                        <button id="btnPublish" class="px-4 py-1.5 bg-blue-500 text-white text-sm font-semibold rounded-lg hover:bg-blue-600 transition disabled:opacity-50 disabled:cursor-not-allowed">
+                                            Опубликовать
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Лента постов -->
+                        <div id="feedPosts" class="space-y-4">
+                            <!-- Посты загружаются динамически -->
+                        </div>
+                        
+                        <div id="feedLoader" class="py-8 text-center hidden">
+                            <div class="inline-block w-6 h-6 border-2 border-blue-200 border-t-blue-500 rounded-full animate-spin"></div>
+                            <div class="text-sm text-gray-500 mt-2">Загрузка...</div>
+                        </div>
+                    </section>
+
+                    <!-- РАЗДЕЛ: ПРОФИЛЬ -->
+                    <section id="section-profile" class="section-hidden">
+                        <div class="profile-banner">
+                            <div class="absolute inset-0 flex items-end p-4 sm:p-6">
+                                <div class="flex items-end justify-between w-full">
+                                    <div class="flex items-end space-x-4">
+                                        <img src="" class="profile-avatar rounded-full object-cover" id="profileAvatar">
+                                        <div class="text-white mb-2">
+                                            <h1 class="text-2xl font-bold flex items-center">
+                                                <span id="profileName">Администратор</span>
+                                                <div class="verified-badge ml-2">
+                                                    <i class="fas fa-check"></i>
+                                                </div>
+                                            </h1>
+                                            <p class="text-sm opacity-90" id="profileStatus">Основатель СЛОЯ</p>
+                                        </div>
+                                    </div>
+                                    <button class="px-4 py-2 bg-white text-blue-600 font-semibold rounded-lg hover:bg-gray-50 transition text-sm">
+                                        <i class="fas fa-edit mr-2"></i>Редактировать
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Навигация профиля -->
+                        <div class="pipe-block mt-4">
+                            <div class="flex space-x-8 px-6 border-b border-gray-100 overflow-x-auto">
+                                <button class="profile-tab py-4 font-semibold text-blue-600 border-b-2 border-blue-600 whitespace-nowrap" data-profile-tab="posts">
+                                    <i class="fas fa-newspaper mr-2"></i>Посты
+                                </button>
+                                <button class="profile-tab py-4 font-semibold text-gray-500 hover:text-blue-600 whitespace-nowrap" data-profile-tab="info">
+                                    <i class="fas fa-info-circle mr-2"></i>Информация
+                                </button>
+                                <button class="profile-tab py-4 font-semibold text-gray-500 hover:text-blue-600 whitespace-nowrap" data-profile-tab="friends">
+                                    <i class="fas fa-users mr-2"></i>Друзья
+                                </button>
+                                <button class="profile-tab py-4 font-semibold text-gray-500 hover:text-blue-600 whitespace-nowrap" data-profile-tab="photos">
+                                    <i class="fas fa-images mr-2"></i>Фото
+                                </button>
+                            </div>
+
+                            <!-- Контент профиля -->
+                            <div id="profileContent" class="p-6">
+                                <!-- Посты пользователя -->
+                                <div id="profilePosts" class="space-y-4">
+                                    <!-- Загружаются динамически -->
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- РАЗДЕЛ: ДРУЗЬЯ -->
+                    <section id="section-friends" class="section-hidden">
+                        <div class="pipe-block p-4 sm:p-6">
+                            <div class="flex flex-col sm:flex-row sm:items-center justify-between mb-6 gap-4">
+                                <div>
+                                    <h1 class="text-2xl font-bold">Друзья</h1>
+                                    <p class="text-gray-500" id="friendsCount">Загрузка...</p>
+                                </div>
+                                <div class="flex space-x-3">
+                                    <button class="px-4 py-2 bg-blue-50 text-blue-600 rounded-lg font-semibold hover:bg-blue-100 transition text-sm">
+                                        <i class="fas fa-user-plus mr-2"></i>Добавить друга
+                                    </button>
+                                    <button class="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg font-semibold hover:bg-gray-200 transition text-sm">
+                                        <i class="fas fa-search mr-2"></i>Поиск
+                                    </button>
+                                </div>
+                            </div>
+
+                            <!-- Фильтры -->
+                            <div class="flex space-x-3 mb-6 overflow-x-auto pb-2">
+                                <button class="px-4 py-2 bg-blue-500 text-white rounded-lg font-semibold text-sm whitespace-nowrap">
+                                    Все друзья
+                                </button>
+                                <button class="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg font-semibold text-sm whitespace-nowrap">
+                                    Онлайн
+                                </button>
+                                <button class="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg font-semibold text-sm whitespace-nowrap">
+                                    Заявки
+                                    <span class="ml-2 bg-red-500 text-white text-xs px-2 py-0.5 rounded-full">0</span>
+                                </button>
+                            </div>
+
+                            <!-- Список друзей -->
+                            <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4" id="friendsList">
+                                <!-- Друзья загружаются динамически -->
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- РАЗДЕЛ: СООБЩЕСТВА -->
+                    <section id="section-groups" class="section-hidden">
+                        <div class="pipe-block p-4 sm:p-6">
+                            <div class="flex flex-col sm:flex-row sm:items-center justify-between mb-6 gap-4">
+                                <div>
+                                    <h1 class="text-2xl font-bold">Сообщества</h1>
+                                    <p class="text-gray-500">Группы и сообщества по интересам</p>
+                                </div>
+                                <button class="px-4 py-2 bg-blue-500 text-white rounded-lg font-semibold hover:bg-blue-600 transition text-sm">
+                                    <i class="fas fa-plus mr-2"></i>Создать сообщество
+                                </button>
+                            </div>
+
+                            <!-- Мои сообщества -->
+                            <div class="mb-8">
+                                <h2 class="text-xl font-bold mb-4">Мои сообщества</h2>
+                                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4" id="myGroups">
+                                    <!-- Сообщества загружаются динамически -->
+                                </div>
+                            </div>
+
+                            <!-- Рекомендации -->
+                            <div>
+                                <h2 class="text-xl font-bold mb-4">Рекомендации</h2>
+                                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4" id="suggestedGroups">
+                                    <!-- Сообщества загружаются динамически -->
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- РАЗДЕЛ: СОБЫТИЯ -->
+                    <section id="section-events" class="section-hidden">
+                        <div class="pipe-block p-4 sm:p-6">
+                            <div class="flex flex-col sm:flex-row sm:items-center justify-between mb-6 gap-4">
+                                <div>
+                                    <h1 class="text-2xl font-bold">События</h1>
+                                    <p class="text-gray-500">Мероприятия и встречи</p>
+                                </div>
+                                <button class="px-4 py-2 bg-blue-500 text-white rounded-lg font-semibold hover:bg-blue-600 transition text-sm">
+                                    <i class="fas fa-plus mr-2"></i>Создать событие
+                                </button>
+                            </div>
+
+                            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                                <div class="lg:col-span-2">
+                                    <h2 class="text-xl font-bold mb-4">Предстоящие события</h2>
+                                    <div class="space-y-4" id="upcomingEvents">
+                                        <!-- События загружаются динамически -->
+                                    </div>
+                                </div>
+
+                                <div>
+                                    <div class="pipe-block p-4 mb-6">
+                                        <h3 class="font-bold text-lg mb-4">Календарь</h3>
+                                        <div id="calendarWidget">
+                                            <!-- Календарь загружается динамически -->
+                                        </div>
+                                    </div>
+
+                                    <div class="pipe-block p-4">
+                                        <h3 class="font-bold text-lg mb-4">Интересное</h3>
+                                        <div class="space-y-3">
+                                            <!-- Интересные события загружаются динамически -->
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- РАЗДЕЛ: МУЗЫКА -->
+                    <section id="section-music" class="section-hidden">
+                        <div class="pipe-block p-4 sm:p-6">
+                            <div class="flex flex-col sm:flex-row sm:items-center justify-between mb-6 gap-4">
+                                <div>
+                                    <h1 class="text-2xl font-bold">Музыка</h1>
+                                    <p class="text-gray-500">Слушайте и делитесь музыкой</p>
+                                </div>
+                                <button class="px-4 py-2 bg-blue-500 text-white rounded-lg font-semibold hover:bg-blue-600 transition text-sm">
+                                    <i class="fas fa-plus mr-2"></i>Добавить музыку
+                                </button>
+                            </div>
+
+                            <!-- Сейчас играет -->
+                            <div class="pipe-block p-4 mb-6 bg-gradient-to-r from-blue-500 to-purple-600 text-white">
+                                <div class="flex items-center justify-between">
+                                    <div class="flex items-center space-x-4">
+                                        <div class="w-16 h-16 rounded-lg overflow-hidden shadow-lg bg-white/20">
+                                            <div class="w-full h-full flex items-center justify-center">
+                                                <i class="fas fa-music text-2xl"></i>
+                                            </div>
+                                        </div>
+                                        <div>
+                                            <div class="text-sm opacity-90">Сейчас играет</div>
+                                            <h3 class="text-xl font-bold">Ваша музыка</h3>
+                                            <p class="opacity-90">Добавьте треки</p>
+                                        </div>
+                                    </div>
+                                    <div class="flex items-center space-x-4">
+                                        <div class="music-wave hidden">
+                                            <span></span><span></span><span></span><span></span><span></span>
+                                        </div>
+                                        <button class="px-4 py-2 bg-white text-blue-600 rounded-lg font-semibold hover:bg-gray-100 transition">
+                                            Добавить
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Плейлисты -->
+                            <div class="mb-8">
+                                <h2 class="text-xl font-bold mb-4">Плейлисты</h2>
+                                <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4" id="playlists">
+                                    <!-- Плейлисты загружаются динамически -->
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- РАЗДЕЛ: ВИДЕО -->
+                    <section id="section-video" class="section-hidden">
+                        <div class="pipe-block p-4 sm:p-6">
+                            <div class="flex flex-col sm:flex-row sm:items-center justify-between mb-6 gap-4">
+                                <div>
+                                    <h1 class="text-2xl font-bold">Видео</h1>
+                                    <p class="text-gray-500">Смотрите и загружайте видео</p>
+                                </div>
+                                <button class="px-4 py-2 bg-blue-500 text-white rounded-lg font-semibold hover:bg-blue-600 transition text-sm">
+                                    <i class="fas fa-upload mr-2"></i>Загрузить видео
+                                </button>
+                            </div>
+
+                            <!-- Рекомендации -->
+                            <div class="mb-8">
+                                <h2 class="text-xl font-bold mb-4">Рекомендации</h2>
+                                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4" id="suggestedVideos">
+                                    <!-- Видео загружаются динамически -->
+                                </div>
+                            </div>
+
+                            <!-- Мои видео -->
+                            <div>
+                                <h2 class="text-xl font-bold mb-4">Мои видео</h2>
+                                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4" id="myVideos">
+                                    <!-- Видео загружаются динамически -->
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- РАЗДЕЛ: НАСТРОЙКИ -->
+                    <section id="section-settings" class="section-hidden">
+                        <div class="pipe-block p-4 sm:p-6">
+                            <h1 class="text-2xl font-bold mb-6">Настройки</h1>
+                            
+                            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                                <div class="lg:col-span-2">
+                                    <!-- Основные настройки -->
+                                    <div class="pipe-block p-4 mb-6">
+                                        <h3 class="font-bold text-lg mb-4">Основные настройки</h3>
+                                        <div class="space-y-4">
+                                            <div class="flex items-center justify-between">
+                                                <div>
+                                                    <div class="font-semibold">Уведомления</div>
+                                                    <div class="text-sm text-gray-500">Получать уведомления</div>
+                                                </div>
+                                                <label class="relative inline-flex items-center cursor-pointer">
+                                                    <input type="checkbox" class="sr-only peer" checked>
+                                                    <div class="w-11 h-6 bg-gray-200 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-500"></div>
+                                                </label>
+                                            </div>
+                                            <div class="flex items-center justify-between">
+                                                <div>
+                                                    <div class="font-semibold">Приватность</div>
+                                                    <div class="text-sm text-gray-500">Кто может видеть профиль</div>
+                                                </div>
+                                                <select class="bg-gray-100 rounded-lg px-3 py-1.5 text-sm outline-none">
+                                                    <option>Все пользователи</option>
+                                                    <option>Только друзья</option>
+                                                    <option>Только я</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Внешний вид -->
+                                    <div class="pipe-block p-4">
+                                        <h3 class="font-bold text-lg mb-4">Внешний вид</h3>
+                                        <div class="space-y-4">
+                                            <div>
+                                                <div class="font-semibold mb-2">Тема</div>
+                                                <div class="flex space-x-3">
+                                                    <button class="px-4 py-2 bg-blue-500 text-white rounded-lg font-semibold">
+                                                        Светлая
+                                                    </button>
+                                                    <button class="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg font-semibold">
+                                                        Темная
+                                                    </button>
+                                                    <button class="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg font-semibold">
+                                                        Авто
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div>
+                                    <!-- Аккаунт -->
+                                    <div class="pipe-block p-4 mb-6">
+                                        <h3 class="font-bold text-lg mb-4">Аккаунт</h3>
+                                        <div class="space-y-3">
+                                            <button class="w-full text-left px-3 py-2.5 rounded-lg hover:bg-gray-50 transition text-sm">
+                                                <i class="fas fa-user-edit text-gray-400 mr-3"></i>
+                                                Редактировать профиль
+                                            </button>
+                                            <button class="w-full text-left px-3 py-2.5 rounded-lg hover:bg-gray-50 transition text-sm">
+                                                <i class="fas fa-shield-alt text-gray-400 mr-3"></i>
+                                                Безопасность
+                                            </button>
+                                            <button class="w-full text-left px-3 py-2.5 rounded-lg hover:bg-gray-50 transition text-sm">
+                                                <i class="fas fa-bell text-gray-400 mr-3"></i>
+                                                Уведомления
+                                            </button>
+                                            <button class="w-full text-left px-3 py-2.5 rounded-lg hover:bg-gray-50 transition text-sm">
+                                                <i class="fas fa-language text-gray-400 mr-3"></i>
+                                                Язык
+                                            </button>
+                                        </div>
+                                    </div>
+
+                                    <!-- Информация -->
+                                    <div class="pipe-block p-4">
+                                        <h3 class="font-bold text-lg mb-4">О приложении</h3>
+                                        <div class="space-y-2 text-sm">
+                                            <div class="flex justify-between">
+                                                <span class="text-gray-500">Версия</span>
+                                                <span class="font-semibold">1.0.0</span>
+                                            </div>
+                                            <div class="pt-4">
+                                                <button class="w-full py-2 bg-blue-50 text-blue-600 rounded-lg font-semibold hover:bg-blue-100 transition">
+                                                    Проверить обновления
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+
+                </main>
+
+                <!-- Правый сайдбар (десктоп) -->
+                <aside class="w-80 hidden xl:block space-y-4">
+                    <!-- Новости -->
+                    <div class="pipe-block p-4">
+                        <h3 class="font-bold text-sm mb-3">Новости СЛОЯ</h3>
+                        <div class="space-y-3 text-sm">
+                            <div class="p-3 bg-blue-50 rounded-lg">
+                                <div class="font-semibold text-blue-600">Обновление 1.0</div>
+                                <div class="text-gray-600 mt-1">Добавлены новые разделы</div>
+                            </div>
+                            <div class="p-3 hover:bg-gray-50 rounded-lg cursor-pointer">
+                                <div class="font-semibold">Улучшена производительность</div>
+                                <div class="text-gray-500 text-xs mt-1">2 дня назад</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Дни рождения -->
+                    <div class="pipe-block p-4">
+                        <h3 class="font-bold text-sm mb-3">Дни рождения</h3>
+                        <div class="space-y-3 text-sm">
+                            <div class="flex items-center space-x-3">
+                                <div class="w-10 h-10 bg-gradient-to-tr from-yellow-400 to-orange-500 rounded-full flex items-center justify-center text-white">
+                                    А
+                                </div>
+                                <div>
+                                    <div class="font-semibold">Алексей</div>
+                                    <div class="text-xs text-gray-500">Сегодня</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </aside>
+            </div>
+        </div>
+
+        <!-- Мобильное меню -->
+        <nav class="mobile-menu">
+            <a href="#" class="mobile-menu-item active" onclick="switchSection('feed'); return false;">
+                <i class="fas fa-home"></i>
+                <span>Лента</span>
+            </a>
+            <a href="#" class="mobile-menu-item" onclick="switchSection('friends'); return false;">
+                <i class="fas fa-users"></i>
+                <span>Друзья</span>
+            </a>
+            <a href="#" class="mobile-menu-item" onclick="switchSection('groups'); return false;">
+                <i class="fas fa-users"></i>
+                <span>Группы</span>
+            </a>
+            <a href="#" class="mobile-menu-item" onclick="switchSection('video'); return false;">
+                <i class="fas fa-video"></i>
+                <span>Видео</span>
+            </a>
+            <a href="#" class="mobile-menu-item" onclick="switchSection('profile'); return false;">
+                <i class="fas fa-user"></i>
+                <span>Профиль</span>
+            </a>
+        </nav>
+
+        <!-- Мини-чат -->
+        <div id="miniChat" class="pipe-block flex flex-col overflow-hidden" style="display: none; position: fixed; bottom: 80px; right: 20px; width: 300px; height: 400px; z-index: 1000;">
+            <div class="p-3 bg-blue-500 text-white flex justify-between items-center">
+                <div class="flex items-center space-x-2">
+                    <span class="font-bold text-sm">Мессенджер</span>
+                </div>
+                <div class="flex items-center space-x-2">
+                    <button onclick="toggleChat()" class="text-lg leading-none">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+            </div>
+            <div id="chatMessages" class="flex-1 p-3 overflow-y-auto space-y-2 bg-gray-50 custom-scrollbar text-sm">
+                <div class="bg-white p-3 rounded-xl rounded-bl-none shadow-sm max-w-[80%]">
+                    Привет! Напиши сообщение.
+                </div>
+            </div>
+            <div class="p-3 border-t bg-white">
+                <div class="flex items-center space-x-2">
+                    <input
+                        id="chatInput"
+                        type="text"
+                        placeholder="Сообщение..."
+                        class="w-full p-2 bg-gray-100 rounded-lg outline-none text-sm px-3"
+                    >
+                    <button id="chatSendBtn" class="w-9 h-9 rounded-full bg-blue-500 text-white flex items-center justify-center">
+                        <i class="fas fa-paper-plane"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Попап репоста -->
+        <div id="sharePopup" class="share-popup pipe-block p-3 w-56">
+            <h4 class="font-bold mb-2 text-sm">Поделиться</h4>
+            <div class="space-y-1">
+                <button class="w-full flex items-center space-x-2 p-2 rounded-lg hover:bg-gray-50 text-sm">
+                    <i class="fab fa-facebook text-blue-600"></i>
+                    <span>Facebook</span>
+                </button>
+                <button class="w-full flex items-center space-x-2 p-2 rounded-lg hover:bg-gray-50 text-sm">
+                    <i class="fab fa-telegram text-blue-400"></i>
+                    <span>Telegram</span>
+                </button>
+                <button id="btnRepostToFeed" class="w-full flex items-center space-x-2 p-2 rounded-lg bg-blue-50 text-blue-600 text-sm">
+                    <i class="fas fa-retweet"></i>
+                    <span>Репост в ленту</span>
+                </button>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        // Константы и переменные
+        const STORAGE_KEYS = {
+            POSTS: 'sl_posts',
+            USER: 'sl_user',
+            FRIENDS: 'sl_friends',
+            GROUPS: 'sl_groups',
+            EVENTS: 'sl_events',
+            MUSIC: 'sl_music',
+            VIDEOS: 'sl_videos',
+            SETTINGS: 'sl_settings',
+            DRAFT: 'sl_draft',
+            CHAT: 'sl_chat',
+            CURRENT_SECTION: 'sl_current_section'
+        };
+
+        let currentSection = 'feed';
+        let currentUser = null;
+        let posts = [];
+        let friends = [];
+        let groups = [];
+        let events = [];
+        let chatMessages = [];
+
+        // Инициализация приложения
+        document.addEventListener('DOMContentLoaded', initializeApp);
+
+        function initializeApp() {
+            // Инициализация данных
+            initData();
+            
+            // Показываем загрузку
+            setTimeout(() => {
+                document.getElementById('loadingScreen').style.opacity = '0';
+                setTimeout(() => {
+                    document.getElementById('loadingScreen').style.display = 'none';
+                    document.getElementById('mainInterface').classList.remove('hidden');
+                    
+                    // Загружаем сохраненную секцию
+                    const savedSection = localStorage.getItem(STORAGE_KEYS.CURRENT_SECTION) || 'feed';
+                    switchSection(savedSection);
+                    
+                    // Инициализируем обработчики
+                    initEventListeners();
+                    
+                    // Загружаем данные
+                    loadData();
+                    
+                    // Обновляем UI
+                    updateUI();
+                }, 300);
+            }, 1000);
+        }
+
+        function initData() {
+            // Пользователь
+            if (!localStorage.getItem(STORAGE_KEYS.USER)) {
+                const user = {
+                    id: 1,
+                    name: "Администратор",
+                    username: "@admin",
+                    avatar: "А",
+                    cover: "linear-gradient(135deg, #4361ee 0%, #3a0ca3 100%)",
+                    verified: true,
+                    status: "Основатель СЛОЯ",
+                    location: "Москва",
+                    age: 25,
+                    joined: "2023",
+                    friends: 0,
+                    posts: 0,
+                    online: true
+                };
+                localStorage.setItem(STORAGE_KEYS.USER, JSON.stringify(user));
+            }
+            
+            // Посты
+            if (!localStorage.getItem(STORAGE_KEYS.POSTS)) {
+                const initialPosts = [
+                    {
+                        id: 1,
+                        userId: 1,
+                        userName: "Администратор",
+                        userAvatar: "А",
+                        verified: true,
+                        time: "Только что",
+                        text: "Добро пожаловать в СЛОЙ! Это новая социальная сеть. Здесь вы можете общаться, делиться контентом и находить друзей.",
+                        image: null,
+                        likes: 0,
+                        comments: 0,
+                        reposts: 0,
+                        views: 0,
+                        isLiked: false,
+                        isReposted: false
+                    }
+                ];
+                localStorage.setItem(STORAGE_KEYS.POSTS, JSON.stringify(initialPosts));
+            }
+            
+            // Друзья
+            if (!localStorage.getItem(STORAGE_KEYS.FRIENDS)) {
+                localStorage.setItem(STORAGE_KEYS.FRIENDS, JSON.stringify([]));
+            }
+            
+            // Группы
+            if (!localStorage.getItem(STORAGE_KEYS.GROUPS)) {
+                localStorage.setItem(STORAGE_KEYS.GROUPS, JSON.stringify([]));
+            }
+            
+            // События
+            if (!localStorage.getItem(STORAGE_KEYS.EVENTS)) {
+                localStorage.setItem(STORAGE_KEYS.EVENTS, JSON.stringify([]));
+            }
+            
+            // Музыка
+            if (!localStorage.getItem(STORAGE_KEYS.MUSIC)) {
+                localStorage.setItem(STORAGE_KEYS.MUSIC, JSON.stringify([]));
+            }
+            
+            // Видео
+            if (!localStorage.getItem(STORAGE_KEYS.VIDEOS)) {
+                localStorage.setItem(STORAGE_KEYS.VIDEOS, JSON.stringify([]));
+            }
+            
+            // Настройки
+            if (!localStorage.getItem(STORAGE_KEYS.SETTINGS)) {
+                localStorage.setItem(STORAGE_KEYS.SETTINGS, JSON.stringify({
+                    notifications: true,
+                    privacy: 'all',
+                    theme: 'light'
+                }));
+            }
+            
+            // Черновик
+            if (!localStorage.getItem(STORAGE_KEYS.DRAFT)) {
+                localStorage.setItem(STORAGE_KEYS.DRAFT, '');
+            }
+            
+            // Чат
+            if (!localStorage.getItem(STORAGE_KEYS.CHAT)) {
+                localStorage.setItem(STORAGE_KEYS.CHAT, JSON.stringify([]));
+            }
+        }
+
+        function loadData() {
+            // Загружаем данные из localStorage
+            try {
+                currentUser = JSON.parse(localStorage.getItem(STORAGE_KEYS.USER));
+                posts = JSON.parse(localStorage.getItem(STORAGE_KEYS.POSTS));
+                friends = JSON.parse(localStorage.getItem(STORAGE_KEYS.FRIENDS));
+                groups = JSON.parse(localStorage.getItem(STORAGE_KEYS.GROUPS));
+                events = JSON.parse(localStorage.getItem(STORAGE_KEYS.EVENTS));
+                chatMessages = JSON.parse(localStorage.getItem(STORAGE_KEYS.CHAT));
+                
+                // Загружаем черновик
+                const draft = localStorage.getItem(STORAGE_KEYS.DRAFT);
+                const postText = document.getElementById('postText');
+                if (postText && draft) {
+                    postText.value = draft;
+                    updateTextareaHeight(postText);
+                }
+            } catch (e) {
+                console.error('Ошибка загрузки данных:', e);
+                // Если ошибка, инициализируем заново
+                initData();
+                loadData();
+            }
+        }
+
+        function updateUI() {
+            // Обновляем профиль
+            updateProfile();
+            
+            // Обновляем посты в ленте
+            renderPosts();
+            
+            // Обновляем друзей
+            renderFriends();
+            
+            // Обновляем группы
+            renderGroups();
+            
+            // Обновляем события
+            renderEvents();
+            
+            // Обновляем музыку
+            renderMusic();
+            
+            // Обновляем видео
+            renderVideos();
+            
+            // Обновляем чат
+            renderChat();
+            
+            // Обновляем состояние кнопки публикации
+            updatePublishButton();
+        }
+
+        function updateProfile() {
+            if (!currentUser) return;
+            
+            // Обновляем имя
+            const profileName = document.getElementById('profileName');
+            if (profileName) profileName.textContent = currentUser.name;
+            
+            // Обновляем статус
+            const profileStatus = document.getElementById('profileStatus');
+            if (profileStatus) profileStatus.textContent = currentUser.status;
+            
+            // Обновляем аватар
+            const profileAvatar = document.getElementById('profileAvatar');
+            if (profileAvatar) {
+                profileAvatar.textContent = currentUser.avatar;
+                profileAvatar.style.background = `linear-gradient(135deg, #4361ee, #3a0ca3)`;
+            }
+            
+            // Обновляем счетчик друзей
+            const friendsCount = document.getElementById('friendsCount');
+            if (friendsCount) friendsCount.textContent = `Друзей: ${friends.length}`;
+        }
+
+        function renderPosts() {
+            const container = document.getElementById('feedPosts');
+            if (!container) return;
+            
+            container.innerHTML = '';
+            
+            if (posts.length === 0) {
+                container.innerHTML = `
+                    <div class="pipe-block p-8 text-center">
+                        <i class="fas fa-newspaper text-4xl text-gray-300 mb-3"></i>
+                        <div class="font-semibold text-gray-700">Лента пуста</div>
+                        <div class="text-gray-500 mt-1">Будьте первым, кто опубликует пост!</div>
+                    </div>
+                `;
+                return;
+            }
+            
+            posts.forEach(post => {
+                const postElement = createPostElement(post);
+                container.appendChild(postElement);
+            });
+            
+            // Обновляем посты в профиле
+            renderProfilePosts();
+        }
+
+        function createPostElement(post) {
+            const div = document.createElement('div');
+            div.className = 'pipe-block overflow-hidden';
+            div.dataset.postId = post.id;
+            
+            const verifiedBadge = post.verified ? 
+                '<div class="verified-badge"><i class="fas fa-check"></i></div>' : '';
+            
+            const imageHtml = post.image ? 
+                `<div class="mt-3">
+                    <img src="${post.image}" class="w-full rounded-lg" alt="Изображение">
+                </div>` : '';
+            
+            div.innerHTML = `
+                <div class="p-4">
+                    <div class="flex items-center justify-between mb-3">
+                        <div class="flex items-center space-x-3">
+                            <div class="w-10 h-10 ${post.userId === currentUser.id ? 'bg-gradient-to-tr from-blue-500 to-purple-600' : 'bg-gray-200'} rounded-full flex items-center justify-center ${post.userId === currentUser.id ? 'text-white' : 'text-gray-700'} font-bold">
+                                ${post.userAvatar}
+                            </div>
+                            <div>
+                                <div class="font-semibold text-sm flex items-center">
+                                    <span>${post.userName}</span>
+                                    ${verifiedBadge}
+                                </div>
+                                <div class="text-xs text-gray-500">
+                                    ${post.time}
+                                </div>
+                            </div>
+                        </div>
+                        <button class="w-8 h-8 rounded-full hover:bg-gray-100 flex items-center justify-center text-gray-500">
+                            <i class="fas fa-ellipsis-h"></i>
+                        </button>
+                    </div>
+                    
+                    <div class="text-gray-700 whitespace-pre-wrap">
+                        ${post.text}
+                    </div>
+                    
+                    ${imageHtml}
+                    
+                    <div class="flex items-center justify-between mt-4 pt-3 border-t border-gray-100">
+                        <div class="flex space-x-4">
+                            <button class="flex items-center space-x-1 text-gray-500 hover:text-red-500 transition btn-like ${post.isLiked ? 'like-active' : ''}" data-post-id="${post.id}">
+                                <i class="fas fa-heart"></i>
+                                <span class="text-sm font-medium like-count">${post.likes}</span>
+                            </button>
+                            <button class="flex items-center space-x-1 text-gray-500 hover:text-blue-500 transition btn-comment" data-post-id="${post.id}">
+                                <i class="fas fa-comment"></i>
+                                <span class="text-sm font-medium">${post.comments}</span>
+                            </button>
+                            <button class="flex items-center space-x-1 text-gray-500 hover:text-green-500 transition btn-repost ${post.isReposted ? 'text-green-500' : ''}" data-post-id="${post.id}">
+                                <i class="fas fa-retweet"></i>
+                                <span class="text-sm font-medium">${post.reposts}</span>
+                            </button>
+                        </div>
+                        <button class="flex items-center space-x-1 text-gray-500 hover:text-blue-500 transition btn-share" data-post-id="${post.id}">
+                            <i class="fas fa-share"></i>
+                        </button>
+                    </div>
+                </div>
+            `;
+            
+            return div;
+        }
+
+        function renderProfilePosts() {
+            const container = document.getElementById('profilePosts');
+            if (!container) return;
+            
+            const userPosts = posts.filter(post => post.userId === currentUser.id);
+            
+            if (userPosts.length === 0) {
+                container.innerHTML = `
+                    <div class="text-center py-8">
+                        <i class="fas fa-edit text-3xl text-gray-300 mb-3"></i>
+                        <div class="font-semibold text-gray-700">Пока нет постов</div>
+                        <div class="text-gray-500 mt-1">Создайте первый пост!</div>
+                    </div>
+                `;
+                return;
+            }
+            
+            container.innerHTML = '';
+            userPosts.forEach(post => {
+                const postElement = createPostElement(post);
+                container.appendChild(postElement);
+            });
+        }
+
+        function renderFriends() {
+            const container = document.getElementById('friendsList');
+            if (!container) return;
+            
+            container.innerHTML = '';
+            
+            if (friends.length === 0) {
+                container.innerHTML = `
+                    <div class="col-span-full py-8 text-center">
+                        <i class="fas fa-user-friends text-3xl text-gray-300 mb-3"></i>
+                        <div class="font-semibold text-gray-700">Пока нет друзей</div>
+                        <div class="text-gray-500 mt-1">Добавьте друзей, чтобы общаться</div>
+                        <button class="mt-4 px-4 py-2 bg-blue-500 text-white rounded-lg font-semibold hover:bg-blue-600 transition">
+                            Найти друзей
+                        </button>
+                    </div>
+                `;
+                return;
+            }
+            
+            friends.forEach(friend => {
+                const friendElement = document.createElement('div');
+                friendElement.className = 'pipe-block overflow-hidden';
+                
+                friendElement.innerHTML = `
+                    <div class="p-3">
+                        <div class="relative mb-2">
+                            <div class="w-full h-32 bg-gradient-to-tr from-blue-400 to-purple-500 rounded-lg flex items-center justify-center text-white text-xl">
+                                ${friend.name.charAt(0)}
+                            </div>
+                            ${friend.online ? '<span class="online-dot"></span>' : '<span class="offline-dot"></span>'}
+                        </div>
+                        <div class="font-semibold text-sm">${friend.name}</div>
+                        <div class="text-xs text-gray-500">@${friend.username}</div>
+                        <div class="flex space-x-2 mt-3">
+                            <button class="flex-1 py-1.5 bg-blue-50 text-blue-600 text-xs font-semibold rounded-lg hover:bg-blue-100 transition">
+                                Написать
+                            </button>
+                        </div>
+                    </div>
+                `;
+                
+                container.appendChild(friendElement);
+            });
+        }
+
+        function renderGroups() {
+            const myGroupsContainer = document.getElementById('myGroups');
+            const suggestedContainer = document.getElementById('suggestedGroups');
+            
+            if (myGroupsContainer) {
+                if (groups.filter(g => g.joined).length === 0) {
+                    myGroupsContainer.innerHTML = `
+                        <div class="col-span-full py-8 text-center">
+                            <i class="fas fa-users text-3xl text-gray-300 mb-3"></i>
+                            <div class="font-semibold text-gray-700">Вы не в сообществах</div>
+                            <div class="text-gray-500 mt-1">Вступите в сообщества по интересам</div>
+                        </div>
+                    `;
+                } else {
+                    myGroupsContainer.innerHTML = '';
+                    groups.filter(g => g.joined).forEach(group => {
+                        const groupElement = createGroupElement(group);
+                        myGroupsContainer.appendChild(groupElement);
+                    });
+                }
+            }
+            
+            if (suggestedContainer) {
+                if (groups.filter(g => !g.joined).length === 0) {
+                    suggestedContainer.innerHTML = `
+                        <div class="col-span-full py-8 text-center">
+                            <div class="font-semibold text-gray-700">Нет рекомендаций</div>
+                        </div>
+                    `;
+                } else {
+                    suggestedContainer.innerHTML = '';
+                    groups.filter(g => !g.joined).slice(0, 3).forEach(group => {
+                        const groupElement = createGroupElement(group);
+                        suggestedContainer.appendChild(groupElement);
+                    });
+                }
+            }
+        }
+
+        function createGroupElement(group) {
+            const div = document.createElement('div');
+            div.className = 'group-card pipe-block overflow-hidden';
+            
+            div.innerHTML = `
+                <div class="p-4">
+                    <div class="flex items-center space-x-3 mb-3">
+                        <div class="w-12 h-12 ${group.color} rounded-lg flex items-center justify-center text-white text-lg">
+                            ${group.icon}
+                        </div>
+                        <div>
+                            <div class="font-semibold">${group.name}</div>
+                            <div class="text-xs text-gray-500">${group.members} участников</div>
+                        </div>
+                    </div>
+                    <p class="text-sm text-gray-600 mb-3 line-clamp-2">${group.description}</p>
+                    ${group.joined ? 
+                        `<button class="w-full py-2 bg-gray-100 text-gray-700 rounded-lg font-semibold hover:bg-gray-200 transition text-sm">
+                            Вы участник
+                        </button>` :
+                        `<button class="w-full py-2 bg-blue-500 text-white rounded-lg font-semibold hover:bg-blue-600 transition text-sm">
+                            Вступить
+                        </button>`
+                    }
+                </div>
+            `;
+            
+            return div;
+        }
+
+        function renderEvents() {
+            const container = document.getElementById('upcomingEvents');
+            if (!container) return;
+            
+            container.innerHTML = '';
+            
+            if (events.length === 0) {
+                container.innerHTML = `
+                    <div class="pipe-block p-8 text-center">
+                        <i class="fas fa-calendar text-3xl text-gray-300 mb-3"></i>
+                        <div class="font-semibold text-gray-700">Нет предстоящих событий</div>
+                        <div class="text-gray-500 mt-1">Создайте свое первое событие</div>
+                    </div>
+                `;
+                return;
+            }
+            
+            events.forEach(event => {
+                const eventElement = document.createElement('div');
+                eventElement.className = 'pipe-block overflow-hidden';
+                
+                eventElement.innerHTML = `
+                    <div class="p-4">
+                        <div class="flex items-start justify-between mb-3">
+                            <div>
+                                <div class="font-semibold">${event.title}</div>
+                                <div class="text-sm text-gray-500 mt-1">
+                                    <i class="fas fa-calendar mr-1"></i>${event.date}
+                                    <i class="fas fa-map-marker-alt ml-3 mr-1"></i>${event.location}
+                                </div>
+                            </div>
+                            <span class="px-2 py-1 ${event.type === 'online' ? 'bg-green-100 text-green-600' : 'bg-blue-100 text-blue-600'} rounded text-xs font-semibold">
+                                ${event.type === 'online' ? 'Онлайн' : 'Офлайн'}
+                            </span>
+                        </div>
+                        <p class="text-sm text-gray-600 mb-3">${event.description}</p>
+                        <div class="flex items-center justify-between">
+                            <span class="text-sm text-gray-500">${event.participants} участников</span>
+                            <button class="px-3 py-1 bg-blue-500 text-white rounded-lg text-sm font-semibold hover:bg-blue-600 transition">
+                                Участвовать
+                            </button>
+                        </div>
+                    </div>
+                `;
+                
+                container.appendChild(eventElement);
+            });
+        }
+
+        function renderMusic() {
+            const container = document.getElementById('playlists');
+            if (!container) return;
+            
+            const music = JSON.parse(localStorage.getItem(STORAGE_KEYS.MUSIC) || '[]');
+            
+            if (music.length === 0) {
+                container.innerHTML = `
+                    <div class="col-span-full py-8 text-center">
+                        <i class="fas fa-music text-3xl text-gray-300 mb-3"></i>
+                        <div class="font-semibold text-gray-700">Нет плейлистов</div>
+                        <div class="text-gray-500 mt-1">Создайте свой первый плейлист</div>
+                    </div>
+                `;
+                return;
+            }
+            
+            container.innerHTML = '';
+            music.forEach(playlist => {
+                const playlistElement = document.createElement('div');
+                playlistElement.className = 'pipe-block overflow-hidden';
+                
+                playlistElement.innerHTML = `
+                    <div class="p-3">
+                        <div class="w-full h-32 bg-gradient-to-tr from-purple-500 to-pink-500 rounded-lg flex items-center justify-center text-white text-2xl mb-2">
+                            <i class="fas fa-music"></i>
+                        </div>
+                        <div class="font-semibold">${playlist.name}</div>
+                        <div class="text-xs text-gray-500">${playlist.tracks} треков</div>
+                        <button class="w-full mt-2 py-1.5 bg-gray-100 text-gray-700 rounded-lg text-sm font-semibold hover:bg-gray-200 transition">
+                            Слушать
+                        </button>
+                    </div>
+                `;
+                
+                container.appendChild(playlistElement);
+            });
+        }
+
+        function renderVideos() {
+            const suggestedContainer = document.getElementById('suggestedVideos');
+            const myVideosContainer = document.getElementById('myVideos');
+            const videos = JSON.parse(localStorage.getItem(STORAGE_KEYS.VIDEOS) || '[]');
+            
+            const renderVideosToContainer = (container, videoList) => {
+                if (!container) return;
+                
+                if (videoList.length === 0) {
+                    container.innerHTML = `
+                        <div class="col-span-full py-8 text-center">
+                            <i class="fas fa-video text-3xl text-gray-300 mb-3"></i>
+                            <div class="font-semibold text-gray-700">Нет видео</div>
+                            <div class="text-gray-500 mt-1">Загрузите свое первое видео</div>
+                        </div>
+                    `;
+                    return;
+                }
+                
+                container.innerHTML = '';
+                videoList.forEach(video => {
+                    const videoElement = document.createElement('div');
+                    videoElement.className = 'pipe-block overflow-hidden';
+                    
+                    videoElement.innerHTML = `
+                        <div class="p-3">
+                            <div class="w-full h-40 bg-gradient-to-tr from-blue-400 to-cyan-400 rounded-lg flex items-center justify-center text-white text-2xl mb-2">
+                                <i class="fas fa-play"></i>
+                            </div>
+                            <div class="font-semibold text-sm line-clamp-2">${video.title}</div>
+                            <div class="text-xs text-gray-500 mt-1">${video.views} просмотров</div>
+                        </div>
+                    `;
+                    
+                    container.appendChild(videoElement);
+                });
+            };
+            
+            if (suggestedContainer) {
+                renderVideosToContainer(suggestedContainer, videos.slice(0, 3));
+            }
+            
+            if (myVideosContainer) {
+                const myVideos = videos.filter(v => v.userId === currentUser.id);
+                renderVideosToContainer(myVideosContainer, myVideos);
+            }
+        }
+
+        function renderChat() {
+            const container = document.getElementById('chatMessages');
+            if (!container) return;
+            
+            container.innerHTML = '';
+            
+            chatMessages.forEach(msg => {
+                const msgElement = document.createElement('div');
+                msgElement.className = msg.from === 'user' 
+                    ? 'bg-blue-500 text-white p-3 rounded-xl rounded-br-none shadow-sm self-end ml-auto max-w-[80%]'
+                    : 'bg-white p-3 rounded-xl rounded-bl-none shadow-sm self-start max-w-[80%]';
+                msgElement.textContent = msg.text;
+                container.appendChild(msgElement);
+            });
+            
+            container.scrollTop = container.scrollHeight;
+        }
+
+        // Функции для работы с разделами
+        function switchSection(sectionId) {
+            // Сохраняем текущий раздел
+            localStorage.setItem(STORAGE_KEYS.CURRENT_SECTION, sectionId);
+            currentSection = sectionId;
+            
+            // Скрываем все разделы
+            document.querySelectorAll('[id^="section-"]').forEach(section => {
+                section.classList.remove('section-visible');
+                section.classList.add('section-hidden');
+            });
+            
+            // Показываем выбранный раздел
+            const targetSection = document.getElementById(`section-${sectionId}`);
+            if (targetSection) {
+                targetSection.classList.remove('section-hidden');
+                targetSection.classList.add('section-visible');
+                
+                // Прокручиваем к началу
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+                
+                // Обновляем активные табы
+                updateActiveTabs(sectionId);
+                
+                // Обновляем мобильное меню
+                updateMobileMenu(sectionId);
+                
+                // Обновляем заголовок
+                const titles = {
+                    'feed': 'Лента',
+                    'profile': 'Профиль',
+                    'friends': 'Друзья',
+                    'groups': 'Сообщества',
+                    'events': 'События',
+                    'music': 'Музыка',
+                    'video': 'Видео',
+                    'settings': 'Настройки'
+                };
+                
+                document.title = `СЛОЙ — ${titles[sectionId] || 'Социальная сеть'}`;
+            }
+        }
+
+        function updateActiveTabs(sectionId) {
+            // Десктоп табы
+            document.querySelectorAll('.header-tab').forEach(tab => {
+                if (tab.dataset.section === sectionId) {
+                    tab.classList.add('active');
+                } else {
+                    tab.classList.remove('active');
+                }
+            });
+            
+            // Табы профиля
+            if (sectionId === 'profile') {
+                document.querySelectorAll('.profile-tab').forEach((tab, index) => {
+                    if (index === 0) {
+                        tab.classList.add('text-blue-600', 'border-blue-600');
+                        tab.classList.remove('text-gray-500');
+                    }
+                });
+            }
+        }
+
+        function updateMobileMenu(sectionId) {
+            document.querySelectorAll('.mobile-menu-item').forEach(item => {
+                item.classList.remove('active');
+            });
+            
+            const menuItems = {
+                'feed': 0,
+                'friends': 1,
+                'groups': 2,
+                'video': 3,
+                'profile': 4
+            };
+            
+            if (menuItems[sectionId] !== undefined) {
+                const items = document.querySelectorAll('.mobile-menu-item');
+                if (items[menuItems[sectionId]]) {
+                    items[menuItems[sectionId]].classList.add('active');
+                }
+            }
+        }
+
+        function toggleBurgerMenu() {
+            const burgerMenu = document.querySelector('.burger-menu');
+            const overlay = document.querySelector('.burger-overlay');
+            
+            if (burgerMenu.classList.contains('active')) {
+                burgerMenu.classList.remove('active');
+                overlay.style.display = 'none';
+            } else {
+                burgerMenu.classList.add('active');
+                overlay.style.display = 'block';
+            }
+        }
+
+        function toggleChat() {
+            const chat = document.getElementById('miniChat');
+            if (chat.style.display === 'flex') {
+                chat.style.display = 'none';
+            } else {
+                chat.style.display = 'flex';
+            }
+        }
+
+        // Функции для работы с постами
+        function publishPost() {
+            const postText = document.getElementById('postText');
+            if (!postText) return;
+            
+            const text = postText.value.trim();
+            if (!text) return;
+            
+            // Показываем прогресс
+            const progressBar = document.getElementById('topProgress');
+            const btnPublish = document.getElementById('btnPublish');
+            
+            if (progressBar) progressBar.style.width = '30%';
+            if (btnPublish) {
+                btnPublish.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Публикация...';
+                btnPublish.disabled = true;
+            }
+            
+            setTimeout(() => {
+                // Создаем новый пост
+                const newPost = {
+                    id: Date.now(),
+                    userId: currentUser.id,
+                    userName: currentUser.name,
+                    userAvatar: currentUser.avatar,
+                    verified: currentUser.verified,
+                    time: 'Только что',
+                    text: text,
+                    image: null,
+                    likes: 0,
+                    comments: 0,
+                    reposts: 0,
+                    views: 0,
+                    isLiked: false,
+                    isReposted: false
+                };
+                
+                // Добавляем в массив
+                posts.unshift(newPost);
+                localStorage.setItem(STORAGE_KEYS.POSTS, JSON.stringify(posts));
+                
+                // Обновляем UI
+                renderPosts();
+                
+                // Сбрасываем форму
+                postText.value = '';
+                localStorage.setItem(STORAGE_KEYS.DRAFT, '');
+                updateTextareaHeight(postText);
+                updatePublishButton();
+                
+                // Скрываем прогресс
+                setTimeout(() => {
+                    if (progressBar) progressBar.style.width = '100%';
+                    setTimeout(() => {
+                        if (progressBar) progressBar.style.width = '0%';
+                    }, 300);
+                }, 200);
+                
+                // Восстанавливаем кнопку
+                if (btnPublish) {
+                    btnPublish.innerHTML = 'Опубликовать';
+                    btnPublish.disabled = false;
+                }
+                
+                // Показываем уведомление
+                showNotification('Пост опубликован!');
+            }, 500);
+        }
+
+        function likePost(postId) {
+            const postIndex = posts.findIndex(p => p.id === postId);
+            if (postIndex === -1) return;
+            
+            const post = posts[postIndex];
+            post.isLiked = !post.isLiked;
+            post.likes += post.isLiked ? 1 : -1;
+            
+            // Сохраняем
+            localStorage.setItem(STORAGE_KEYS.POSTS, JSON.stringify(posts));
+            
+            // Обновляем UI
+            const likeBtn = document.querySelector(`[data-post-id="${postId}"] .btn-like`);
+            const likeCount = document.querySelector(`[data-post-id="${postId}"] .like-count`);
+            
+            if (likeBtn) {
+                likeBtn.classList.toggle('like-active', post.isLiked);
+            }
+            
+            if (likeCount) {
+                likeCount.textContent = post.likes;
+            }
+        }
+
+        function repostPost(postId) {
+            const postIndex = posts.findIndex(p => p.id === postId);
+            if (postIndex === -1) return;
+            
+            const post = posts[postIndex];
+            post.isReposted = !post.isReposted;
+            post.reposts += post.isReposted ? 1 : -1;
+            
+            // Сохраняем
+            localStorage.setItem(STORAGE_KEYS.POSTS, JSON.stringify(posts));
+            
+            // Обновляем UI
+            const repostBtn = document.querySelector(`[data-post-id="${postId}"] .btn-repost`);
+            const repostCount = document.querySelector(`[data-post-id="${postId}"] .repost-count`);
+            
+            if (repostBtn) {
+                repostBtn.classList.toggle('text-green-500', post.isReposted);
+            }
+            
+            if (repostCount) {
+                repostCount.textContent = post.reposts;
+            }
+            
+            // Если репост, создаем новый пост
+            if (post.isReposted) {
+                const repost = {
+                    ...post,
+                    id: Date.now(),
+                    text: `🔁 Репост: ${post.text.substring(0, 100)}${post.text.length > 100 ? '...' : ''}`,
+                    isLiked: false,
+                    isReposted: false,
+                    likes: 0,
+                    comments: 0,
+                    reposts: 0
+                };
+                
+                posts.unshift(repost);
+                localStorage.setItem(STORAGE_KEYS.POSTS, JSON.stringify(posts));
+                renderPosts();
+                
+                showNotification('Пост репостнут!');
+            }
+        }
+
+        // Вспомогательные функции
+        function updateTextareaHeight(textarea) {
+            textarea.style.height = 'auto';
+            textarea.style.height = textarea.scrollHeight + 'px';
+        }
+
+        function updatePublishButton() {
+            const postText = document.getElementById('postText');
+            const btnPublish = document.getElementById('btnPublish');
+            
+            if (!postText || !btnPublish) return;
+            
+            const hasText = postText.value.trim().length > 0;
+            btnPublish.disabled = !hasText;
+        }
+
+        function showNotification(message) {
+            // Создаем элемент уведомления
+            const notification = document.createElement('div');
+            notification.className = 'fixed top-4 right-4 pipe-block p-3 bg-white shadow-lg z-[9999] animate-popIn';
+            notification.innerHTML = `
+                <div class="flex items-center space-x-3">
+                    <div class="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center text-green-600">
+                        <i class="fas fa-check"></i>
+                    </div>
+                    <div class="font-semibold text-sm">${message}</div>
+                </div>
+            `;
+            
+            document.body.appendChild(notification);
+            
+            // Удаляем через 3 секунды
+            setTimeout(() => {
+                notification.style.opacity = '0';
+                notification.style.transform = 'translateX(100px)';
+                setTimeout(() => notification.remove(), 300);
+            }, 3000);
+        }
+
+        function sendChatMessage() {
+            const chatInput = document.getElementById('chatInput');
+            const text = chatInput.value.trim();
+            if (!text) return;
+            
+            // Добавляем сообщение
+            chatMessages.push({
+                from: 'user',
+                text: text,
+                time: new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})
+            });
+            
+            // Сохраняем
+            localStorage.setItem(STORAGE_KEYS.CHAT, JSON.stringify(chatMessages));
+            
+            // Очищаем поле
+            chatInput.value = '';
+            
+            // Обновляем чат
+            renderChat();
+            
+            // Авто-ответ
+            setTimeout(() => {
+                const responses = [
+                    'Привет! Как дела?',
+                    'Интересно, расскажи подробнее',
+                    'Спасибо за сообщение!',
+                    'Отличная идея!',
+                    'Давай обсудим это позже'
+                ];
+                
+                const response = responses[Math.floor(Math.random() * responses.length)];
+                chatMessages.push({
+                    from: 'bot',
+                    text: response,
+                    time: new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})
+                });
+                
+                localStorage.setItem(STORAGE_KEYS.CHAT, JSON.stringify(chatMessages));
+                renderChat();
+            }, 1000);
+        }
+
+        // Инициализация обработчиков событий
+        function initEventListeners() {
+            // Переключение разделов
+            document.querySelectorAll('.header-tab').forEach(tab => {
+                tab.addEventListener('click', () => {
+                    switchSection(tab.dataset.section);
+                });
+            });
+            
+            // Табы профиля
+            document.querySelectorAll('.profile-tab').forEach(tab => {
+                tab.addEventListener('click', () => {
+                    document.querySelectorAll('.profile-tab').forEach(t => {
+                        t.classList.remove('text-blue-600', 'border-blue-600');
+                        t.classList.add('text-gray-500');
+                    });
+                    tab.classList.add('text-blue-600', 'border-blue-600');
+                    tab.classList.remove('text-gray-500');
+                });
+            });
+            
+            // Создание поста
+            const postText = document.getElementById('postText');
+            const btnPublish = document.getElementById('btnPublish');
+            
+            if (postText) {
+                postText.addEventListener('input', () => {
+                    updateTextareaHeight(postText);
+                    updatePublishButton();
+                    localStorage.setItem(STORAGE_KEYS.DRAFT, postText.value);
+                });
+                
+                postText.addEventListener('keydown', (e) => {
+                    if (e.key === 'Enter' && !e.shiftKey) {
+                        e.preventDefault();
+                        if (postText.value.trim() && !btnPublish.disabled) {
+                            publishPost();
+                        }
+                    }
+                });
+            }
+            
+            if (btnPublish) {
+                btnPublish.addEventListener('click', publishPost);
+            }
+            
+            // Взаимодействия с постами
+            document.addEventListener('click', (e) => {
+                // Лайки
+                if (e.target.closest('.btn-like')) {
+                    const postId = parseInt(e.target.closest('.btn-like').dataset.postId);
+                    likePost(postId);
+                }
+                
+                // Репосты
+                if (e.target.closest('.btn-repost')) {
+                    const postId = parseInt(e.target.closest('.btn-repost').dataset.postId);
+                    repostPost(postId);
+                }
+                
+                // Комментарии
+                if (e.target.closest('.btn-comment')) {
+                    const postId = parseInt(e.target.closest('.btn-comment').dataset.postId);
+                    const post = posts.find(p => p.id === postId);
+                    if (post) {
+                        postText.focus();
+                        postText.value = `@${post.userName} `;
+                        updateTextareaHeight(postText);
+                        updatePublishButton();
+                        showNotification('Готово к ответу!');
+                    }
+                }
+                
+                // Поделиться
+                if (e.target.closest('.btn-share')) {
+                    const postId = parseInt(e.target.closest('.btn-share').dataset.postId);
+                    const sharePopup = document.getElementById('sharePopup');
+                    sharePopup.style.display = 'block';
+                    
+                    // Позиционирование
+                    const shareBtn = e.target.closest('.btn-share');
+                    const rect = shareBtn.getBoundingClientRect();
+                    sharePopup.style.right = `${window.innerWidth - rect.right}px`;
+                    sharePopup.style.bottom = `${window.innerHeight - rect.top + 50}px`;
+                    
+                    // Обработка репоста
+                    document.getElementById('btnRepostToFeed').onclick = () => {
+                        repostPost(postId);
+                        sharePopup.style.display = 'none';
+                    };
+                    
+                    // Закрытие при клике вне
+                    setTimeout(() => {
+                        const closePopup = (e) => {
+                            if (!sharePopup.contains(e.target) && !shareBtn.contains(e.target)) {
+                                sharePopup.style.display = 'none';
+                                document.removeEventListener('click', closePopup);
+                            }
+                        };
+                        document.addEventListener('click', closePopup);
+                    }, 10);
+                }
+            });
+            
+            // Чат
+            const chatInput = document.getElementById('chatInput');
+            const chatSendBtn = document.getElementById('chatSendBtn');
+            
+            if (chatInput) {
+                chatInput.addEventListener('keypress', (e) => {
+                    if (e.key === 'Enter') {
+                        e.preventDefault();
+                        sendChatMessage();
+                    }
+                });
+            }
+            
+            if (chatSendBtn) {
+                chatSendBtn.addEventListener('click', sendChatMessage);
+            }
+            
+            // Бургер-меню
+            document.querySelector('.burger-overlay').addEventListener('click', toggleBurgerMenu);
+            
+            // Мобильный поиск
+            const btnMobileSearch = document.getElementById('btnMobileSearch');
+            const mobileSearch = document.getElementById('mobileSearch');
+            
+            if (btnMobileSearch && mobileSearch) {
+                btnMobileSearch.addEventListener('click', () => {
+                    mobileSearch.classList.toggle('hidden');
+                });
+            }
+            
+            // Глобальный поиск
+            const globalSearch = document.getElementById('globalSearch');
+            if (globalSearch) {
+                globalSearch.addEventListener('input', (e) => {
+                    // Поисковая логика может быть добавлена здесь
+                    console.log('Поиск:', e.target.value);
+                });
+            }
+            
+            // Уведомления
+            const btnNotifications = document.getElementById('btnNotifications');
+            const btnMobileNotifications = document.getElementById('btnMobileNotifications');
+            
+            [btnNotifications, btnMobileNotifications].forEach(btn => {
+                if (btn) {
+                    btn.addEventListener('click', () => {
+                        showNotification('Новых уведомлений нет');
+                    });
+                }
+            });
+        }
+    </script>
+</body>
+</html>
