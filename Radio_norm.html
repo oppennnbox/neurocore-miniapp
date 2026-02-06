@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <style>
+        body { margin: 0; }
+        .header {
+            background: #0f172a;
+            padding: 15px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        .back-btn {
+            background: #3b82f6;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <button class="back-btn" onclick="window.history.back()">← Назад</button>
+        <span style="color:white; font-weight:bold;">Радиостанции</span>
+    </div>
+    <iframe src="https://radio.garden/" style="width:100%; height:calc(100vh - 60px); border:none;"></iframe>
+</body>
+</html>
