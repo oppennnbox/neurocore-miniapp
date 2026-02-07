@@ -8,7 +8,7 @@
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
         :root {
-            --bg: #F2F2F7; 
+            --bg: #F2F2F7;
             --text: #1C1C1E;
             --card-bg: #FFFFFF;
             --secondary: #E5E5EA;
@@ -78,7 +78,7 @@
             background: var(--bg);
             z-index: 100;
             transform: translateY(100%);
-            transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
         #game-page.active { transform: translateY(0); }
         .active-scale:active { transform: scale(0.95); transition: transform 0.1s; }
@@ -90,6 +90,107 @@
             padding: 12px 16px 12px 40px;
             color: var(--text);
             outline: none;
+        }
+
+        /* Анимация вращения */
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        .animate-spin {
+            animation: spin 1s linear infinite;
+        }
+
+        /* Анимация появления iframe */
+        @keyframes slideUp {
+            from { transform: translateY(100%); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        .game-iframe-container {
+            animation: slideUp 0.25s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+        }
+
+        /* Стили для подписей в сетке игр */
+        .game-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            aspect-ratio: 1;
+            background-color: var(--card-bg);
+            border-radius: 16px;
+            padding: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+            border: 1px solid rgba(0,0,0,0.05);
+            transition: all 0.2s ease;
+        }
+
+        .game-item:active {
+            transform: scale(0.95);
+        }
+
+        .game-icon {
+            font-size: 2rem;
+            margin-bottom: 8px;
+            height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .game-title {
+            font-size: 10px;
+            font-weight: 600;
+            text-align: center;
+            line-height: 1.2;
+            max-height: 28px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            width: 100%;
+        }
+
+        /* Стили для недоступных игр */
+        .game-item.unavailable {
+            opacity: 0.4;
+            filter: grayscale(100%);
+            cursor: not-allowed;
+        }
+
+        /* Стили для кнопки назад в iframe */
+        .compact-back-btn {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            width: 44px;
+            height: 44px;
+            background: rgba(0, 0, 0, 0.85);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 22px;
+            font-weight: 300;
+            z-index: 1001;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .compact-back-btn:hover {
+            background: rgba(0, 0, 0, 0.95);
+            transform: scale(1.08);
+            box-shadow: 0 6px 16px rgba(0,0,0,0.4);
+        }
+
+        .compact-back-btn:active {
+            transform: scale(0.95);
         }
     </style>
 </head>
@@ -104,7 +205,7 @@
         <div class="px-main mb-6 animate-fade-in" style="animation-delay: 0.05s;">
             <div class="relative">
                 <span class="absolute left-3 top-3 opacity-40">🔍</span>
-                <input type="text" id="search-input" placeholder="Найти Zмейку или 2048..." class="rounded-medium text-sm font-medium">
+                <input type="text" id="search-input" placeholder="Найти игру..." class="rounded-medium text-sm font-medium">
             </div>
         </div>
 
@@ -148,32 +249,53 @@
                 <div class="bg-[--card-bg] p-6 rounded-large mb-10 border border-black/5">
                     <p id="game-view-desc" class="text-sm opacity-70 leading-relaxed"></p>
                 </div>
-                <button id="launch-btn" class="w-full bg-[--text] text-[--bg] py-5 rounded-xlarge font-black text-lg active:scale-95 transition-transform shadow-xl">ЗАПУСТИТЬ ИГРУ</button>
+                <button id="launch-btn" class="w-full bg-[--text] text-[--bg] py-5 rounded-xlarge font-black text-lg active:scale-95 transition-transform shadow-xl relative overflow-hidden">
+                    <span id="launch-btn-text">ЗАПУСТИТЬ ИГРУ</span>
+                    <div id="game-loading" class="hidden absolute inset-0 bg-gradient-to-r from-green-500 to-teal-500 flex items-center justify-center">
+                        <div class="w-6 h-6 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                    </div>
+                </button>
             </div>
         </div>
     </div>
 
     <script>
+        // Убрал повторное объявление tg
         const tg = window.Telegram.WebApp;
         tg.expand();
 
-        // База данных игр
+        // ОБНОВЛЕННАЯ БАЗА ДАННЫХ ИГР
         const gamesData = [
-            { id: 'snake', title: 'Zмейка', icon: '🐍', desc: 'Классика в новом исполнении. Собирай яблоки, расти и не врезайся в хвост. Закругления труб включены!', color: 'bg-green-500', isNew: true },
-            { id: '2048', title: '2048', icon: '🔢', desc: 'Складывай числа, соединяй плитки и доберись до заветного числа 2048. Математический азарт!', color: 'bg-amber-500', isNew: true },
-            { id: 1, title: 'Космос', icon: '🛸', desc: 'Полет сквозь звезды и астероиды.', grad: 'from-blue-600 to-indigo-700' },
-            { id: 2, title: 'Гонки', icon: '🏎️', desc: 'Скорость, дрифт и жженая резина.', grad: 'from-purple-600 to-pink-600' },
-            { id: 3, title: 'Замок', icon: '🏰', desc: 'Построй свою крепость и защити её.', grad: 'from-amber-500 to-orange-600' }
+            // Новинки (оставлены сверху)
+            { id: 'snake', title: 'Zмейка', icon: '🐍', desc: 'Классика в новом исполнении. Собирай яблоки, расти и не врезайся в хвост. Закругления труб включены!', color: 'bg-green-500', isNew: true, url: 'https://oppennnbox.github.io/neurocore-miniapp/snake.html' },
+            { id: '2048', title: '2048', icon: '🔢', desc: 'Складывай числа, соединяй плитки и доберись до заветного числа 2048. Математический азарт!', color: 'bg-amber-500', isNew: true, url: 'https://oppennnbox.github.io/neurocore-miniapp/game2048.html' },
+
+            // Новые игры из списка
+            { id: 'pipe_jumper', title: 'Pipe Jumper Pro', icon: '🚀', desc: 'Экстремальные прыжки по скоростным трубам. Ловкость и реакция на пределе!', color: 'bg-purple-500', url: 'https://oppennnbox.github.io/neurocore-miniapp/Sharik.html' },
+            { id: 'quantum_flux', title: 'Quantum Flux', icon: '🌀', desc: 'Погрузись в поток квантовых частиц. Гипнотизирующая аркада на выживание.', color: 'bg-indigo-500', url: 'https://oppennnbox.github.io/neurocore-miniapp/oxyet.html' },
+            { id: 'jelly_drift', title: 'Jelly Drift', icon: '🍮', desc: 'Плавное и расслабляющее управление желеобразным шариком в потоке цвета.', color: 'bg-pink-300', url: 'https://oppennnbox.github.io/neurocore-miniapp/oxyett.html' },
+            { id: 'neo_zen_flow', title: 'Neo Zen Flow', icon: '🧘‍♂️', desc: 'Медитативное путешествие по неоновым туннелям. Найди свой поток.', color: 'bg-cyan-400', url: 'https://oppennnbox.github.io/neurocore-miniapp/oxxyel.html' },
+            { id: 'grey_tunnel', title: 'Grey Tech Tunnel', icon: '⚙️', desc: 'Высокоскоростной полет через техногенный туннель. Тест на концентрацию.', color: 'bg-gray-600', url: 'https://oppennnbox.github.io/neurocore-miniapp/oxeeeyt.html' },
+            { id: 'tic_tac_toe', title: 'Крестики Нолики', icon: '❌⭕', desc: 'Величайший поединок ума. Классическая битва крестиков и ноликов с ИИ.', color: 'bg-red-100', url: 'https://oppennnbox.github.io/neurocore-miniapp/Krestik-Nolik.html' },
+            { id: 'maze_flow', title: 'Maze Flow', icon: '🧩', desc: 'Сложные лабиринты и головоломные туннели. Пройди все уровни хардкор-режима.', color: 'bg-yellow-400', url: 'https://oppennnbox.github.io/neurocore-miniapp/Sharik2.html' },
+            { id: 'fluid_ultra', title: 'Fluid Ultra', icon: '💧', desc: 'Ультра-плавная физика и динамика жидкости. Управляй бесконечным потоком.', color: 'bg-blue-300', url: 'https://oppennnbox.github.io/neurocore-miniapp/doksik.html' },
+            { id: 'smart_spider', title: 'Smart Spider', icon: '🕷️', desc: 'У каждого паука свой путь! Мультитач-игра на ловкость и многозадачность.', color: 'bg-gray-800', url: 'https://oppennnbox.github.io/neurocore-miniapp/Pavyk.html' },
+
+            // Старые демо-игры (недоступные)
+            { id: 1, title: 'Космос', icon: '🛸', desc: 'Полет сквозь звезды и астероиды.', grad: 'from-blue-600 to-indigo-700', url: '#' },
+            { id: 2, title: 'Гонки', icon: '🏎️', desc: 'Скорость, дрифт и жженая резина.', grad: 'from-purple-600 to-pink-600', url: '#' },
+            { id: 3, title: 'Замок', icon: '🏰', desc: 'Построй свою крепость и защити её.', grad: 'from-amber-500 to-orange-600', url: '#' }
         ];
 
-        // Генерируем остальные игры
+        // Генерируем остальные игры-заглушки (недоступные)
         const icons = ['🔮','🍎','🧊','🎯','💎','👾','⚽','🚀','🥑','🍄','🍕','🍔','🍟','🎈','🎁','🎨','🎭','🥊','🥋','🎸','🎷','🎺','🎻','🎬','🎮','🕹️','🎰','🎲','🎱','🎳','🛹','🚲','🚜','🚁','🚤','🦄','🐲','🦁','🐯','🐘','🐼','🦒','🦓','🦜','🐚'];
         icons.forEach((icon, i) => {
             gamesData.push({
-                id: i + 4,
+                id: i + 100,
                 title: `Игра ${i + 4}`,
                 icon: icon,
-                desc: "Захватывающее приключение ждет тебя внутри!"
+                desc: "Скоро будет...",
+                url: '#'
             });
         });
 
@@ -209,15 +331,60 @@
                 foundCount++;
             });
 
+            // Добавляем пустые ячейки для выравнивания
+            addEmptyGridItems();
+
             noResults.classList.toggle('hidden', foundCount > 0);
         });
 
+        // Функция добавления пустых ячеек для четного количества
+        function addEmptyGridItems() {
+            const gridCont = document.getElementById('all-games-grid');
+            const currentItems = gridCont.children.length;
+            const itemsPerRow = 4;
+            const remainder = currentItems % itemsPerRow;
+            
+            if (remainder > 0) {
+                const emptyCellsNeeded = itemsPerRow - remainder;
+                for (let i = 0; i < emptyCellsNeeded; i++) {
+                    const emptyDiv = document.createElement('div');
+                    emptyDiv.className = "invisible";
+                    gridCont.appendChild(emptyDiv);
+                }
+            }
+        }
+
+        // ФУНКЦИЯ ДЛЯ РЕНДЕРА ИГР С ПОДПИСЯМИ
         function renderGridItem(g) {
             const gridCont = document.getElementById('all-games-grid');
             const div = document.createElement('div');
-            div.className = "aspect-square bg-[--card-bg] rounded-large flex items-center justify-center text-3xl shadow-sm active-scale border border-black/5";
-            div.onclick = () => openGame(g.id);
-            div.innerHTML = g.icon;
+            div.className = "game-item active-scale";
+            
+            // Добавляем класс для недоступных игр
+            if (g.url === '#') {
+                div.classList.add('unavailable');
+            }
+            
+            div.onclick = () => {
+                if (g.url === '#') {
+                    // Для недоступных игр показываем сообщение
+                    tg.showAlert('Скоро будет...');
+                    tg.HapticFeedback.impactOccurred('medium');
+                    return;
+                }
+                openGame(g.id);
+            };
+            
+            const iconDiv = document.createElement('div');
+            iconDiv.className = "game-icon";
+            iconDiv.innerText = g.icon;
+            
+            const titleDiv = document.createElement('div');
+            titleDiv.className = "game-title";
+            titleDiv.innerText = g.title;
+            
+            div.appendChild(iconDiv);
+            div.appendChild(titleDiv);
             gridCont.appendChild(div);
         }
 
@@ -232,7 +399,18 @@
                 if (g) {
                     const item = document.createElement('div');
                     item.className = `snap-item w-20 active-scale`;
-                    item.onclick = () => openGame(g.id);
+                    if (g.url === '#') {
+                        item.style.opacity = '0.5';
+                        item.style.filter = 'grayscale(100%)';
+                    }
+                    item.onclick = () => {
+                        if (g.url === '#') {
+                            tg.showAlert('Скоро будет...');
+                            tg.HapticFeedback.impactOccurred('medium');
+                            return;
+                        }
+                        openGame(g.id);
+                    };
                     item.innerHTML = `<div class="w-20 h-20 bg-[--card-bg] rounded-large flex items-center justify-center text-3xl shadow-sm border border-black/5">${g.icon}</div>`;
                     scroll.appendChild(item);
                 }
@@ -242,6 +420,14 @@
         function openGame(id) {
             currentGameId = id;
             const g = gamesData.find(x => x.id == id);
+            
+            // Проверяем доступность игры
+            if (g.url === '#') {
+                tg.showAlert('Скоро будет...');
+                tg.HapticFeedback.impactOccurred('medium');
+                return;
+            }
+            
             document.getElementById('game-view-title').innerText = g.title;
             document.getElementById('game-view-icon').innerText = g.icon;
             document.getElementById('game-view-desc').innerText = g.desc;
@@ -253,42 +439,115 @@
             tg.HapticFeedback.impactOccurred('medium');
         }
 
+        // ОБРАБОТЧИК ЗАПУСКА ИГРЫ
         document.getElementById('launch-btn').onclick = function() {
             if (!currentGameId) return;
+            const currentGame = gamesData.find(x => x.id == currentGameId);
+            if (!currentGame) return;
+            
+            // Проверяем доступность игры
+            if (currentGame.url === '#') {
+                tg.showAlert('Скоро будет...');
+                tg.HapticFeedback.impactOccurred('medium');
+                return;
+            }
+
+            // Сохраняем в историю
             history = [currentGameId, ...history.filter(x => x != currentGameId)].slice(0, 10);
             localStorage.setItem('game_history', JSON.stringify(history));
             updateHistoryUI();
+
             tg.HapticFeedback.notificationOccurred('success');
-            setTimeout(closeGame, 200);
+
+            // Показываем индикатор загрузки
+            document.getElementById('game-loading').classList.remove('hidden');
+            document.getElementById('launch-btn-text').classList.add('opacity-0');
+
+            // Закрываем страницу игры и создаем iframe (быстрее)
+            setTimeout(() => {
+                closeGame();
+                createGameFrame(currentGame);
+            }, 150); // Ускорено с 300ms до 150ms
         };
+
+        // ФУНКЦИЯ СОЗДАНИЯ IFRAME ДЛЯ ИГРЫ
+        function createGameFrame(game) {
+            // Создаем контейнер
+            const iframeContainer = document.createElement('div');
+            iframeContainer.className = 'game-iframe-container';
+            iframeContainer.style.cssText = `
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                z-index: 1000;
+                background: var(--bg);
+            `;
+
+            // Улучшенная компактная кнопка назад
+            const backBtn = document.createElement('button');
+            backBtn.className = 'compact-back-btn';
+            backBtn.innerHTML = '←';
+            backBtn.onclick = function() {
+                document.body.removeChild(iframeContainer);
+                tg.HapticFeedback.impactOccurred('light');
+            };
+
+            // Сам iframe (теперь занимает 100% экрана)
+            const iframe = document.createElement('iframe');
+            iframe.src = game.url;
+            iframe.style.cssText = `
+                width: 100%;
+                height: 100%;
+                border: none;
+                background: var(--bg);
+            `;
+            iframe.allow = 'fullscreen *';
+            iframe.allowFullscreen = true;
+            iframe.title = game.title;
+
+            // Собираем и добавляем
+            iframeContainer.appendChild(iframe);
+            iframeContainer.appendChild(backBtn);
+            document.body.appendChild(iframeContainer);
+        }
 
         function closeGame() {
             document.getElementById('game-page').classList.remove('active');
             currentGameId = null;
+            // Сбрасываем состояние кнопки
+            document.getElementById('game-loading').classList.add('hidden');
+            document.getElementById('launch-btn-text').classList.remove('opacity-0');
         }
 
         // Рендер начальных разделов
         const heroCont = document.getElementById('hero-carousel');
+        // В карусель добавляем первые три новые игры
         gamesData.slice(2, 5).forEach(g => {
-            heroCont.innerHTML += `<div class="snap-item w-[85vw] active-scale" onclick="openGame('${g.id}')"><div class="relative w-full h-56 bg-gradient-to-tr ${g.grad} rounded-xlarge p-6 text-white flex flex-col justify-end shadow-lg"><p class="text-[10px] font-black opacity-80 mb-1 uppercase">ТОП НЕДЕЛИ</p><h2 class="text-2xl font-black mb-4">${g.title}</h2><button class="bg-white text-black w-max px-6 py-2 rounded-medium font-bold text-xs">ИГРАТЬ</button><div class="absolute top-6 right-6 text-6xl drop-shadow-2xl">${g.icon}</div></div></div>`;
+            heroCont.innerHTML += `<div class="snap-item w-[85vw] active-scale" onclick="openGame('${g.id}')"><div class="relative w-full h-56 bg-gradient-to-tr ${g.grad || 'from-purple-500 to-pink-500'} rounded-xlarge p-6 text-white flex flex-col justify-end shadow-lg"><p class="text-[10px] font-black opacity-80 mb-1 uppercase">ПРЕМИУМ</p><h2 class="text-2xl font-black mb-4">${g.title}</h2><button class="bg-white text-black w-max px-6 py-2 rounded-medium font-bold text-xs">ИГРАТЬ</button><div class="absolute top-6 right-6 text-6xl drop-shadow-2xl">${g.icon}</div></div></div>`;
         });
 
+        // В тренде - следующие три игры
         const trendCont = document.getElementById('trending-scroll');
         gamesData.slice(5, 8).forEach(g => {
-            trendCont.innerHTML += `<div class="snap-item w-44 active-scale" onclick="openGame('${g.id}')"><div class="bg-blue-600 w-full h-56 rounded-xlarge p-5 text-white flex flex-col justify-between shadow-md"><div class="text-6xl">${g.icon}</div><div><h4 class="font-bold text-lg leading-tight">${g.title}</h4><p class="text-[10px] opacity-70 mt-1 uppercase font-bold tracking-wider">ПЕРЕЙТИ</p></div></div></div>`;
+            trendCont.innerHTML += `<div class="snap-item w-44 active-scale" onclick="openGame('${g.id}')"><div class="bg-gradient-to-br from-blue-600 to-indigo-700 w-full h-56 rounded-xlarge p-5 text-white flex flex-col justify-between shadow-md"><div class="text-6xl">${g.icon}</div><div><h4 class="font-bold text-lg leading-tight">${g.title}</h4><p class="text-[10px] opacity-70 mt-1 uppercase font-bold tracking-wider">ХИТ</p></div></div></div>`;
         });
 
-        // Секция Новинки (Zмейка и 2048 всегда тут)
+        // Секция Новинки (Zмейка и 2048)
         const newCont = document.getElementById('new-games-scroll');
         gamesData.filter(g => g.isNew).forEach(g => {
             newCont.innerHTML += `<div class="snap-item w-64 active-scale" onclick="openGame('${g.id}')"><div class="bg-[--card-bg] p-4 rounded-xlarge flex items-center gap-4 shadow-sm border border-black/5"><div class="text-4xl w-16 h-16 rounded-medium ${g.color} flex items-center justify-center shadow-inner">${g.icon}</div><div><h4 class="font-bold text-lg text-[--text]">${g.title}</h4><p class="text-[10px] text-blue-600 font-bold uppercase">НОВАЯ ИГРА</p></div></div></div>`;
         });
 
-        // Весь грид
+        // Весь грид с подписями
         const gridCont = document.getElementById('all-games-grid');
         gamesData.forEach(g => renderGridItem(g));
+        
+        // Добавляем пустые ячейки для выравнивания
+        addEmptyGridItems();
 
         updateHistoryUI();
     </script>
 </body>
-</html>
+    </html>
